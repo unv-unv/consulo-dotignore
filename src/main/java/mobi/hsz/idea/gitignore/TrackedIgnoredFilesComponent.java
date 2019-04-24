@@ -39,7 +39,6 @@ import com.intellij.util.messages.MessageBusConnection;
 import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
 import mobi.hsz.idea.gitignore.ui.untrackFiles.UntrackFilesDialog;
 import mobi.hsz.idea.gitignore.util.Notify;
-import mobi.hsz.idea.gitignore.util.Utils;
 
 /**
  * ProjectComponent instance to handle {@link IgnoreManager.TrackedIgnoredListener} event
@@ -115,7 +114,7 @@ public class TrackedIgnoredFilesComponent implements IgnoreManager.TrackedIgnore
         notificationShown = true;
         Notify.show(
                 myProject,
-                IgnoreBundle.message("notification.untrack.title", Utils.getVersion()),
+                IgnoreBundle.message("notification.untrack.title"),
                 IgnoreBundle.message("notification.untrack.content"),
                 NotificationType.INFORMATION,
                 (notification, event) -> {
