@@ -1,4 +1,6 @@
 .idea/
+.consulo/
+target/
 *.iml
 out/
 gen/
