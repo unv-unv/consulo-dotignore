@@ -24,6 +24,26 @@
 
 package mobi.hsz.idea.gitignore.ui;
 
+import static mobi.hsz.idea.gitignore.settings.IgnoreSettings.IgnoreLanguagesSettings.KEY.ENABLE;
+import static mobi.hsz.idea.gitignore.settings.IgnoreSettings.IgnoreLanguagesSettings.KEY.NEW_FILE;
+
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TreeMap;
+
+import javax.swing.JCheckBox;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.table.AbstractTableModel;
+
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.Disposable;
@@ -42,8 +62,6 @@ import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.fileChooser.FileChooserFactory;
 import com.intellij.openapi.fileChooser.FileSaverDescriptor;
-import com.intellij.openapi.fileTypes.FileTypes;
-import com.intellij.openapi.fileTypes.StdFileTypes;
 import com.intellij.openapi.ui.InputValidatorEx;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.Splitter;
@@ -60,26 +78,12 @@ import com.intellij.ui.components.labels.ActionLink;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.ui.JBUI;
+import consulo.fileTypes.ArchiveFileType;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
 import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
 import mobi.hsz.idea.gitignore.util.Constants;
 import mobi.hsz.idea.gitignore.util.Utils;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
-import java.awt.*;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TreeMap;
-
-import static mobi.hsz.idea.gitignore.settings.IgnoreSettings.IgnoreLanguagesSettings.KEY.ENABLE;
-import static mobi.hsz.idea.gitignore.settings.IgnoreSettings.IgnoreLanguagesSettings.KEY.NEW_FILE;
 
 /**
  * UI form for {@link IgnoreSettings} edition.
@@ -410,19 +414,19 @@ public class IgnoreSettingsPanel implements Disposable {
                                 public boolean isFileVisible(VirtualFile file, boolean showHiddenFiles) {
                                     return super.isFileVisible(file, showHiddenFiles) &&
                                             (file.isDirectory() || FILE_EXTENSION.equals(file.getExtension()) ||
-                                                    file.getFileType() == FileTypes.ARCHIVE);
+                                                    file.getFileType() instanceof ArchiveFileType);
                                 }
 
                                 @Override
                                 public boolean isFileSelectable(VirtualFile file) {
-                                    return file.getFileType() == StdFileTypes.XML;
+                                    return file.getExtension().endsWith("xml");
                                 }
                             };
                     descriptor.setDescription(IgnoreBundle.message("action.importTemplates.wrapper.description"));
                     descriptor.setTitle(IgnoreBundle.message("action.importTemplates.wrapper"));
                     descriptor.putUserData(
                             LangDataKeys.MODULE_CONTEXT,
-                            LangDataKeys.MODULE.getData(event.getDataContext())
+                            event.getData(LangDataKeys.MODULE)
                     );
 
                     final VirtualFile file = FileChooser.chooseFile(descriptor, templatesListPanel, null, null);
@@ -592,7 +596,7 @@ public class IgnoreSettingsPanel implements Disposable {
         public List<IgnoreSettings.UserTemplate> getList() {
             ArrayList<IgnoreSettings.UserTemplate> list = ContainerUtil.newArrayList();
             for (int i = 0; i < myListModel.size(); i++) {
-                list.add(myListModel.getElementAt(i));
+                list.add((IgnoreSettings.UserTemplate) myListModel.getElementAt(i));
             }
             return list;
         }
@@ -620,7 +624,7 @@ public class IgnoreSettingsPanel implements Disposable {
             if (index == -1) {
                 return null;
             }
-            return myListModel.get(index);
+            return (IgnoreSettings.UserTemplate) myListModel.get(index);
         }
 
         /**

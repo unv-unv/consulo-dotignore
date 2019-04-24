@@ -24,6 +24,11 @@
 
 package mobi.hsz.idea.gitignore.lang.kind;
 
+import java.util.ArrayList;
+import java.util.Set;
+
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.jetbrains.annotations.NotNull;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.containers.ContainerUtil;
@@ -36,11 +41,6 @@ import mobi.hsz.idea.gitignore.outer.OuterIgnoreLoaderComponent.OuterFileFetcher
 import mobi.hsz.idea.gitignore.util.Icons;
 import mobi.hsz.idea.gitignore.util.Utils;
 import mobi.hsz.idea.gitignore.util.exec.ExternalExec;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.Set;
 
 /**
  * Gitignore {@link IgnoreLanguage} definition.

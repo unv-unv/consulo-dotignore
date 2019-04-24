@@ -24,19 +24,20 @@
 
 package mobi.hsz.idea.gitignore.daemon;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.EditorNotificationPanel;
 import com.intellij.ui.EditorNotifications;
+import consulo.awt.TargetAWT;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.IgnoreManager;
 import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
 import mobi.hsz.idea.gitignore.util.Icons;
 import mobi.hsz.idea.gitignore.util.Properties;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Editor notification provider that informs about the attempt of the ignored file modification.
@@ -114,7 +115,7 @@ public class IgnoredEditingNotificationProvider extends EditorNotifications.Prov
         });
 
         try { // ignore if older SDK does not support panel icon
-            panel.icon(Icons.IGNORE);
+            panel.icon(TargetAWT.to(Icons.IGNORE));
         } catch (NoSuchMethodError ignored) {
         }
 

@@ -24,24 +24,31 @@
 
 package mobi.hsz.idea.gitignore;
 
-import com.intellij.openapi.components.AbstractProjectComponent;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.FileIndex;
-import com.intellij.openapi.roots.ProjectRootManager;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vfs.*;
-import com.intellij.psi.search.FilenameIndex;
-import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.util.containers.ContainerUtil;
 import gnu.trove.THashSet;
-import mobi.hsz.idea.gitignore.util.Constants;
-import mobi.hsz.idea.gitignore.util.MatcherUtil;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Pattern;
+
+import org.jetbrains.annotations.NotNull;
+import com.intellij.openapi.components.ProjectComponent;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.roots.FileIndex;
+import com.intellij.openapi.roots.ProjectRootManager;
+import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.VirtualFileCopyEvent;
+import com.intellij.openapi.vfs.VirtualFileEvent;
+import com.intellij.openapi.vfs.VirtualFileListener;
+import com.intellij.openapi.vfs.VirtualFileManager;
+import com.intellij.openapi.vfs.VirtualFileMoveEvent;
+import com.intellij.openapi.vfs.VirtualFilePropertyEvent;
+import com.intellij.psi.search.FilenameIndex;
+import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.util.containers.ContainerUtil;
+import mobi.hsz.idea.gitignore.util.Constants;
+import mobi.hsz.idea.gitignore.util.MatcherUtil;
 
 /**
  * Cache that retrieves matching files using given {@link Pattern}.
@@ -51,7 +58,8 @@ import java.util.regex.Pattern;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 1.3.1
  */
-public class FilesIndexCacheProjectComponent extends AbstractProjectComponent {
+public class FilesIndexCacheProjectComponent implements ProjectComponent
+{
     /** Concurrent cache map. */
     @NotNull
     private final ConcurrentMap<String, Collection<VirtualFile>> cacheMap;
@@ -125,7 +133,6 @@ public class FilesIndexCacheProjectComponent extends AbstractProjectComponent {
      * @param project current project
      */
     protected FilesIndexCacheProjectComponent(@NotNull final Project project) {
-        super(project);
         cacheMap = ContainerUtil.newConcurrentMap();
         virtualFileManager = VirtualFileManager.getInstance();
         projectFileIndex = ProjectRootManager.getInstance(project).getFileIndex();

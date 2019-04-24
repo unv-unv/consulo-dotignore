@@ -24,15 +24,17 @@
 
 package mobi.hsz.idea.gitignore.ui.template;
 
+import java.awt.Color;
+import java.awt.Font;
+
+import javax.swing.JTree;
+
 import com.intellij.ide.ui.search.SearchUtil;
 import com.intellij.ui.CheckboxTree;
+import com.intellij.ui.JBColor;
 import com.intellij.ui.SimpleTextAttributes;
-import com.intellij.util.ui.PlatformColors;
 import com.intellij.util.ui.UIUtil;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
-
-import javax.swing.*;
-import java.awt.*;
 
 /**
  * {@link TemplateTreeRenderer} implementation of checkbox renderer.
@@ -64,8 +66,7 @@ public abstract class TemplateTreeRenderer extends CheckboxTree.CheckboxTreeCell
 
         final Color background = selected ? UIUtil.getTreeSelectionBackground() : UIUtil.getTreeTextBackground();
         UIUtil.changeBackGround(this, background);
-        Color foreground = selected ? UIUtil.getTreeSelectionForeground() : node.getTemplate() == null ?
-                PlatformColors.BLUE : UIUtil.getTreeTextForeground();
+        Color foreground = selected ? UIUtil.getTreeSelectionForeground() : node.getTemplate() == null ? JBColor.BLUE : UIUtil.getTreeTextForeground();
         int style = SimpleTextAttributes.STYLE_PLAIN;
 
         String text = "", hint = "";

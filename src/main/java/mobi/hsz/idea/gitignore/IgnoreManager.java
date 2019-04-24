@@ -24,19 +24,33 @@
 
 package mobi.hsz.idea.gitignore;
 
+import static mobi.hsz.idea.gitignore.IgnoreManager.RefreshTrackedIgnoredListener.TRACKED_IGNORED_REFRESH;
+import static mobi.hsz.idea.gitignore.IgnoreManager.TrackedIgnoredListener.TRACKED_IGNORED;
+import static mobi.hsz.idea.gitignore.settings.IgnoreSettings.KEY;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
+import java.util.regex.Pattern;
+
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import com.intellij.ProjectTopics;
 import com.intellij.ide.projectView.ProjectView;
 import com.intellij.ide.projectView.impl.AbstractProjectViewPane;
+import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
-import com.intellij.openapi.components.AbstractProjectComponent;
+import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.extensions.Extensions;
 import com.intellij.openapi.fileTypes.ExactFileNameMatcher;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.progress.ProgressManager;
-import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.NoAccessDuringPsiEvents;
 import com.intellij.openapi.project.Project;
@@ -45,7 +59,12 @@ import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vcs.FileStatusManager;
 import com.intellij.openapi.vcs.ProjectLevelVcsManager;
 import com.intellij.openapi.vcs.VcsRoot;
-import com.intellij.openapi.vfs.*;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.VirtualFileCopyEvent;
+import com.intellij.openapi.vfs.VirtualFileEvent;
+import com.intellij.openapi.vfs.VirtualFileListener;
+import com.intellij.openapi.vfs.VirtualFileManager;
+import com.intellij.openapi.vfs.VirtualFileMoveEvent;
 import com.intellij.util.Time;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.messages.MessageBusConnection;
@@ -59,22 +78,14 @@ import mobi.hsz.idea.gitignore.indexing.IgnoreEntryOccurrence;
 import mobi.hsz.idea.gitignore.indexing.IgnoreFilesIndex;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
 import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
-import mobi.hsz.idea.gitignore.util.*;
+import mobi.hsz.idea.gitignore.util.CachedConcurrentMap;
+import mobi.hsz.idea.gitignore.util.Debounced;
+import mobi.hsz.idea.gitignore.util.ExpiringMap;
+import mobi.hsz.idea.gitignore.util.Glob;
+import mobi.hsz.idea.gitignore.util.InterruptibleScheduledFuture;
+import mobi.hsz.idea.gitignore.util.MatcherUtil;
+import mobi.hsz.idea.gitignore.util.Utils;
 import mobi.hsz.idea.gitignore.util.exec.ExternalExec;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentMap;
-import java.util.regex.Pattern;
-
-import static mobi.hsz.idea.gitignore.IgnoreManager.RefreshTrackedIgnoredListener.TRACKED_IGNORED_REFRESH;
-import static mobi.hsz.idea.gitignore.IgnoreManager.TrackedIgnoredListener.TRACKED_IGNORED;
-import static mobi.hsz.idea.gitignore.settings.IgnoreSettings.KEY;
 
 /**
  * {@link IgnoreManager} handles ignore files indexing and status caching.
@@ -82,13 +93,16 @@ import static mobi.hsz.idea.gitignore.settings.IgnoreSettings.KEY;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 1.0
  */
-public class IgnoreManager extends AbstractProjectComponent implements DumbAware {
+public class IgnoreManager implements ProjectComponent, Disposable
+{
     /** List of all available {@link IgnoreFileType}. */
     private static final List<IgnoreFileType> FILE_TYPES =
             ContainerUtil.map(IgnoreBundle.LANGUAGES, IgnoreLanguage::getFileType);
 
     /** List of filenames that require to be associated with specific {@link IgnoreFileType}. */
     public static final Map<String, IgnoreFileType> FILE_TYPES_ASSOCIATION_QUEUE = ContainerUtil.newConcurrentMap();
+
+    private final Project myProject;
 
     /** {@link MatcherUtil} instance. */
     @NotNull
@@ -133,12 +147,12 @@ public class IgnoreManager extends AbstractProjectComponent implements DumbAware
     /** References to the indexed {@link IgnoreEntryOccurrence}. */
     @NotNull
     private final CachedConcurrentMap<IgnoreFileType, Collection<IgnoreEntryOccurrence>> cachedIgnoreFilesIndex =
-            CachedConcurrentMap.create(key -> IgnoreFilesIndex.getEntries(myProject, key));
+            CachedConcurrentMap.create(key -> IgnoreFilesIndex.getEntries(getProject(), key));
 
     /** References to the indexed outer files. */
     @NotNull
     private final CachedConcurrentMap<IgnoreFileType, Collection<VirtualFile>> cachedOuterFiles =
-            CachedConcurrentMap.create(key -> key.getIgnoreLanguage().getOuterFiles(myProject));
+            CachedConcurrentMap.create(key -> key.getIgnoreLanguage().getOuterFiles(getProject()));
 
     @NotNull
     private final ExpiringMap<VirtualFile, Boolean> expiringStatusCache = new ExpiringMap<>(Time.SECOND);
@@ -288,7 +302,7 @@ public class IgnoreManager extends AbstractProjectComponent implements DumbAware
      * @param project current project
      */
     public IgnoreManager(@NotNull final Project project) {
-        super(project);
+        myProject = project;
         this.matcher = new MatcherUtil();
         this.virtualFileManager = VirtualFileManager.getInstance();
         this.settings = IgnoreSettings.getInstance();
@@ -299,6 +313,10 @@ public class IgnoreManager extends AbstractProjectComponent implements DumbAware
         this.refreshTrackedIgnoredFeature.setTrailing(true);
         this.projectLevelVcsManager = ProjectLevelVcsManager.getInstance(project);
         this.commonRunnableListeners = new CommonRunnableListeners(debouncedStatusesChanged);
+    }
+
+    public Project getProject() {
+        return myProject;
     }
 
     /**
@@ -542,8 +560,7 @@ public class IgnoreManager extends AbstractProjectComponent implements DumbAware
 
     /** Dispose and disable component. */
     @Override
-    public void disposeComponent() {
-        super.disposeComponent();
+    public void dispose() {
         disable();
     }
 

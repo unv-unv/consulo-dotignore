@@ -24,12 +24,17 @@
 
 package mobi.hsz.idea.gitignore.util;
 
-import com.intellij.notification.*;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationDisplayType;
+import com.intellij.notification.NotificationGroup;
+import com.intellij.notification.NotificationListener;
+import com.intellij.notification.NotificationType;
+import com.intellij.notification.Notifications;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindowId;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Wrapper function for showing {@link Notification}.
@@ -44,28 +49,6 @@ public class Notify {
             true,
             ToolWindowId.PROJECT_VIEW
     );
-
-    private static final NotificationGroup NOTIFICATION_GROUP_UPDATE = new NotificationGroup(
-            IgnoreBundle.message("notification.group.update"),
-            NotificationDisplayType.STICKY_BALLOON,
-            true
-    );
-
-    /**
-     * Shows {@link Notification} in IGNORE_GROUP_UPDATE group.
-     *
-     * @param project  current project
-     */
-    public static void showUpdate(@NotNull Project project) {
-        show(
-                project,
-                IgnoreBundle.message("notification.update.title", Utils.getVersion()),
-                IgnoreBundle.message("notification.update.content"),
-                NOTIFICATION_GROUP_UPDATE,
-                NotificationType.INFORMATION,
-                NotificationListener.URL_OPENING_LISTENER
-        );
-    }
 
     /**
      * Shows {@link Notification} in ".ignore plugin" group.

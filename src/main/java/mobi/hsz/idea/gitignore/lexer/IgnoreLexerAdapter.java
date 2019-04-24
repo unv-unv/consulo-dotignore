@@ -24,10 +24,9 @@
 
 package mobi.hsz.idea.gitignore.lexer;
 
-import com.intellij.lexer.FlexAdapter;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.Nullable;
+import com.intellij.lexer.FlexAdapter;
+import com.intellij.openapi.vfs.VirtualFile;
 
 /**
  * Definition of {@link com.intellij.lexer.FlexAdapter}.
@@ -37,12 +36,12 @@ import org.jetbrains.annotations.Nullable;
  */
 public class IgnoreLexerAdapter extends FlexAdapter {
     /** Builds a new instance of {@link IgnoreLexerAdapter}. */
-    public IgnoreLexerAdapter(Project project) {
-        this(project, null);
+    public IgnoreLexerAdapter() {
+        this(null);
     }
 
     /** Builds a new instance of {@link IgnoreLexerAdapter}. */
-    public IgnoreLexerAdapter(Project project, @Nullable VirtualFile virtualFile) {
+    public IgnoreLexerAdapter(@Nullable VirtualFile virtualFile) {
         super(new IgnoreLexer(virtualFile));
     }
 }

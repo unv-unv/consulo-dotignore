@@ -24,8 +24,22 @@
 
 package mobi.hsz.idea.gitignore.outer;
 
-import com.intellij.openapi.components.AbstractProjectComponent;
-import com.intellij.openapi.fileEditor.*;
+import static mobi.hsz.idea.gitignore.settings.IgnoreSettings.KEY;
+
+import java.util.Collection;
+import java.util.List;
+
+import javax.swing.JComponent;
+
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
+import com.intellij.openapi.Disposable;
+import com.intellij.openapi.components.ProjectComponent;
+import com.intellij.openapi.fileEditor.FileEditor;
+import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.fileEditor.FileEditorManagerEvent;
+import com.intellij.openapi.fileEditor.FileEditorManagerListener;
+import com.intellij.openapi.fileEditor.TextEditor;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
@@ -36,14 +50,6 @@ import com.intellij.util.messages.MessageBusConnection;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
 import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-
-import javax.swing.*;
-import java.util.Collection;
-import java.util.List;
-
-import static mobi.hsz.idea.gitignore.settings.IgnoreSettings.KEY;
 
 /**
  * Component loader for outer ignore files editor.
@@ -51,7 +57,7 @@ import static mobi.hsz.idea.gitignore.settings.IgnoreSettings.KEY;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 1.1
  */
-public class OuterIgnoreLoaderComponent extends AbstractProjectComponent {
+public class OuterIgnoreLoaderComponent implements ProjectComponent, Disposable {
     /** MessageBus instance. */
     private MessageBusConnection messageBus;
 
@@ -66,9 +72,13 @@ public class OuterIgnoreLoaderComponent extends AbstractProjectComponent {
         return project.getComponent(OuterIgnoreLoaderComponent.class);
     }
 
+    private final Project myProject;
+
     /** Constructor. */
     public OuterIgnoreLoaderComponent(@NotNull final Project project) {
-        super(project);
+        myProject = project;
+        messageBus = myProject.getMessageBus().connect();
+        messageBus.subscribe(FileEditorManagerListener.FILE_EDITOR_MANAGER, new IgnoreEditorManagerListener(myProject));
     }
 
     /**
@@ -83,15 +93,8 @@ public class OuterIgnoreLoaderComponent extends AbstractProjectComponent {
         return "IgnoreOuterComponent";
     }
 
-    /** Initializes component. */
     @Override
-    public void initComponent() {
-        messageBus = myProject.getMessageBus().connect();
-        messageBus.subscribe(FileEditorManagerListener.FILE_EDITOR_MANAGER, new IgnoreEditorManagerListener(myProject));
-    }
-
-    @Override
-    public void disposeComponent() {
+    public void dispose() {
         if (messageBus != null) {
             messageBus.disconnect();
             messageBus = null;

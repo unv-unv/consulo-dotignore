@@ -26,11 +26,11 @@ package mobi.hsz.idea.gitignore.actions;
 
 import com.intellij.ide.actions.CloseEditorsActionBase;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.fileEditor.impl.EditorComposite;
-import com.intellij.openapi.fileEditor.impl.EditorWindow;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.FileStatusManager;
 import com.intellij.openapi.vcs.ProjectLevelVcsManager;
+import consulo.fileEditor.impl.EditorComposite;
+import consulo.fileEditor.impl.EditorWindow;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.vcs.IgnoreFileStatusProvider;
 

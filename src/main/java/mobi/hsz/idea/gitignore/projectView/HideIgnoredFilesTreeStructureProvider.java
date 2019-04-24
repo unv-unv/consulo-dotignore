@@ -24,6 +24,10 @@
 
 package mobi.hsz.idea.gitignore.projectView;
 
+import java.util.Collection;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import com.intellij.ide.projectView.TreeStructureProvider;
 import com.intellij.ide.projectView.ViewSettings;
 import com.intellij.ide.projectView.impl.nodes.BasePsiNode;
@@ -33,10 +37,6 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.containers.ContainerUtil;
 import mobi.hsz.idea.gitignore.IgnoreManager;
 import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Collection;
 
 /**
  * Extension for the {@link TreeStructureProvider} that provides the ability to hide ignored files
@@ -85,11 +85,5 @@ public class HideIgnoredFilesTreeStructureProvider implements TreeStructureProvi
             }
             return true;
         });
-    }
-
-    @Nullable
-    @Override
-    public Object getData(@NotNull Collection<AbstractTreeNode> collection, String s) {
-        return null;
     }
 }

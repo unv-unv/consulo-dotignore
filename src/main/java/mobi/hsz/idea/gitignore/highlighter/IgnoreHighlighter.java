@@ -82,7 +82,7 @@ public class IgnoreHighlighter extends SyntaxHighlighterBase {
     @NotNull
     @Override
     public Lexer getHighlightingLexer() {
-        return new IgnoreLexerAdapter(project, virtualFile);
+        return new IgnoreLexerAdapter(virtualFile);
     }
 
     /**

@@ -24,12 +24,22 @@
 
 package mobi.hsz.idea.gitignore.lang;
 
+import java.util.Set;
+import java.util.TreeMap;
+
+import javax.swing.Icon;
+
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import com.intellij.lang.InjectableLanguage;
 import com.intellij.lang.Language;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.FileViewProvider;
 import com.intellij.util.containers.ContainerUtil;
+import consulo.ui.image.Image;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.outer.OuterIgnoreLoaderComponent;
@@ -38,14 +48,6 @@ import mobi.hsz.idea.gitignore.psi.IgnoreFile;
 import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
 import mobi.hsz.idea.gitignore.util.ExpiringMap;
 import mobi.hsz.idea.gitignore.util.Icons;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import javax.swing.*;
-import java.util.Set;
-import java.util.TreeMap;
 
 /**
  * Gitignore {@link Language} definition.
@@ -71,7 +73,7 @@ public class IgnoreLanguage extends Language implements InjectableLanguage {
 
     /** The GitignoreLanguage icon. */
     @Nullable
-    private final Icon icon;
+    private final Image icon;
 
     /** Outer files for the specified {@link IgnoreLanguage}. */
     @NotNull
@@ -88,13 +90,13 @@ public class IgnoreLanguage extends Language implements InjectableLanguage {
 
     /** {@link IgnoreLanguage} is a non-instantiable static class. */
     protected IgnoreLanguage(@NotNull String name, @NotNull String extension, @Nullable String vcsDirectory,
-                             @Nullable Icon icon) {
+                             @Nullable Image icon) {
         this(name, extension, vcsDirectory, icon, new OuterFileFetcher[0]);
     }
 
     /** {@link IgnoreLanguage} is a non-instantiable static class. */
     protected IgnoreLanguage(@NotNull String name, @NotNull String extension, @Nullable String vcsDirectory,
-                             @Nullable Icon icon, @NotNull OuterFileFetcher[] fetchers) {
+                             @Nullable Image icon, @NotNull OuterFileFetcher[] fetchers) {
         super(name);
         this.extension = extension;
         this.vcsDirectory = vcsDirectory;
@@ -144,7 +146,7 @@ public class IgnoreLanguage extends Language implements InjectableLanguage {
      * @return icon
      */
     @Nullable
-    public Icon getIcon() {
+    public Image getIcon() {
         return icon;
     }
 

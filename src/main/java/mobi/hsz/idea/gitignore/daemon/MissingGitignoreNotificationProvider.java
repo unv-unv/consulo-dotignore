@@ -24,6 +24,8 @@
 
 package mobi.hsz.idea.gitignore.daemon;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
@@ -34,6 +36,8 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.ui.EditorNotificationPanel;
 import com.intellij.ui.EditorNotifications;
+import consulo.awt.TargetAWT;
+import consulo.ui.image.Image;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.command.CreateFileCommandAction;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
@@ -42,10 +46,6 @@ import mobi.hsz.idea.gitignore.lang.kind.GitLanguage;
 import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
 import mobi.hsz.idea.gitignore.ui.GeneratorDialog;
 import mobi.hsz.idea.gitignore.util.Properties;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import javax.swing.*;
 
 /**
  * Editor notification provider that checks if there is {@link GitLanguage#getFilename()}
@@ -164,9 +164,9 @@ public class MissingGitignoreNotificationProvider extends EditorNotifications.Pr
         });
 
         try { // ignore if older SDK does not support panel icon
-            Icon icon = fileType.getIcon();
+            Image icon = fileType.getIcon();
             if (icon != null) {
-                panel.icon(icon);
+                panel.icon(TargetAWT.to(icon));
             }
         } catch (NoSuchMethodError ignored) {
         }

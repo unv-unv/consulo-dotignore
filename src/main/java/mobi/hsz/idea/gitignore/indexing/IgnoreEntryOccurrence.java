@@ -24,21 +24,21 @@
 
 package mobi.hsz.idea.gitignore.indexing;
 
-import com.intellij.openapi.util.Pair;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.VirtualFileManager;
-import com.intellij.util.containers.ContainerUtil;
-import com.intellij.util.containers.ImmutableList;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import com.intellij.openapi.util.Pair;
+import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.VirtualFileManager;
+import com.intellij.util.containers.ContainerUtil;
+import com.intellij.util.containers.ImmutableList;
 
 /**
  * Entry containing information about the {@link VirtualFile} instance of the ignore file mapped with the collection
@@ -164,7 +164,7 @@ public class IgnoreEntryOccurrence implements Serializable {
         final String url = in.readUTF();
         final ArrayList<Pair<String, Boolean>> items = ContainerUtil.newArrayList();
 
-        if (!StringUtils.isEmpty(url)) {
+        if (!StringUtil.isEmpty(url)) {
             final int size = in.readInt();
             for (int i = 0; i < size; i++) {
                 String pattern = in.readUTF();

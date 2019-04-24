@@ -24,6 +24,11 @@
 
 package mobi.hsz.idea.gitignore.daemon;
 
+import java.util.List;
+import java.util.Map;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
@@ -34,6 +39,8 @@ import com.intellij.psi.PsiManager;
 import com.intellij.ui.EditorNotificationPanel;
 import com.intellij.ui.EditorNotifications;
 import com.intellij.util.containers.ContainerUtil;
+import consulo.awt.TargetAWT;
+import consulo.ui.image.Image;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.command.AppendFileCommandAction;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
@@ -44,12 +51,6 @@ import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
 import mobi.hsz.idea.gitignore.util.Constants;
 import mobi.hsz.idea.gitignore.util.Properties;
 import mobi.hsz.idea.gitignore.util.exec.ExternalExec;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import javax.swing.*;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Editor notification provider that suggests to add unversioned files to the .gitignore file.
@@ -79,7 +80,7 @@ public class AddUnversionedFilesNotificationProvider extends EditorNotifications
     private final List<String> unignoredFiles = ContainerUtil.newArrayList();
 
     /** Map to obtain if file was handled. */
-    private final Map<VirtualFile, Boolean> handledMap = ContainerUtil.createWeakKeyWeakValueMap();
+    private final Map<VirtualFile, Boolean> handledMap = ContainerUtil.createConcurrentWeakKeyWeakValueMap();
 
     /**
      * Builds a new instance of {@link AddUnversionedFilesNotificationProvider}.
@@ -175,9 +176,9 @@ public class AddUnversionedFilesNotificationProvider extends EditorNotifications
         });
 
         try { // ignore if older SDK does not support panel icon
-            Icon icon = fileType.getIcon();
+            Image icon = fileType.getIcon();
             if (icon != null) {
-                panel.icon(icon);
+                panel.icon(TargetAWT.to(icon));
             }
         } catch (NoSuchMethodError ignored) {
         }

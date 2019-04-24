@@ -25,6 +25,7 @@
 package mobi.hsz.idea.gitignore.file.type;
 
 import com.intellij.openapi.fileTypes.LanguageFileType;
+import consulo.ui.image.Image;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -107,7 +108,7 @@ public class IgnoreFileType extends LanguageFileType {
      */
     @Nullable
     @Override
-    public Icon getIcon() {
+    public Image getIcon() {
         return language.getIcon();
     }
 

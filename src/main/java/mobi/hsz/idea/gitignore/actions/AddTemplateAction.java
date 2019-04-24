@@ -24,15 +24,15 @@
 
 package mobi.hsz.idea.gitignore.actions;
 
+import org.jetbrains.annotations.NotNull;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.psi.IgnoreFile;
 import mobi.hsz.idea.gitignore.ui.GeneratorDialog;
-import mobi.hsz.idea.gitignore.util.CommonDataKeys;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Action that initiates adding new template to the selected .gitignore file.

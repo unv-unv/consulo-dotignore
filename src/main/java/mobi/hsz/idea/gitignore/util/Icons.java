@@ -25,8 +25,7 @@
 package mobi.hsz.idea.gitignore.util;
 
 import com.intellij.openapi.util.IconLoader;
-
-import javax.swing.*;
+import consulo.ui.image.Image;
 
 /**
  * {@link Icons} class that holds icon resources.
@@ -36,90 +35,86 @@ import javax.swing.*;
  */
 public class Icons {
     /** General ignore icon. */
-    public static final Icon IGNORE = IconLoader.getIcon("/icons/icon.png");
+    public static final Image IGNORE = IconLoader.getIcon("/icons/icon.png");
 
     /** Bazaar icon. */
-    public static final Icon BAZAAR = IconLoader.getIcon("/icons/icon_bazaar.png");
+    public static final Image BAZAAR = IconLoader.getIcon("/icons/icon_bazaar.png");
 
     /** Chefignore icon. */
-    public static final Icon CHEF = IconLoader.getIcon("/icons/icon_chef.png");
+    public static final Image CHEF = IconLoader.getIcon("/icons/icon_chef.png");
 
     /** Cloud Foundry icon. */
-    public static final Icon CLOUD_FOUNDRY = IconLoader.getIcon("/icons/icon_cf.png");
+    public static final Image CLOUD_FOUNDRY = IconLoader.getIcon("/icons/icon_cf.png");
 
     /** Cvsignore icon. */
-    public static final Icon CVS = IconLoader.getIcon("/icons/icon_cvs.png");
+    public static final Image CVS = IconLoader.getIcon("/icons/icon_cvs.png");
 
     /** Darcs icon. */
-    public static final Icon DARCS = IconLoader.getIcon("/icons/icon_darcs.png");
+    public static final Image DARCS = IconLoader.getIcon("/icons/icon_darcs.png");
 
     /** Dockerignore icon. */
-    public static final Icon DOCKER = IconLoader.getIcon("/icons/icon_docker.png");
+    public static final Image DOCKER = IconLoader.getIcon("/icons/icon_docker.png");
 
     /** ESLint icon. */
-    public static final Icon ESLINT = IconLoader.getIcon("/icons/icon_eslint.png");
+    public static final Image ESLINT = IconLoader.getIcon("/icons/icon_eslint.png");
 
     /** ElasticBeanstalk icon. */
-    public static final Icon ELASTIC_BEANSTALK = IconLoader.getIcon("/icons/icon_elasticbeanstalk.png");
+    public static final Image ELASTIC_BEANSTALK = IconLoader.getIcon("/icons/icon_elasticbeanstalk.png");
 
     /** Git icon. */
-    public static final Icon GIT = IconLoader.getIcon("/icons/icon_git.png");
+    public static final Image GIT = IconLoader.getIcon("/icons/icon_git.png");
 
     /** Google Cloud icon. */
-    public static final Icon GCLOUD = IconLoader.getIcon("/icons/icon_gcloud.png");
+    public static final Image GCLOUD = IconLoader.getIcon("/icons/icon_gcloud.png");
 
     /** Kubernetes Helm icon. */
-    public static final Icon HELM = IconLoader.getIcon("/icons/icon_helm.png");
+    public static final Image HELM = IconLoader.getIcon("/icons/icon_helm.png");
 
     /** Floobits icon. */
-    public static final Icon FLOOBITS = IconLoader.getIcon("/icons/icon_floobits.png");
+    public static final Image FLOOBITS = IconLoader.getIcon("/icons/icon_floobits.png");
 
     /** Fossil icon. */
-    public static final Icon FOSSIL = IconLoader.getIcon("/icons/icon_fossil.png");
+    public static final Image FOSSIL = IconLoader.getIcon("/icons/icon_fossil.png");
 
     /** Mercurial icon. */
-    public static final Icon MERCURIAL = IconLoader.getIcon("/icons/icon_mercurial.png");
+    public static final Image MERCURIAL = IconLoader.getIcon("/icons/icon_mercurial.png");
 
     /** Jetpack icon. */
-    public static final Icon JETPACK = IconLoader.getIcon("/icons/icon_jetpack.png");
+    public static final Image JETPACK = IconLoader.getIcon("/icons/icon_jetpack.png");
 
     /** JSHint icon. */
-    public static final Icon JSHINT = IconLoader.getIcon("/icons/icon_jshint.png");
+    public static final Image JSHINT = IconLoader.getIcon("/icons/icon_jshint.png");
 
     /** Monotone icon. */
-    public static final Icon MONOTONE = IconLoader.getIcon("/icons/icon_monotone.png");
+    public static final Image MONOTONE = IconLoader.getIcon("/icons/icon_monotone.png");
 
     /** Nodemon icon. */
-    public static final Icon NODEMON = IconLoader.getIcon("/icons/icon_nodemon.png");
+    public static final Image NODEMON = IconLoader.getIcon("/icons/icon_nodemon.png");
 
     /** Npmignore icon. */
-    public static final Icon NPM = IconLoader.getIcon("/icons/icon_npm.png");
+    public static final Image NPM = IconLoader.getIcon("/icons/icon_npm.png");
 
     /** NuxtJS icon. */
-    public static final Icon NUXTJS = IconLoader.getIcon("/icons/icon_nuxtjs.png");
+    public static final Image NUXTJS = IconLoader.getIcon("/icons/icon_nuxtjs.png");
 
     /** Perforce icon. */
-    public static final Icon PERFORCE = IconLoader.getIcon("/icons/icon_perforce.png");
+    public static final Image PERFORCE = IconLoader.getIcon("/icons/icon_perforce.png");
 
     /** Prettier icon. */
-    public static final Icon PRETTIER = IconLoader.getIcon("/icons/icon_prettier.png");
+    public static final Image PRETTIER = IconLoader.getIcon("/icons/icon_prettier.png");
 
     /** StyleLint icon. */
-    public static final Icon STYLELINT = IconLoader.getIcon("/icons/icon_stylelint.png");
+    public static final Image STYLELINT = IconLoader.getIcon("/icons/icon_stylelint.png");
 
     /** Stylint icon. */
-    public static final Icon STYLINT = IconLoader.getIcon("/icons/icon_stylint.png");
+    public static final Image STYLINT = IconLoader.getIcon("/icons/icon_stylint.png");
 
     /** Swagger Codegen icon. */
-    public static final Icon SWAGGER_CODEGEN = IconLoader.getIcon("/icons/icon_swagger-codegen.png");
+    public static final Image SWAGGER_CODEGEN = IconLoader.getIcon("/icons/icon_swagger-codegen.png");
 
     /** TeamFoundation icon. */
-    public static final Icon TF = IconLoader.getIcon("/icons/icon_tf.png");
+    public static final Image TF = IconLoader.getIcon("/icons/icon_tf.png");
 
     /** Up icon. */
-    public static final Icon UP = IconLoader.getIcon("/icons/icon_up.png");
-
-    /** Private constructor to prevent creating {@link Icons} instance. */
-    private Icons() {
-    }
+    public static final Image UP = IconLoader.getIcon("/icons/icon_up.png");
 }

@@ -24,24 +24,24 @@
 
 package mobi.hsz.idea.gitignore.lang;
 
+import org.jetbrains.annotations.NotNull;
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.Language;
 import com.intellij.lang.ParserDefinition;
 import com.intellij.lang.PsiParser;
 import com.intellij.lexer.Lexer;
-import com.intellij.openapi.project.Project;
 import com.intellij.psi.FileViewProvider;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IFileElementType;
 import com.intellij.psi.tree.TokenSet;
+import consulo.lang.LanguageVersion;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.lexer.IgnoreLexerAdapter;
 import mobi.hsz.idea.gitignore.parser.IgnoreParser;
 import mobi.hsz.idea.gitignore.psi.IgnoreFile;
 import mobi.hsz.idea.gitignore.psi.IgnoreTypes;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Defines the implementation of a parser for a custom language.
@@ -84,23 +84,21 @@ public class IgnoreParserDefinition implements ParserDefinition {
      * Returns the lexer for lexing files in the specified project. This lexer does not need to support incremental
      * relexing - it is always called for the entire file.
      *
-     * @param project the project to which the lexer is connected.
      * @return the lexer instance.
      */
     @NotNull
     @Override
-    public Lexer createLexer(Project project) {
-        return new IgnoreLexerAdapter(project);
+    public Lexer createLexer(LanguageVersion languageVersion) {
+        return new IgnoreLexerAdapter();
     }
 
     /**
      * Returns the parser for parsing files in the specified project.
      *
-     * @param project the project to which the parser is connected.
      * @return the parser instance.
      */
     @Override
-    public PsiParser createParser(Project project) {
+    public PsiParser createParser(LanguageVersion languageVersion) {
         return new IgnoreParser();
     }
 
@@ -125,7 +123,7 @@ public class IgnoreParserDefinition implements ParserDefinition {
      */
     @NotNull
     @Override
-    public TokenSet getWhitespaceTokens() {
+    public TokenSet getWhitespaceTokens(LanguageVersion languageVersion) {
         return WHITE_SPACES;
     }
 
@@ -138,7 +136,7 @@ public class IgnoreParserDefinition implements ParserDefinition {
      */
     @NotNull
     @Override
-    public TokenSet getCommentTokens() {
+    public TokenSet getCommentTokens(LanguageVersion languageVersion) {
         return COMMENTS;
     }
 
@@ -150,7 +148,7 @@ public class IgnoreParserDefinition implements ParserDefinition {
      */
     @NotNull
     @Override
-    public TokenSet getStringLiteralElements() {
+    public TokenSet getStringLiteralElements(LanguageVersion languageVersion) {
         return TokenSet.EMPTY;
     }
 
@@ -194,7 +192,7 @@ public class IgnoreParserDefinition implements ParserDefinition {
      * @since 6.0
      */
     @Override
-    public SpaceRequirements spaceExistenceTypeBetweenTokens(ASTNode left, ASTNode right) {
+    public SpaceRequirements spaceExistanceTypeBetweenTokens(ASTNode left, ASTNode right) {
         return SpaceRequirements.MAY;
     }
 }

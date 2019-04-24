@@ -6,15 +6,6 @@
 
     <description><![CDATA[
       <h1>.ignore</h1>
-      <br/>
-
-      <a href="http://ignore.hsz.mobi">Website</a> |
-      <a href="https://github.com/hsz/idea-gitignore">GitHub</a> |
-      <a href="https://github.com/hsz/idea-gitignore/issues">Issues</a> |
-      <a href="https://www.paypal.me/hsz">Donate with PayPal</a>
-      <br/>
-      <br/>
-
       <b>.ignore</b> is a plugin for
       <i>
         .gitignore (Git),
@@ -73,22 +64,7 @@
 
     ]]></description>
 
-    <change-notes><![CDATA[
-
-        <a href="https://github.com/hsz/idea-gitignore/tree/v3.1.0"><b>v3.1.0</b></a> (unreleased) <br/><br/>
-        <a href="https://github.com/hsz/idea-gitignore/compare/v3.0.0...v3.1.0"><small>Full Changelog</small></a> <br/><br/>
-
-        <i>Fixed bugs:</i>
-
-        <ul>
-            <li>Adding 2+ templates without new line in between (<a href="https://github.com/hsz/idea-gitignore/issues/561">561</a>)</li>
-        </ul>
-
-        <a href="https://github.com/hsz/idea-gitignore/blob/master/CHANGELOG.md"><b>Full Changelog History</b></a>
-
-    ]]>
-    </change-notes>
-    <depends optional="true">Git4Idea</depends>
+    <depends optional="true">com.intellij.git</depends>
 
     <extensions defaultExtensionNs="com.intellij">
 
@@ -124,7 +100,7 @@
 
         <fileBasedIndex
                 implementation="mobi.hsz.idea.gitignore.indexing.IgnoreFilesIndex"/>
-        <indexedRootsProvider
+        <indexedRootsContributor
                 implementation="mobi.hsz.idea.gitignore.indexing.ExternalIndexableSetContributor"/>
 
         <fileTypeFactory
@@ -517,12 +493,6 @@
         <!-- END Up -->
     </extensions>
 
-    <application-components>
-        <component>
-            <implementation-class>mobi.hsz.idea.gitignore.IgnoreApplicationComponent</implementation-class>
-        </component>
-    </application-components>
-
     <project-components>
         <component>
             <implementation-class>mobi.hsz.idea.gitignore.IgnoreManager</implementation-class>
@@ -534,9 +504,6 @@
         </component>
         <component>
             <implementation-class>mobi.hsz.idea.gitignore.outer.OuterIgnoreLoaderComponent</implementation-class>
-        </component>
-        <component>
-            <implementation-class>mobi.hsz.idea.gitignore.IgnoreUpdateComponent</implementation-class>
         </component>
         <component>
             <implementation-class>mobi.hsz.idea.gitignore.TrackedIgnoredFilesComponent</implementation-class>

@@ -24,15 +24,15 @@
 
 package mobi.hsz.idea.gitignore.util;
 
-import com.intellij.util.containers.ContainerUtil;
-import com.intellij.util.containers.IntObjectCache;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import com.intellij.util.containers.ContainerUtil;
+import com.intellij.util.containers.IntObjectCache;
 
 /**
  * Util class to speed up and limit regex operation on the files paths.

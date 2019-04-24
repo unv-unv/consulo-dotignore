@@ -24,15 +24,14 @@
 
 package mobi.hsz.idea.gitignore;
 
+import java.util.List;
+
+import org.jetbrains.annotations.NotNull;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.ModuleListener;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ModuleRootEvent;
 import com.intellij.openapi.roots.ModuleRootListener;
-import com.intellij.util.Function;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
 
 /**
  * Wrapper for common listeners.
@@ -40,73 +39,79 @@ import java.util.List;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 2.2.0
  */
-public class CommonRunnableListeners implements
-        IgnoreManager.RefreshStatusesListener, ModuleRootListener, ModuleListener {
-    /** Task to run. */
-    @NotNull
-    private final Runnable task;
+public class CommonRunnableListeners implements IgnoreManager.RefreshStatusesListener, ModuleRootListener, ModuleListener
+{
+	/**
+	 * Task to run.
+	 */
+	@NotNull
+	private final Runnable task;
 
-    /**
-     * Constructor.
-     *
-     * @param task to run by all listeners
-     */
-    public CommonRunnableListeners(@NotNull Runnable task) {
-        this.task = task;
-    }
+	/**
+	 * Constructor.
+	 *
+	 * @param task to run by all listeners
+	 */
+	public CommonRunnableListeners(@NotNull Runnable task)
+	{
+		this.task = task;
+	}
 
-    /**
-     * {@link IgnoreManager.RefreshStatusesListener} event.
-     */
-    @Override
-    public void refresh() {
-        task.run();
-    }
+	/**
+	 * {@link IgnoreManager.RefreshStatusesListener} event.
+	 */
+	@Override
+	public void refresh()
+	{
+		task.run();
+	}
 
-    /**
-     * {@link ModuleRootListener} event (ignored).
-     */
-    @Override
-    public void beforeRootsChange(@NotNull ModuleRootEvent event) {
-    }
+	/**
+	 * {@link ModuleRootListener} event (ignored).
+	 */
+	@Override
+	public void beforeRootsChange(@NotNull ModuleRootEvent event)
+	{
+	}
 
-    /**
-     * {@link ModuleRootListener} event.
-     */
-    @Override
-    public void rootsChanged(@NotNull ModuleRootEvent event) {
-        task.run();
-    }
+	/**
+	 * {@link ModuleRootListener} event.
+	 */
+	@Override
+	public void rootsChanged(@NotNull ModuleRootEvent event)
+	{
+		task.run();
+	}
 
-    /**
-     * {@link ModuleListener} event.
-     */
-    @Override
-    public void moduleAdded(@NotNull Project project, @NotNull Module module) {
-        task.run();
-    }
+	/**
+	 * {@link ModuleListener} event.
+	 */
+	@Override
+	public void moduleAdded(@NotNull Project project, @NotNull Module module)
+	{
+		task.run();
+	}
 
-    /**
-     * {@link ModuleListener} event (ignored).
-     */
-    @Override
-    public void beforeModuleRemoved(@NotNull Project project, @NotNull Module module) {
-    }
+	/**
+	 * {@link ModuleListener} event (ignored).
+	 */
+	@Override
+	public void beforeModuleRemoved(@NotNull Project project, @NotNull Module module)
+	{
+	}
 
-    /**
-     * {@link ModuleListener} event.
-     */
-    @Override
-    public void moduleRemoved(@NotNull Project project, @NotNull Module module) {
-        task.run();
-    }
+	/**
+	 * {@link ModuleListener} event.
+	 */
+	@Override
+	public void moduleRemoved(@NotNull Project project, @NotNull Module module)
+	{
+		task.run();
+	}
 
-    /**
-     * {@link ModuleListener} event.
-     */
-    @Override
-    public void modulesRenamed(@NotNull Project project, @NotNull List<Module> modules,
-                               @NotNull Function<Module, String> oldNameProvider) {
-        task.run();
-    }
+	@Override
+	public void modulesRenamed(Project project, List<Module> list)
+	{
+		task.run();
+	}
 }

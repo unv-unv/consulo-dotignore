@@ -24,9 +24,14 @@
 
 package mobi.hsz.idea.gitignore;
 
+import java.util.concurrent.ConcurrentMap;
+
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
-import com.intellij.openapi.components.AbstractProjectComponent;
+import com.intellij.openapi.Disposable;
+import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.VcsRoot;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -35,10 +40,6 @@ import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
 import mobi.hsz.idea.gitignore.ui.untrackFiles.UntrackFilesDialog;
 import mobi.hsz.idea.gitignore.util.Notify;
 import mobi.hsz.idea.gitignore.util.Utils;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.concurrent.ConcurrentMap;
 
 /**
  * ProjectComponent instance to handle {@link IgnoreManager.TrackedIgnoredListener} event
@@ -47,8 +48,8 @@ import java.util.concurrent.ConcurrentMap;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 1.7
  */
-public class TrackedIgnoredFilesComponent extends AbstractProjectComponent
-        implements IgnoreManager.TrackedIgnoredListener {
+public class TrackedIgnoredFilesComponent implements IgnoreManager.TrackedIgnoredListener, ProjectComponent, Disposable
+{
     /** Disable action event. */
     @NonNls
     private static final String DISABLE_ACTION = "#disable";
@@ -62,13 +63,15 @@ public class TrackedIgnoredFilesComponent extends AbstractProjectComponent
     /** Notification about tracked files was shown for current project. */
     private boolean notificationShown;
 
+    private final Project myProject;
+
     /**
      * Constructor.
      *
      * @param project current project
      */
     protected TrackedIgnoredFilesComponent(@NotNull Project project) {
-        super(project);
+        myProject = project;
     }
 
     /** Component initialization method. */
@@ -81,7 +84,7 @@ public class TrackedIgnoredFilesComponent extends AbstractProjectComponent
 
     /** Component dispose method. */
     @Override
-    public void disposeComponent() {
+    public void dispose() {
         if (messageBus != null) {
             messageBus.disconnect();
         }

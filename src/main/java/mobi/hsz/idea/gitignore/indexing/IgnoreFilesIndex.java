@@ -24,6 +24,16 @@
 
 package mobi.hsz.idea.gitignore.indexing;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import org.jetbrains.annotations.NotNull;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pair;
@@ -42,12 +52,6 @@ import mobi.hsz.idea.gitignore.psi.IgnoreEntry;
 import mobi.hsz.idea.gitignore.psi.IgnoreFile;
 import mobi.hsz.idea.gitignore.psi.IgnoreVisitor;
 import mobi.hsz.idea.gitignore.util.Glob;
-import org.jetbrains.annotations.NotNull;
-
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
-import java.util.*;
 
 /**
  * Implementation of {@link AbstractIgnoreFilesIndex} that allows to index all ignore files content using native
@@ -189,7 +193,7 @@ public class IgnoreFilesIndex extends AbstractIgnoreFilesIndex<IgnoreFileTypeKey
      * @return file is accepted
      */
     @Override
-    public boolean acceptInput(@NotNull VirtualFile file) {
+    public boolean acceptInput(Project project, @NotNull VirtualFile file) {
         return file.getFileType() instanceof IgnoreFileType ||
                 IgnoreManager.FILE_TYPES_ASSOCIATION_QUEUE.containsKey(file.getName());
     }

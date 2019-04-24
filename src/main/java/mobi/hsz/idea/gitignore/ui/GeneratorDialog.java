@@ -24,10 +24,40 @@
 
 package mobi.hsz.idea.gitignore.ui;
 
+import static mobi.hsz.idea.gitignore.util.Resources.Template.Container.STARRED;
+import static mobi.hsz.idea.gitignore.util.Resources.Template.Container.USER;
+
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import javax.swing.Action;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
+
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.CommonActionsManager;
 import com.intellij.ide.DefaultTreeExpander;
-import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionPlaces;
+import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.editor.Document;
@@ -38,15 +68,20 @@ import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.OptionAction;
-import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiFile;
-import com.intellij.ui.*;
+import com.intellij.ui.CheckboxTree;
+import com.intellij.ui.CheckedTreeNode;
+import com.intellij.ui.FilterComponent;
+import com.intellij.ui.JBSplitter;
+import com.intellij.ui.ScrollPaneFactory;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
 import com.intellij.util.ui.tree.TreeUtil;
+import consulo.ui.image.Image;
+import consulo.ui.image.ImageEffects;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.command.AppendFileCommandAction;
 import mobi.hsz.idea.gitignore.command.CreateFileCommandAction;
@@ -57,22 +92,6 @@ import mobi.hsz.idea.gitignore.ui.template.TemplateTreeRenderer;
 import mobi.hsz.idea.gitignore.util.Constants;
 import mobi.hsz.idea.gitignore.util.Resources;
 import mobi.hsz.idea.gitignore.util.Utils;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import javax.swing.*;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreePath;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import static mobi.hsz.idea.gitignore.util.Resources.Template.Container.STARRED;
-import static mobi.hsz.idea.gitignore.util.Resources.Template.Container.USER;
 
 /**
  * {@link GeneratorDialog} responsible for displaying list of all available templates and adding selected ones
@@ -87,7 +106,7 @@ public class GeneratorDialog extends DialogWrapper {
     private static final String TEMPLATES_FILTER_HISTORY = "TEMPLATES_FILTER_HISTORY";
 
     /** Star icon for the favorites action. */
-    private static final Icon STAR = AllIcons.Ide.Rating;
+    private static final Image STAR = AllIcons.Ide.Rating;
 
     /** Cache set to store checked templates for the current action. */
     private final Set<Resources.Template> checked = ContainerUtil.newHashSet();
@@ -397,8 +416,8 @@ public class GeneratorDialog extends DialogWrapper {
                 boolean disabled = node == null || USER.equals(node.getContainer()) || !node.isLeaf();
                 boolean unstar = node != null && STARRED.equals(node.getContainer());
 
-                final Icon icon = disabled ? IconLoader.getDisabledIcon(STAR) :
-                        (unstar ? IconLoader.getTransparentIcon(STAR) : STAR);
+                final Image icon = disabled ? ImageEffects.grayed(STAR) :
+                        (unstar ? ImageEffects.transparent(STAR) : STAR);
                 final String text = IgnoreBundle.message(unstar ? "dialog.generator.unstar" : "dialog.generator.star");
 
                 final Presentation presentation = e.getPresentation();

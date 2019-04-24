@@ -24,17 +24,21 @@
 
 package mobi.hsz.idea.gitignore.codeInsight;
 
-import com.intellij.codeInsight.completion.*;
+import java.util.List;
+
+import org.jetbrains.annotations.NotNull;
+import com.intellij.codeInsight.completion.CompletionContributor;
+import com.intellij.codeInsight.completion.CompletionParameters;
+import com.intellij.codeInsight.completion.CompletionResultSet;
+import com.intellij.codeInsight.completion.CompletionType;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.patterns.StandardPatterns;
 import com.intellij.psi.PsiElement;
 import com.intellij.util.ProcessingContext;
 import com.intellij.util.containers.ContainerUtil;
+import consulo.codeInsight.completion.CompletionProvider;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.psi.IgnoreSyntax;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
 
 /**
  * Class provides completion feature for {@link mobi.hsz.idea.gitignore.psi.IgnoreTypes#SYNTAX} element.
@@ -57,9 +61,9 @@ public class SyntaxCompletionContributor extends CompletionContributor {
     public SyntaxCompletionContributor() {
         extend(CompletionType.BASIC,
                 StandardPatterns.instanceOf(PsiElement.class),
-                new CompletionProvider<CompletionParameters>() {
+                new CompletionProvider() {
                     @Override
-                    protected void addCompletions(@NotNull CompletionParameters parameters,
+                    public void addCompletions(@NotNull CompletionParameters parameters,
                                                   @NotNull ProcessingContext context,
                                                   @NotNull CompletionResultSet result) {
                         PsiElement current = parameters.getPosition();

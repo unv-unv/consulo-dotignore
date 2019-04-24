@@ -24,9 +24,16 @@
 
 package mobi.hsz.idea.gitignore.daemon;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import com.intellij.codeHighlighting.Pass;
 import com.intellij.codeInsight.daemon.LineMarkerInfo;
 import com.intellij.codeInsight.daemon.LineMarkerProvider;
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.editor.markup.GutterIconRenderer;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -39,12 +46,6 @@ import mobi.hsz.idea.gitignore.psi.IgnoreEntryFile;
 import mobi.hsz.idea.gitignore.util.Glob;
 import mobi.hsz.idea.gitignore.util.MatcherUtil;
 import mobi.hsz.idea.gitignore.util.Utils;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
 
 /**
  * {@link LineMarkerProvider} that marks entry lines with directory icon if they point to the directory in virtual
@@ -91,19 +92,8 @@ public class IgnoreDirectoryMarkerProvider implements LineMarkerProvider {
         }
 
         if (isDirectory) {
-            return new LineMarkerInfo<>(element.getFirstChild(), element.getTextRange(),
-                    PlatformIcons.FOLDER_ICON, Pass.UPDATE_ALL, null, null, GutterIconRenderer.Alignment.CENTER);
+            return new LineMarkerInfo<>(element.getFirstChild(), element.getTextRange(), AllIcons.Nodes.TreeOpen, Pass.UPDATE_ALL, null, null, GutterIconRenderer.Alignment.CENTER);
         }
         return null;
-    }
-
-    /**
-     * Mocked method.
-     *
-     * @param elements unused parameter
-     * @param result   unused parameter
-     */
-    @Override
-    public void collectSlowLineMarkers(@NotNull List<PsiElement> elements, @NotNull Collection<LineMarkerInfo> result) {
     }
 }
