@@ -24,19 +24,16 @@
 
 package mobi.hsz.idea.gitignore.util;
 
-import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.net.URL;
 import java.util.List;
-import java.util.Scanner;
 
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.util.containers.ContainerUtil;
 import mobi.hsz.idea.gitignore.lang.kind.GitLanguage;
 import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
@@ -51,11 +48,6 @@ public class Resources
 {
 	private static final Logger LOG = Logger.getInstance(Resources.class);
 
-	/**
-	 * Path to the gitignore templates list.
-	 */
-	@NonNls
-	private static final String GITIGNORE_TEMPLATES_PATH = "/templates.list";
 
 	/**
 	 * List of fetched {@link Template} elements from resources.
@@ -89,28 +81,33 @@ public class Resources
 			// fetch templates from resources
 			try
 			{
-				String list = getResourceContent(GITIGNORE_TEMPLATES_PATH);
-				if(list != null)
+				File gitignoreDir = new File(PluginManager.getPluginPath(Resources.class), "gitignore");
+				if(gitignoreDir.exists())
 				{
-					BufferedReader br = new BufferedReader(new StringReader(list));
-
-					for(String line; (line = br.readLine()) != null; )
+					FileUtil.visitFiles(gitignoreDir, file ->
 					{
-						line = "/" + line;
-						File file = getResource(line);
-						if(file != null)
+						if(file.getName().endsWith(".gitignore"))
 						{
-							String content = getResourceContent(line);
-							Template template = new Template(file, content);
-							template.setStarred(starredTemplates.contains(template.getName()));
-							resourceTemplates.add(template);
+							try
+							{
+								String content = FileUtil.loadTextAndClose(new FileReader(file));
+
+								Template template = new Template(file, content);
+								template.setStarred(starredTemplates.contains(template.getName()));
+								resourceTemplates.add(template);
+							}
+							catch(IOException e)
+							{
+								throw new RuntimeException(e);
+							}
 						}
-					}
+						return true;
+					});
 				}
 			}
-			catch(IOException e)
+			catch(Exception e)
 			{
-				e.printStackTrace();
+				LOG.error(e);
 			}
 		}
 
@@ -123,51 +120,6 @@ public class Resources
 		}
 
 		return templates;
-	}
-
-	/**
-	 * Returns gitignore templates directory.
-	 *
-	 * @return Resources directory
-	 */
-	@Nullable
-	public static File getResource(@NotNull String path)
-	{
-		URL resource = Resources.class.getResource(path);
-		if(resource == null)
-		{
-			return null;
-		}
-		return new File(resource.getPath());
-	}
-
-	/**
-	 * Reads resource file and returns its content as a String.
-	 *
-	 * @param path Resource path
-	 * @return Content
-	 */
-	@Nullable
-	public static String getResourceContent(@NotNull String path)
-	{
-		return convertStreamToString(Resources.class.getResourceAsStream(path));
-	}
-
-	/**
-	 * Converts InputStream resource to String.
-	 *
-	 * @param inputStream Input stream
-	 * @return Content
-	 */
-	@Nullable
-	protected static String convertStreamToString(@Nullable InputStream inputStream)
-	{
-		if(inputStream == null)
-		{
-			return null;
-		}
-		Scanner s = new Scanner(inputStream).useDelimiter("\\A");
-		return s.hasNext() ? s.next() : "";
 	}
 
 	/**
