@@ -73,7 +73,6 @@ import com.intellij.ui.AddEditDeleteListPanel;
 import com.intellij.ui.ScrollPaneFactory;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBLabel;
-import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.labels.ActionLink;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.containers.ContainerUtil;
@@ -128,9 +127,6 @@ public class IgnoreSettingsPanel implements Disposable {
     /** Inform about ignored files that are still tracked. */
     public JCheckBox informTrackedIgnored;
 
-    /** Panel with information about donations. */
-    private JPanel donatePanel;
-
     /** Inform about editing ignored file. */
     private JCheckBox notifyIgnoredEditing;
 
@@ -161,14 +157,6 @@ public class IgnoreSettingsPanel implements Disposable {
         languagesTable.setDragEnabled(false);
 
         languagesPanel = ScrollPaneFactory.createScrollPane(languagesTable);
-
-        donatePanel = new JBPanel(new BorderLayout());
-        donatePanel.setBorder(JBUI.Borders.empty(10, 0));
-        donatePanel.add(new JBLabel(IgnoreBundle.message("settings.general.donate")), BorderLayout.WEST);
-        donatePanel.add(createLink(
-                "Donate with PayPal",
-                "https://www.paypal.me/hsz"
-        ), BorderLayout.CENTER);
     }
 
     /**
