@@ -36,6 +36,7 @@ import java.util.Scanner;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.util.containers.ContainerUtil;
 import mobi.hsz.idea.gitignore.lang.kind.GitLanguage;
 import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
@@ -48,6 +49,8 @@ import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
  */
 public class Resources
 {
+	private static final Logger LOG = Logger.getInstance(Resources.class);
+
 	/**
 	 * Path to the gitignore templates list.
 	 */
