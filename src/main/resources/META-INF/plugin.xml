@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>mobi.hsz.idea.gitignore</id>
     <name>.ignore</name>
-    <version>3.1.0</version>
+    <version>SNAPSHOT</version>
     <vendor email="jakub@hsz.mobi" url="http://ignore.hsz.mobi">hsz</vendor>
 
     <description><![CDATA[
@@ -88,9 +88,6 @@
 
     ]]>
     </change-notes>
-
-    <idea-version since-build="139"/>
-    <depends>com.intellij.modules.lang</depends>
     <depends optional="true">Git4Idea</depends>
 
     <extensions defaultExtensionNs="com.intellij">
