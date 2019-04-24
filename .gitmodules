@@ -1,3 +1,0 @@
-[submodule "src/main/dist/gitignore"]
-	path = src/main/dist/gitignore
-	url = https://github.com/github/gitignore.git
