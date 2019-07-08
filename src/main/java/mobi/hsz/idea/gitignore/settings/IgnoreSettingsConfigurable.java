@@ -153,8 +153,10 @@ public class IgnoreSettingsConfigurable implements SearchableConfigurable, VcsCo
     /** Disposes the Swing components used for displaying the configuration. */
     @Override
     public void disposeUIResources() {
-        settingsPanel.dispose();
-        settingsPanel = null;
+        if(settingsPanel != null) {
+            settingsPanel.dispose();
+            settingsPanel = null;
+        }
     }
 
     /**
