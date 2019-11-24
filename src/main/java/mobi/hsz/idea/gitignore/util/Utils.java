@@ -24,8 +24,6 @@
 
 package mobi.hsz.idea.gitignore.util;
 
-import com.intellij.ide.plugins.IdeaPluginDescriptor;
-import com.intellij.ide.plugins.IdeaPluginDescriptorImpl;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.ide.projectView.PresentationData;
 import com.intellij.openapi.editor.Document;
@@ -35,7 +33,6 @@ import com.intellij.openapi.editor.EditorSettings;
 import com.intellij.openapi.editor.colors.EditorColors;
 import com.intellij.openapi.editor.colors.EditorColorsScheme;
 import com.intellij.openapi.editor.ex.EditorEx;
-import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.module.Module;
@@ -52,6 +49,9 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.util.containers.ContainerUtil;
+import consulo.container.impl.IdeaPluginDescriptorImpl;
+import consulo.container.plugin.PluginDescriptor;
+import consulo.container.plugin.PluginId;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.command.CreateFileCommandAction;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
@@ -341,8 +341,8 @@ public class Utils {
      * @return plugin is enabled
      */
     private static boolean isPluginEnabled(@NotNull final String id) {
-        IdeaPluginDescriptor p = PluginManager.getPlugin(PluginId.getId(id));
-        return p instanceof IdeaPluginDescriptorImpl && p.isEnabled();
+        PluginDescriptor p = PluginManager.getPlugin(PluginId.getId(id));
+        return p != null && p.isEnabled();
     }
 
     /**
@@ -351,7 +351,7 @@ public class Utils {
      * @return Git plugin is enabled
      */
     public static boolean isGitPluginEnabled() {
-        return isPluginEnabled("Git4Idea");
+        return isPluginEnabled("com.intellij.git");
     }
 
     /**

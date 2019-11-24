@@ -1,4 +1,4 @@
-<idea-plugin>
+<consulo-plugin>
     <id>mobi.hsz.idea.gitignore</id>
     <name>.ignore</name>
     <version>SNAPSHOT</version>
@@ -553,4 +553,4 @@
             <add-to-group group-id="ProjectViewPopupMenu"/>
         </action>
     </actions>
-</idea-plugin>
+</consulo-plugin>
