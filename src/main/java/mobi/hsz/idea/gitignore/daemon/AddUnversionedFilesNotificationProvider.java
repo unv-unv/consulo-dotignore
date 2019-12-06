@@ -24,14 +24,8 @@
 
 package mobi.hsz.idea.gitignore.daemon;
 
-import java.util.List;
-import java.util.Map;
-
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
@@ -40,6 +34,7 @@ import com.intellij.ui.EditorNotificationPanel;
 import com.intellij.ui.EditorNotifications;
 import com.intellij.util.containers.ContainerUtil;
 import consulo.awt.TargetAWT;
+import consulo.editor.notifications.EditorNotificationProvider;
 import consulo.ui.image.Image;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.command.AppendFileCommandAction;
@@ -51,6 +46,11 @@ import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
 import mobi.hsz.idea.gitignore.util.Constants;
 import mobi.hsz.idea.gitignore.util.Properties;
 import mobi.hsz.idea.gitignore.util.exec.ExternalExec;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Editor notification provider that suggests to add unversioned files to the .gitignore file.
@@ -58,11 +58,7 @@ import mobi.hsz.idea.gitignore.util.exec.ExternalExec;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 1.4
  */
-public class AddUnversionedFilesNotificationProvider extends EditorNotifications.Provider<EditorNotificationPanel> {
-    /** Notification key. */
-    @NotNull
-    private static final Key<EditorNotificationPanel> KEY = Key.create("AddUnversionedFilesNotificationProvider");
-
+public class AddUnversionedFilesNotificationProvider implements EditorNotificationProvider<EditorNotificationPanel> {
     /** Current project. */
     @NotNull
     private final Project project;
@@ -93,17 +89,6 @@ public class AddUnversionedFilesNotificationProvider extends EditorNotifications
         this.project = project;
         this.notifications = notifications;
         this.settings = IgnoreSettings.getInstance();
-    }
-
-    /**
-     * Gets notification key.
-     *
-     * @return notification key
-     */
-    @NotNull
-    @Override
-    public Key<EditorNotificationPanel> getKey() {
-        return KEY;
     }
 
     /**

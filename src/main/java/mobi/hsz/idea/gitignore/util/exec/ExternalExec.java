@@ -24,25 +24,15 @@
 
 package mobi.hsz.idea.gitignore.util.exec;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import com.intellij.execution.process.BaseOSProcessHandler;
 import com.intellij.execution.process.ProcessHandler;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vcs.VcsRoot;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.concurrency.AppExecutorUtil;
 import com.intellij.util.containers.ContainerUtil;
+import consulo.util.dataholder.Key;
 import git4idea.config.GitExecutableManager;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
 import mobi.hsz.idea.gitignore.lang.kind.GitLanguage;
@@ -51,6 +41,16 @@ import mobi.hsz.idea.gitignore.util.exec.parser.ExecutionOutputParser;
 import mobi.hsz.idea.gitignore.util.exec.parser.GitExcludesOutputParser;
 import mobi.hsz.idea.gitignore.util.exec.parser.GitUnignoredFilesOutputParser;
 import mobi.hsz.idea.gitignore.util.exec.parser.SimpleOutputParser;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Class that holds util methods for calling external executables (i.e. git/hg)

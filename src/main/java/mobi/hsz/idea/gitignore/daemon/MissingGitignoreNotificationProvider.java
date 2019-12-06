@@ -24,12 +24,9 @@
 
 package mobi.hsz.idea.gitignore.daemon;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
@@ -37,6 +34,7 @@ import com.intellij.psi.PsiManager;
 import com.intellij.ui.EditorNotificationPanel;
 import com.intellij.ui.EditorNotifications;
 import consulo.awt.TargetAWT;
+import consulo.editor.notifications.EditorNotificationProvider;
 import consulo.ui.image.Image;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.command.CreateFileCommandAction;
@@ -46,6 +44,8 @@ import mobi.hsz.idea.gitignore.lang.kind.GitLanguage;
 import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
 import mobi.hsz.idea.gitignore.ui.GeneratorDialog;
 import mobi.hsz.idea.gitignore.util.Properties;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Editor notification provider that checks if there is {@link GitLanguage#getFilename()}
@@ -54,11 +54,7 @@ import mobi.hsz.idea.gitignore.util.Properties;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 0.3.3
  */
-public class MissingGitignoreNotificationProvider extends EditorNotifications.Provider<EditorNotificationPanel> {
-    /** Notification key. */
-    @NotNull
-    private static final Key<EditorNotificationPanel> KEY = Key.create("MissingGitignoreNotificationProvider");
-
+public class MissingGitignoreNotificationProvider implements EditorNotificationProvider<EditorNotificationPanel> {
     /** Current project. */
     @NotNull
     private final Project project;
@@ -81,17 +77,6 @@ public class MissingGitignoreNotificationProvider extends EditorNotifications.Pr
         this.project = project;
         this.notifications = notifications;
         this.settings = IgnoreSettings.getInstance();
-    }
-
-    /**
-     * Gets notification key.
-     *
-     * @return notification key
-     */
-    @NotNull
-    @Override
-    public Key<EditorNotificationPanel> getKey() {
-        return KEY;
     }
 
     /**

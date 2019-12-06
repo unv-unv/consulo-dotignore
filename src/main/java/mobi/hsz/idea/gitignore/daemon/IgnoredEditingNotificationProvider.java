@@ -24,20 +24,20 @@
 
 package mobi.hsz.idea.gitignore.daemon;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.EditorNotificationPanel;
 import com.intellij.ui.EditorNotifications;
 import consulo.awt.TargetAWT;
+import consulo.editor.notifications.EditorNotificationProvider;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.IgnoreManager;
 import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
 import mobi.hsz.idea.gitignore.util.Icons;
 import mobi.hsz.idea.gitignore.util.Properties;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Editor notification provider that informs about the attempt of the ignored file modification.
@@ -45,11 +45,7 @@ import mobi.hsz.idea.gitignore.util.Properties;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 1.8
  */
-public class IgnoredEditingNotificationProvider extends EditorNotifications.Provider<EditorNotificationPanel> {
-    /** Notification key. */
-    @NotNull
-    private static final Key<EditorNotificationPanel> KEY = Key.create("IgnoredEditingNotificationProvider");
-
+public class IgnoredEditingNotificationProvider implements EditorNotificationProvider<EditorNotificationPanel> {
     /** Current project. */
     @NotNull
     private final Project project;
@@ -79,16 +75,6 @@ public class IgnoredEditingNotificationProvider extends EditorNotifications.Prov
         this.manager = IgnoreManager.getInstance(project);
     }
 
-    /**
-     * Gets notification key.
-     *
-     * @return notification key
-     */
-    @NotNull
-    @Override
-    public Key<EditorNotificationPanel> getKey() {
-        return KEY;
-    }
 
     /**
      * Creates notification panel for given file and checks if is allowed to show the notification.
