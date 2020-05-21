@@ -49,7 +49,6 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.util.containers.ContainerUtil;
-import consulo.container.impl.IdeaPluginDescriptorImpl;
 import consulo.container.plugin.PluginDescriptor;
 import consulo.container.plugin.PluginId;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
