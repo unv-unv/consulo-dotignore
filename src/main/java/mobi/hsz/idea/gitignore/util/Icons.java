@@ -24,7 +24,7 @@
 
 package mobi.hsz.idea.gitignore.util;
 
-import com.intellij.openapi.util.IconLoader;
+import consulo.dotignore.icon.DotIgnoreIconGroup;
 import consulo.ui.image.Image;
 
 /**
@@ -35,86 +35,86 @@ import consulo.ui.image.Image;
  */
 public class Icons {
     /** General ignore icon. */
-    public static final Image IGNORE = IconLoader.getIcon("/icons/icon.png");
+    public static final Image IGNORE = DotIgnoreIconGroup.icon();
 
     /** Bazaar icon. */
-    public static final Image BAZAAR = IconLoader.getIcon("/icons/icon_bazaar.png");
+    public static final Image BAZAAR = DotIgnoreIconGroup.icon_bazaar();
 
     /** Chefignore icon. */
-    public static final Image CHEF = IconLoader.getIcon("/icons/icon_chef.png");
+    public static final Image CHEF = DotIgnoreIconGroup.icon_chef();
 
     /** Cloud Foundry icon. */
-    public static final Image CLOUD_FOUNDRY = IconLoader.getIcon("/icons/icon_cf.png");
+    public static final Image CLOUD_FOUNDRY = DotIgnoreIconGroup.icon_cf();
 
     /** Cvsignore icon. */
-    public static final Image CVS = IconLoader.getIcon("/icons/icon_cvs.png");
+    public static final Image CVS = DotIgnoreIconGroup.icon_cvs();
 
     /** Darcs icon. */
-    public static final Image DARCS = IconLoader.getIcon("/icons/icon_darcs.png");
+    public static final Image DARCS = DotIgnoreIconGroup.icon_darcs();
 
     /** Dockerignore icon. */
-    public static final Image DOCKER = IconLoader.getIcon("/icons/icon_docker.png");
+    public static final Image DOCKER = DotIgnoreIconGroup.icon_docker();
 
     /** ESLint icon. */
-    public static final Image ESLINT = IconLoader.getIcon("/icons/icon_eslint.png");
+    public static final Image ESLINT = DotIgnoreIconGroup.icon_eslint();
 
     /** ElasticBeanstalk icon. */
-    public static final Image ELASTIC_BEANSTALK = IconLoader.getIcon("/icons/icon_elasticbeanstalk.png");
+    public static final Image ELASTIC_BEANSTALK = DotIgnoreIconGroup.icon_elasticbeanstalk();
 
     /** Git icon. */
-    public static final Image GIT = IconLoader.getIcon("/icons/icon_git.png");
+    public static final Image GIT = DotIgnoreIconGroup.icon_git();
 
     /** Google Cloud icon. */
-    public static final Image GCLOUD = IconLoader.getIcon("/icons/icon_gcloud.png");
+    public static final Image GCLOUD = DotIgnoreIconGroup.icon_gcloud();
 
     /** Kubernetes Helm icon. */
-    public static final Image HELM = IconLoader.getIcon("/icons/icon_helm.png");
+    public static final Image HELM = DotIgnoreIconGroup.icon_helm();
 
     /** Floobits icon. */
-    public static final Image FLOOBITS = IconLoader.getIcon("/icons/icon_floobits.png");
+    public static final Image FLOOBITS = DotIgnoreIconGroup.icon_floobits();
 
     /** Fossil icon. */
-    public static final Image FOSSIL = IconLoader.getIcon("/icons/icon_fossil.png");
+    public static final Image FOSSIL = DotIgnoreIconGroup.icon_fossil();
 
     /** Mercurial icon. */
-    public static final Image MERCURIAL = IconLoader.getIcon("/icons/icon_mercurial.png");
+    public static final Image MERCURIAL = DotIgnoreIconGroup.icon_mercurial();
 
     /** Jetpack icon. */
-    public static final Image JETPACK = IconLoader.getIcon("/icons/icon_jetpack.png");
+    public static final Image JETPACK = DotIgnoreIconGroup.icon_jetpack();
 
     /** JSHint icon. */
-    public static final Image JSHINT = IconLoader.getIcon("/icons/icon_jshint.png");
+    public static final Image JSHINT = DotIgnoreIconGroup.icon_jshint();
 
     /** Monotone icon. */
-    public static final Image MONOTONE = IconLoader.getIcon("/icons/icon_monotone.png");
+    public static final Image MONOTONE = DotIgnoreIconGroup.icon_monotone();
 
     /** Nodemon icon. */
-    public static final Image NODEMON = IconLoader.getIcon("/icons/icon_nodemon.png");
+    public static final Image NODEMON = DotIgnoreIconGroup.icon_nodemon();
 
     /** Npmignore icon. */
-    public static final Image NPM = IconLoader.getIcon("/icons/icon_npm.png");
+    public static final Image NPM = DotIgnoreIconGroup.icon_npm();
 
     /** NuxtJS icon. */
-    public static final Image NUXTJS = IconLoader.getIcon("/icons/icon_nuxtjs.png");
+    public static final Image NUXTJS = DotIgnoreIconGroup.icon_nuxtjs();
 
     /** Perforce icon. */
-    public static final Image PERFORCE = IconLoader.getIcon("/icons/icon_perforce.png");
+    public static final Image PERFORCE = DotIgnoreIconGroup.icon_perforce();
 
     /** Prettier icon. */
-    public static final Image PRETTIER = IconLoader.getIcon("/icons/icon_prettier.png");
+    public static final Image PRETTIER = DotIgnoreIconGroup.icon_prettier();
 
     /** StyleLint icon. */
-    public static final Image STYLELINT = IconLoader.getIcon("/icons/icon_stylelint.png");
+    public static final Image STYLELINT = DotIgnoreIconGroup.icon_stylelint();
 
     /** Stylint icon. */
-    public static final Image STYLINT = IconLoader.getIcon("/icons/icon_stylint.png");
+    public static final Image STYLINT = DotIgnoreIconGroup.icon_stylint();
 
     /** Swagger Codegen icon. */
-    public static final Image SWAGGER_CODEGEN = IconLoader.getIcon("/icons/icon_swagger-codegen.png");
+    public static final Image SWAGGER_CODEGEN = DotIgnoreIconGroup.icon_swagger_codegen();
 
     /** TeamFoundation icon. */
-    public static final Image TF = IconLoader.getIcon("/icons/icon_tf.png");
+    public static final Image TF = DotIgnoreIconGroup.icon_tf();
 
     /** Up icon. */
-    public static final Image UP = IconLoader.getIcon("/icons/icon_up.png");
+    public static final Image UP = DotIgnoreIconGroup.icon_up();
 }
