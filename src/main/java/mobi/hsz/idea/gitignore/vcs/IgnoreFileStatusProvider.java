@@ -31,8 +31,8 @@ import com.intellij.openapi.vcs.FileStatus;
 import com.intellij.openapi.vcs.FileStatusFactory;
 import com.intellij.openapi.vcs.impl.FileStatusProvider;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.ui.JBColor;
 import com.intellij.util.ThreeState;
+import consulo.ui.style.StandardColors;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.IgnoreManager;
 import org.jetbrains.annotations.NotNull;
@@ -48,7 +48,7 @@ import org.jetbrains.annotations.Nullable;
 public class IgnoreFileStatusProvider implements FileStatusProvider, DumbAware {
     /** Ignored status. */
     public static final FileStatus IGNORED = FileStatusFactory.getInstance().createFileStatus(
-            "IGNORE.PROJECT_VIEW.IGNORED", IgnoreBundle.message("projectView.ignored"), JBColor.GRAY);
+            "IGNORE.PROJECT_VIEW.IGNORED", IgnoreBundle.message("projectView.ignored"), StandardColors.GRAY);
 
     /** Instance of {@link IgnoreManager}. */
     private final IgnoreManager ignoreManager;

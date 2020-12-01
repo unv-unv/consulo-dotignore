@@ -29,13 +29,13 @@ import com.intellij.codeInsight.daemon.impl.SeveritiesProvider;
 import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.editor.markup.TextAttributes;
-import com.intellij.ui.JBColor;
 import com.intellij.util.containers.ContainerUtil;
+import consulo.ui.color.ColorValue;
+import consulo.ui.style.StandardColors;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.highlighter.IgnoreHighlighterColors;
 import org.jetbrains.annotations.NotNull;
 
-import java.awt.*;
 import java.util.List;
 
 /**
@@ -76,8 +76,8 @@ public class UnusedEntrySeveritiesProvider extends SeveritiesProvider {
      * @return entry color
      */
     @Override
-    public Color getTrafficRendererColor(@NotNull TextAttributes textAttributes) {
-        return JBColor.GRAY;
+    public ColorValue getTrafficRendererColor(@NotNull TextAttributes textAttributes) {
+        return StandardColors.GRAY;
     }
 
     /**

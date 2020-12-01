@@ -24,40 +24,10 @@
 
 package mobi.hsz.idea.gitignore.ui;
 
-import static mobi.hsz.idea.gitignore.util.Resources.Template.Container.STARRED;
-import static mobi.hsz.idea.gitignore.util.Resources.Template.Container.USER;
-
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import javax.swing.Action;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreePath;
-
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.CommonActionsManager;
 import com.intellij.ide.DefaultTreeExpander;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionPlaces;
-import com.intellij.openapi.actionSystem.ActionToolbar;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
-import com.intellij.openapi.actionSystem.Presentation;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.editor.Document;
@@ -71,15 +41,12 @@ import com.intellij.openapi.ui.OptionAction;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiFile;
-import com.intellij.ui.CheckboxTree;
-import com.intellij.ui.CheckedTreeNode;
-import com.intellij.ui.FilterComponent;
-import com.intellij.ui.JBSplitter;
-import com.intellij.ui.ScrollPaneFactory;
+import com.intellij.ui.*;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
 import com.intellij.util.ui.tree.TreeUtil;
+import consulo.awt.TargetAWT;
 import consulo.ui.image.Image;
 import consulo.ui.image.ImageEffects;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
@@ -92,6 +59,22 @@ import mobi.hsz.idea.gitignore.ui.template.TemplateTreeRenderer;
 import mobi.hsz.idea.gitignore.util.Constants;
 import mobi.hsz.idea.gitignore.util.Resources;
 import mobi.hsz.idea.gitignore.util.Utils;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import javax.swing.*;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import static mobi.hsz.idea.gitignore.util.Resources.Template.Container.STARRED;
+import static mobi.hsz.idea.gitignore.util.Resources.Template.Container.USER;
 
 /**
  * {@link GeneratorDialog} responsible for displaying list of all available templates and adding selected ones
@@ -619,8 +602,8 @@ public class GeneratorDialog extends DialogWrapper {
      */
     private void highlightWords(@NotNull List<Pair<Integer, Integer>> pairs) {
         final TextAttributes attr = new TextAttributes();
-        attr.setBackgroundColor(UIUtil.getTreeSelectionBackground());
-        attr.setForegroundColor(UIUtil.getTreeSelectionForeground());
+        attr.setBackgroundColor(TargetAWT.from(UIUtil.getTreeSelectionBackground()));
+        attr.setForegroundColor(TargetAWT.from(UIUtil.getTreeSelectionForeground()));
 
         for (Pair<Integer, Integer> pair : pairs) {
             preview.getMarkupModel().addRangeHighlighter(pair.first, pair.second, 0, attr,
