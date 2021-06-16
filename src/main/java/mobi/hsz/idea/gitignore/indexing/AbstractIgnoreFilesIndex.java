@@ -61,29 +61,6 @@ public abstract class AbstractIgnoreFilesIndex<K, V> extends FileBasedIndexExten
     }
 
     /**
-     * Checks if given types objects are equal.
-     *
-     * @param val1 object to compare
-     * @param val2 object to compare
-     * @return objects are equal
-     */
-    @Override
-    public boolean isEqual(K val1, K val2) {
-        return val1.equals(val2);
-    }
-
-    /**
-     * Returns hashCode for given type object.
-     *
-     * @param value type object
-     * @return object's hashCode
-     */
-    @Override
-    public int getHashCode(K value) {
-        return value.hashCode();
-    }
-
-    /**
      * Current {@link AbstractIgnoreFilesIndex} depends on the file content.
      *
      * @return depends on file content
