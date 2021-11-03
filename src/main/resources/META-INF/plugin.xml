@@ -3,7 +3,10 @@
     <name>.ignore</name>
     <version>SNAPSHOT</version>
     <vendor email="jakub@hsz.mobi" url="http://ignore.hsz.mobi">hsz</vendor>
-
+    <tags>
+         <tag>vcs</tag>
+         <tag>editor.extension</tag>
+    </tags>
     <description><![CDATA[
       <h1>.ignore</h1>
       <b>.ignore</b> is a plugin for
