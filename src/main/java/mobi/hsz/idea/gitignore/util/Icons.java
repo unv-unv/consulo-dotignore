@@ -35,86 +35,86 @@ import consulo.ui.image.Image;
  */
 public class Icons {
     /** General ignore icon. */
-    public static final Image IGNORE = DotIgnoreIconGroup.icon();
+    public static final Image IGNORE = DotIgnoreIconGroup.ignore_file();
 
     /** Bazaar icon. */
-    public static final Image BAZAAR = DotIgnoreIconGroup.icon_bazaar();
+    public static final Image BAZAAR = DotIgnoreIconGroup.ignore_file();
 
     /** Chefignore icon. */
-    public static final Image CHEF = DotIgnoreIconGroup.icon_chef();
+    public static final Image CHEF = DotIgnoreIconGroup.ignore_file();
 
     /** Cloud Foundry icon. */
-    public static final Image CLOUD_FOUNDRY = DotIgnoreIconGroup.icon_cf();
+    public static final Image CLOUD_FOUNDRY = DotIgnoreIconGroup.ignore_file();
 
     /** Cvsignore icon. */
-    public static final Image CVS = DotIgnoreIconGroup.icon_cvs();
+    public static final Image CVS = DotIgnoreIconGroup.ignore_file();
 
     /** Darcs icon. */
-    public static final Image DARCS = DotIgnoreIconGroup.icon_darcs();
+    public static final Image DARCS = DotIgnoreIconGroup.ignore_file();
 
     /** Dockerignore icon. */
-    public static final Image DOCKER = DotIgnoreIconGroup.icon_docker();
+    public static final Image DOCKER = DotIgnoreIconGroup.ignore_file();
 
     /** ESLint icon. */
-    public static final Image ESLINT = DotIgnoreIconGroup.icon_eslint();
+    public static final Image ESLINT = DotIgnoreIconGroup.ignore_file();
 
     /** ElasticBeanstalk icon. */
-    public static final Image ELASTIC_BEANSTALK = DotIgnoreIconGroup.icon_elasticbeanstalk();
+    public static final Image ELASTIC_BEANSTALK = DotIgnoreIconGroup.ignore_file();
 
     /** Git icon. */
-    public static final Image GIT = DotIgnoreIconGroup.icon_git();
+    public static final Image GIT = DotIgnoreIconGroup.ignore_file();
 
     /** Google Cloud icon. */
-    public static final Image GCLOUD = DotIgnoreIconGroup.icon_gcloud();
+    public static final Image GCLOUD = DotIgnoreIconGroup.ignore_file();
 
     /** Kubernetes Helm icon. */
-    public static final Image HELM = DotIgnoreIconGroup.icon_helm();
+    public static final Image HELM = DotIgnoreIconGroup.ignore_file();
 
     /** Floobits icon. */
-    public static final Image FLOOBITS = DotIgnoreIconGroup.icon_floobits();
+    public static final Image FLOOBITS = DotIgnoreIconGroup.ignore_file();
 
     /** Fossil icon. */
-    public static final Image FOSSIL = DotIgnoreIconGroup.icon_fossil();
+    public static final Image FOSSIL = DotIgnoreIconGroup.ignore_file();
 
     /** Mercurial icon. */
-    public static final Image MERCURIAL = DotIgnoreIconGroup.icon_mercurial();
+    public static final Image MERCURIAL = DotIgnoreIconGroup.ignore_file();
 
     /** Jetpack icon. */
-    public static final Image JETPACK = DotIgnoreIconGroup.icon_jetpack();
+    public static final Image JETPACK = DotIgnoreIconGroup.ignore_file();
 
     /** JSHint icon. */
-    public static final Image JSHINT = DotIgnoreIconGroup.icon_jshint();
+    public static final Image JSHINT = DotIgnoreIconGroup.ignore_file();
 
     /** Monotone icon. */
-    public static final Image MONOTONE = DotIgnoreIconGroup.icon_monotone();
+    public static final Image MONOTONE = DotIgnoreIconGroup.ignore_file();
 
     /** Nodemon icon. */
-    public static final Image NODEMON = DotIgnoreIconGroup.icon_nodemon();
+    public static final Image NODEMON = DotIgnoreIconGroup.ignore_file();
 
     /** Npmignore icon. */
-    public static final Image NPM = DotIgnoreIconGroup.icon_npm();
+    public static final Image NPM = DotIgnoreIconGroup.ignore_file();
 
     /** NuxtJS icon. */
-    public static final Image NUXTJS = DotIgnoreIconGroup.icon_nuxtjs();
+    public static final Image NUXTJS = DotIgnoreIconGroup.ignore_file();
 
     /** Perforce icon. */
-    public static final Image PERFORCE = DotIgnoreIconGroup.icon_perforce();
+    public static final Image PERFORCE = DotIgnoreIconGroup.ignore_file();
 
     /** Prettier icon. */
-    public static final Image PRETTIER = DotIgnoreIconGroup.icon_prettier();
+    public static final Image PRETTIER = DotIgnoreIconGroup.ignore_file();
 
     /** StyleLint icon. */
-    public static final Image STYLELINT = DotIgnoreIconGroup.icon_stylelint();
+    public static final Image STYLELINT = DotIgnoreIconGroup.ignore_file();
 
     /** Stylint icon. */
-    public static final Image STYLINT = DotIgnoreIconGroup.icon_stylint();
+    public static final Image STYLINT = DotIgnoreIconGroup.ignore_file();
 
     /** Swagger Codegen icon. */
-    public static final Image SWAGGER_CODEGEN = DotIgnoreIconGroup.icon_swagger_codegen();
+    public static final Image SWAGGER_CODEGEN = DotIgnoreIconGroup.ignore_file();
 
     /** TeamFoundation icon. */
-    public static final Image TF = DotIgnoreIconGroup.icon_tf();
+    public static final Image TF = DotIgnoreIconGroup.ignore_file();
 
     /** Up icon. */
-    public static final Image UP = DotIgnoreIconGroup.icon_up();
+    public static final Image UP = DotIgnoreIconGroup.ignore_file();
 }
