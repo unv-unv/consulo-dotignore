@@ -25,12 +25,11 @@
 package mobi.hsz.idea.gitignore.file.type;
 
 import com.intellij.openapi.fileTypes.LanguageFileType;
+import consulo.localize.LocalizeValue;
 import consulo.ui.image.Image;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import javax.swing.*;
 
 /**
  * Describes Ignore file type.
@@ -65,7 +64,7 @@ public class IgnoreFileType extends LanguageFileType {
      */
     @NotNull
     @Override
-    public String getName() {
+    public String getId() {
         return language.getID() + " file";
     }
 
@@ -86,8 +85,8 @@ public class IgnoreFileType extends LanguageFileType {
      */
     @NotNull
     @Override
-    public String getDescription() {
-        return language.getDisplayName();
+    public LocalizeValue getDescription() {
+        return LocalizeValue.of(language.getDisplayName());
     }
 
     /**
