@@ -186,7 +186,7 @@ template.container.user:
   text: User templates
 template.container.starred:
   text: Starred templates
-tokenType./:
+tokenType.slash:
   text: <slash>
 tokenType.BRACKET_LEFT:
   text: <left bracket>
