@@ -1,4 +1,4 @@
-<consulo-plugin>
+<consulo-plugin url="https://github.com/consulo/consulo-dotignore">
     <id>mobi.hsz.idea.gitignore</id>
     <name>.ignore</name>
     <version>SNAPSHOT</version>
