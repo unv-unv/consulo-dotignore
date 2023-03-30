@@ -24,16 +24,15 @@
 
 package mobi.hsz.idea.gitignore.psi;
 
-import com.intellij.lang.Language;
-import com.intellij.lang.LanguageParserDefinitions;
-import com.intellij.lang.ParserDefinition;
-import com.intellij.openapi.fileTypes.FileType;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.FileViewProvider;
-import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.impl.source.PsiFileImpl;
-import com.intellij.psi.tree.IFileElementType;
-import com.intellij.util.containers.ContainerUtil;
+import consulo.language.Language;
+import consulo.language.ast.IFileElementType;
+import consulo.language.file.FileViewProvider;
+import consulo.language.impl.psi.PsiFileImpl;
+import consulo.language.parser.ParserDefinition;
+import consulo.language.psi.PsiElementVisitor;
+import consulo.util.collection.ContainerUtil;
+import consulo.virtualFileSystem.VirtualFile;
+import consulo.virtualFileSystem.fileType.FileType;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
 import org.jetbrains.annotations.NotNull;
@@ -66,7 +65,7 @@ public class IgnoreFile extends PsiFileImpl {
         this.fileType = fileType;
         this.language = findLanguage(fileType.getLanguage(), viewProvider);
 
-        final ParserDefinition parserDefinition = LanguageParserDefinitions.INSTANCE.forLanguage(this.language);
+        final ParserDefinition parserDefinition = ParserDefinition.forLanguage(this.language);
         if (parserDefinition == null) {
             throw new RuntimeException(
                     "PsiFileBase: language.getParserDefinition() returned null for: " + this.language

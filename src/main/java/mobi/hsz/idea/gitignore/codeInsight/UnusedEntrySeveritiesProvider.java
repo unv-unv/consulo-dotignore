@@ -24,14 +24,15 @@
 
 package mobi.hsz.idea.gitignore.codeInsight;
 
-import com.intellij.codeInsight.daemon.impl.HighlightInfoType;
-import com.intellij.codeInsight.daemon.impl.SeveritiesProvider;
-import com.intellij.lang.annotation.HighlightSeverity;
-import com.intellij.openapi.editor.colors.TextAttributesKey;
-import com.intellij.openapi.editor.markup.TextAttributes;
-import com.intellij.util.containers.ContainerUtil;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.colorScheme.TextAttributes;
+import consulo.colorScheme.TextAttributesKey;
+import consulo.language.editor.rawHighlight.HighlightInfoType;
+import consulo.language.editor.rawHighlight.SeveritiesProvider;
+import consulo.language.editor.annotation.HighlightSeverity;
 import consulo.ui.color.ColorValue;
 import consulo.ui.style.StandardColors;
+import consulo.util.collection.ContainerUtil;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.highlighter.IgnoreHighlighterColors;
 import org.jetbrains.annotations.NotNull;
@@ -44,6 +45,7 @@ import java.util.List;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 0.5.4
  */
+@ExtensionImpl
 public class UnusedEntrySeveritiesProvider extends SeveritiesProvider {
     /** Unused entry {@link HighlightSeverity} instance. */
     @NotNull

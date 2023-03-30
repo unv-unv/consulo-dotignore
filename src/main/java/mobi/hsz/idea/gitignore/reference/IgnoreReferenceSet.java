@@ -24,16 +24,17 @@
 
 package mobi.hsz.idea.gitignore.reference;
 
-import com.intellij.openapi.progress.ProgressManager;
-import com.intellij.openapi.util.TextRange;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vfs.VfsUtil;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.VirtualFileVisitor;
-import com.intellij.psi.*;
-import com.intellij.psi.impl.source.resolve.reference.impl.providers.FileReference;
-import com.intellij.psi.impl.source.resolve.reference.impl.providers.FileReferenceSet;
-import com.intellij.util.containers.ContainerUtil;
+import consulo.application.progress.ProgressManager;
+import consulo.document.util.TextRange;
+import consulo.language.psi.*;
+import consulo.language.psi.path.FileReference;
+import consulo.language.psi.path.FileReferenceSet;
+import consulo.util.collection.ContainerUtil;
+import consulo.util.collection.Lists;
+import consulo.util.lang.StringUtil;
+import consulo.virtualFileSystem.VirtualFile;
+import consulo.virtualFileSystem.util.VirtualFileUtil;
+import consulo.virtualFileSystem.util.VirtualFileVisitor;
 import mobi.hsz.idea.gitignore.FilesIndexCacheProjectComponent;
 import mobi.hsz.idea.gitignore.IgnoreManager;
 import mobi.hsz.idea.gitignore.psi.IgnoreEntry;
@@ -219,7 +220,7 @@ public class IgnoreReferenceSet extends FileReferenceSet {
          */
         @Override
         protected void innerResolveInContext(@NotNull String text, @NotNull PsiFileSystemItem context,
-                                             @NotNull final Collection<ResolveResult> result, boolean caseSensitive) {
+											 @NotNull final Collection<ResolveResult> result, boolean caseSensitive) {
             ProgressManager.checkCanceled();
             super.innerResolveInContext(text, context, result, caseSensitive);
 
@@ -249,7 +250,7 @@ public class IgnoreReferenceSet extends FileReferenceSet {
                             parent.getVirtualFile() : null);
                     final PsiManager psiManager = getElement().getManager();
 
-                    final List<VirtualFile> files = ContainerUtil.createLockFreeCopyOnWriteList();
+                    final List<VirtualFile> files = Lists.newLockFreeCopyOnWriteList();
                     files.addAll(filesIndexCache.getFilesForPattern(context.getProject(), pattern));
                     if (files.isEmpty()) {
                         files.addAll(ContainerUtil.newArrayList(context.getVirtualFile().getChildren()));
@@ -278,7 +279,7 @@ public class IgnoreReferenceSet extends FileReferenceSet {
                                 if (!file.isDirectory()) {
                                     continue;
                                 }
-                                VfsUtil.visitChildrenRecursively(file, visitor);
+                                VirtualFileUtil.visitChildrenRecursively(file, visitor);
                                 children.remove(file);
                             }
                             cacheMap.put(key, children);

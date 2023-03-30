@@ -24,7 +24,7 @@
 
 package mobi.hsz.idea.gitignore.util;
 
-import com.intellij.openapi.util.Pair;
+import consulo.util.lang.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

@@ -24,31 +24,26 @@
 
 package mobi.hsz.idea.gitignore.ui;
 
-import com.intellij.icons.AllIcons;
-import com.intellij.ide.CommonActionsManager;
-import com.intellij.ide.DefaultTreeExpander;
-import com.intellij.openapi.actionSystem.*;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.command.CommandProcessor;
-import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.EditorFactory;
-import com.intellij.openapi.editor.markup.HighlighterTargetArea;
-import com.intellij.openapi.editor.markup.TextAttributes;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.openapi.ui.OptionAction;
-import com.intellij.openapi.util.Pair;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.psi.PsiFile;
-import com.intellij.ui.*;
-import com.intellij.util.containers.ContainerUtil;
-import com.intellij.util.ui.JBUI;
-import com.intellij.util.ui.UIUtil;
-import com.intellij.util.ui.tree.TreeUtil;
-import consulo.awt.TargetAWT;
+import consulo.application.AllIcons;
+import consulo.application.ApplicationManager;
+import consulo.codeEditor.Editor;
+import consulo.codeEditor.EditorFactory;
+import consulo.codeEditor.markup.HighlighterTargetArea;
+import consulo.colorScheme.TextAttributes;
+import consulo.document.Document;
+import consulo.language.psi.PsiFile;
+import consulo.project.Project;
+import consulo.ui.ex.TreeExpander;
+import consulo.ui.ex.action.*;
+import consulo.ui.ex.awt.*;
+import consulo.ui.ex.awt.tree.*;
+import consulo.ui.ex.awtUnsafe.TargetAWT;
 import consulo.ui.image.Image;
 import consulo.ui.image.ImageEffects;
+import consulo.undoRedo.CommandProcessor;
+import consulo.util.collection.ContainerUtil;
+import consulo.util.lang.Pair;
+import consulo.util.lang.StringUtil;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.command.AppendFileCommandAction;
 import mobi.hsz.idea.gitignore.command.CreateFileCommandAction;
@@ -69,9 +64,8 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static mobi.hsz.idea.gitignore.util.Resources.Template.Container.STARRED;
 import static mobi.hsz.idea.gitignore.util.Resources.Template.Container.USER;
@@ -91,11 +85,13 @@ public class GeneratorDialog extends DialogWrapper {
     /** Star icon for the favorites action. */
     private static final Image STAR = AllIcons.Ide.Rating;
 
-    /** Cache set to store checked templates for the current action. */
-    private final Set<Resources.Template> checked = ContainerUtil.newHashSet();
+    /**
+     * Cache set to store checked templates for the current action.
+     */
+    private final Set<Resources.Template> checked = new HashSet<>();
 
     /** Set of the starred templates. */
-    private final Set<String> starred = ContainerUtil.newHashSet();
+    private final Set<String> starred = new HashSet<>();
 
     /** Current working project. */
     @NotNull
@@ -121,7 +117,7 @@ public class GeneratorDialog extends DialogWrapper {
     private CheckboxTree tree;
 
     /** Tree expander responsible for expanding and collapsing tree structure. */
-    private DefaultTreeExpander treeExpander;
+    private TreeExpander treeExpander;
 
     /** Dynamic templates filter. */
     private FilterComponent profileFilter;
@@ -380,7 +376,8 @@ public class GeneratorDialog extends DialogWrapper {
         actions.add(new AnAction(
                 IgnoreBundle.message("dialog.generator.unselectAll"),
                 null,
-                AllIcons.Actions.Unselectall) {
+                AllIcons.Actions.Unselectall)
+        {
             @Override
             public void update(@NotNull AnActionEvent e) {
                 e.getPresentation().setEnabled(!checked.isEmpty());
@@ -513,8 +510,10 @@ public class GeneratorDialog extends DialogWrapper {
      * @param container container type to search
      * @return group node
      */
-    private static TemplateTreeNode getGroupNode(@NotNull TemplateTreeNode root,
-                                                 @NotNull Resources.Template.Container container) {
+    private static TemplateTreeNode getGroupNode(
+            @NotNull TemplateTreeNode root,
+            @NotNull Resources.Template.Container container)
+    {
         final int childCount = root.getChildCount();
 
         for (int i = 0; i < childCount; i++) {

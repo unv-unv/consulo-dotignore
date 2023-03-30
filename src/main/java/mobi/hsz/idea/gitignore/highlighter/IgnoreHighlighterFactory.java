@@ -24,12 +24,15 @@
 
 package mobi.hsz.idea.gitignore.highlighter;
 
-import com.intellij.openapi.fileTypes.SyntaxHighlighter;
-import com.intellij.openapi.fileTypes.SyntaxHighlighterFactory;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
+import consulo.language.Language;
+import consulo.language.editor.highlight.SyntaxHighlighter;
+import consulo.language.editor.highlight.SyntaxHighlighterFactory;
+import consulo.project.Project;
+import consulo.virtualFileSystem.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nonnull;
 
 /**
  * {@link SyntaxHighlighterFactory} class definition.
@@ -38,6 +41,18 @@ import org.jetbrains.annotations.Nullable;
  * @since 0.8
  */
 public class IgnoreHighlighterFactory extends SyntaxHighlighterFactory {
+    private final Language language;
+
+    public IgnoreHighlighterFactory(Language language) {
+        this.language = language;
+    }
+
+    @Nonnull
+    @Override
+    public Language getLanguage() {
+        return language;
+    }
+
     /**
      * Override this method to provide syntax highlighting (coloring) capabilities for your language implementation.
      * By syntax highlighting we mean highlighting of keywords, comments, braces etc. where lexing the file content

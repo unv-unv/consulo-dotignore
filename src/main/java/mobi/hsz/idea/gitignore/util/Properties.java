@@ -24,14 +24,15 @@
 
 package mobi.hsz.idea.gitignore.util;
 
-import com.intellij.ide.util.PropertiesComponent;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.util.containers.ContainerUtil;
+import consulo.component.PropertiesComponent;
+import consulo.project.Project;
+import consulo.project.ProjectPropertiesComponent;
+import consulo.virtualFileSystem.VirtualFile;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * {@link Properties} util class that holds project specified settings using {@link PropertiesComponent}.
@@ -105,7 +106,7 @@ public class Properties {
         final PropertiesComponent props = properties(project);
         String[] values = props.getValues(DISMISSED_IGNORED_EDITING_NOTIFICATION);
 
-        return ContainerUtil.newHashSet(values != null ? values : new String[0]).contains(file.getCanonicalPath());
+        return Set.of(values != null ? values : new String[0]).contains(file.getCanonicalPath());
     }
 
     /**
@@ -118,20 +119,20 @@ public class Properties {
         final PropertiesComponent props = properties(project);
         String[] values = props.getValues(DISMISSED_IGNORED_EDITING_NOTIFICATION);
 
-        final HashSet<String> set = ContainerUtil.newHashSet(values != null ? values : new String[0]);
+        final Set<String> set = new HashSet<>(Set.of(values != null ? values : new String[0]));
         set.add(file.getCanonicalPath());
 
         props.setValues(DISMISSED_IGNORED_EDITING_NOTIFICATION, set.toArray(new String[0]));
     }
 
     /**
-     * Shorthand for {@link PropertiesComponent#getInstance} method.
+     * Shorthand for {@link ProjectPropertiesComponent#getInstance} method.
      *
      * @param project current project
      * @return component instance
      */
     @NotNull
     private static PropertiesComponent properties(@NotNull Project project) {
-        return PropertiesComponent.getInstance(project);
+        return ProjectPropertiesComponent.getInstance(project);
     }
 }

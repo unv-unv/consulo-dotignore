@@ -24,23 +24,24 @@
 
 package mobi.hsz.idea.gitignore.lang.kind;
 
-import java.util.ArrayList;
-import java.util.Set;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.jetbrains.annotations.NotNull;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.util.containers.ContainerUtil;
+import consulo.project.Project;
+import consulo.util.collection.ContainerUtil;
+import consulo.virtualFileSystem.VirtualFile;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.file.type.kind.GitExcludeFileType;
 import mobi.hsz.idea.gitignore.file.type.kind.GitFileType;
 import mobi.hsz.idea.gitignore.indexing.IgnoreFilesIndex;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
-import mobi.hsz.idea.gitignore.outer.OuterIgnoreLoaderComponent.OuterFileFetcher;
+import mobi.hsz.idea.gitignore.outer.OuterFileFetcher;
 import mobi.hsz.idea.gitignore.util.Icons;
 import mobi.hsz.idea.gitignore.util.Utils;
 import mobi.hsz.idea.gitignore.util.exec.ExternalExec;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Gitignore {@link IgnoreLanguage} definition.
@@ -108,6 +109,6 @@ public class GitLanguage extends IgnoreLanguage {
         ));
 
         ContainerUtil.addAllNotNull(parentFiles, files);
-        return outerFiles.getOrElse(key, ContainerUtil.newHashSet());
+        return outerFiles.getOrElse(key, new HashSet<>());
     }
 }

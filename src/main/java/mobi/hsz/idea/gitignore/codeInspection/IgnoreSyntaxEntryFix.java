@@ -24,13 +24,13 @@
 
 package mobi.hsz.idea.gitignore.codeInspection;
 
-import com.intellij.codeInsight.completion.CodeCompletionHandlerBase;
-import com.intellij.codeInsight.completion.CompletionType;
-import com.intellij.codeInspection.LocalQuickFixAndIntentionActionOnPsiElement;
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.project.Project;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
+import consulo.codeEditor.Editor;
+import consulo.language.editor.AutoPopupController;
+import consulo.language.editor.completion.CompletionType;
+import consulo.language.editor.inspection.LocalQuickFixAndIntentionActionOnPsiElement;
+import consulo.language.psi.PsiElement;
+import consulo.language.psi.PsiFile;
+import consulo.project.Project;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.psi.IgnoreSyntax;
 import org.jetbrains.annotations.NotNull;
@@ -74,8 +74,8 @@ public class IgnoreSyntaxEntryFix extends LocalQuickFixAndIntentionActionOnPsiEl
      */
     @Override
     public void invoke(@NotNull Project project, @NotNull PsiFile file,
-                       @Nullable("is null when called from inspection") Editor editor,
-                       @NotNull PsiElement startElement, @NotNull PsiElement endElement) {
+					   @Nullable("is null when called from inspection") Editor editor,
+					   @NotNull PsiElement startElement, @NotNull PsiElement endElement) {
         if (startElement instanceof IgnoreSyntax) {
             PsiElement value = ((IgnoreSyntax) startElement).getValue();
             if (editor != null) {
@@ -84,7 +84,7 @@ public class IgnoreSyntaxEntryFix extends LocalQuickFixAndIntentionActionOnPsiEl
                         value.getTextOffset() + value.getTextLength()
                 );
             }
-            new CodeCompletionHandlerBase(CompletionType.BASIC).invokeCompletion(project, editor);
+            AutoPopupController.getInstance(project).scheduleAutoPopup(editor, CompletionType.BASIC, null);
         }
     }
 

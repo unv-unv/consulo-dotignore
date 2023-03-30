@@ -24,13 +24,13 @@
 
 package mobi.hsz.idea.gitignore.ui.untrackFiles;
 
-import javax.swing.JTree;
+import consulo.component.util.Iconable;
+import consulo.project.Project;
+import consulo.ui.ex.awt.tree.CheckboxTree;
+import consulo.virtualFileSystem.VirtualFile;
+import consulo.virtualFileSystem.VirtualFileManager;
 
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Iconable;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.ui.CheckboxTree;
-import consulo.fileTypes.impl.VfsIconUtil;
+import javax.swing.*;
 
 /**
  * {@link FileTreeRenderer} implementation of checkbox renderer.
@@ -62,6 +62,6 @@ public class FileTreeRenderer extends CheckboxTree.CheckboxTreeCellRenderer {
         final Project project = node.getProject();
 
         getTextRenderer().append(file.getName());
-        getTextRenderer().setIcon(VfsIconUtil.getIcon(file, Iconable.ICON_FLAG_READ_STATUS, project));
+        getTextRenderer().setIcon(VirtualFileManager.getInstance().getFileIcon(file, project, Iconable.ICON_FLAG_READ_STATUS));
     }
 }

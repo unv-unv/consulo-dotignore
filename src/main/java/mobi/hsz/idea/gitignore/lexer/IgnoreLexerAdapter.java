@@ -24,12 +24,12 @@
 
 package mobi.hsz.idea.gitignore.lexer;
 
+import consulo.virtualFileSystem.VirtualFile;
 import org.jetbrains.annotations.Nullable;
-import com.intellij.lexer.FlexAdapter;
-import com.intellij.openapi.vfs.VirtualFile;
+import consulo.language.lexer.FlexAdapter;
 
 /**
- * Definition of {@link com.intellij.lexer.FlexAdapter}.
+ * Definition of {@link FlexAdapter}.
  *
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 0.1

@@ -24,13 +24,13 @@
 
 package mobi.hsz.idea.gitignore.codeInspection;
 
-import com.intellij.codeInspection.LocalQuickFixAndIntentionActionOnPsiElement;
-import com.intellij.lang.ASTNode;
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.project.Project;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.impl.source.tree.TreeUtil;
+import consulo.codeEditor.Editor;
+import consulo.language.psi.PsiFile;
+import consulo.project.Project;
+import consulo.language.psi.PsiElement;
+import consulo.language.impl.ast.TreeUtil;
+import consulo.language.ast.ASTNode;
+import consulo.language.editor.inspection.LocalQuickFixAndIntentionActionOnPsiElement;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.psi.IgnoreEntry;
 import mobi.hsz.idea.gitignore.psi.IgnoreTypes;
@@ -47,7 +47,8 @@ import org.jetbrains.annotations.Nullable;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 0.4
  */
-public class IgnoreRemoveEntryFix extends LocalQuickFixAndIntentionActionOnPsiElement {
+public class IgnoreRemoveEntryFix extends LocalQuickFixAndIntentionActionOnPsiElement
+{
     /**
      * Builds a new instance of {@link IgnoreRemoveEntryFix}.
      *
@@ -78,8 +79,8 @@ public class IgnoreRemoveEntryFix extends LocalQuickFixAndIntentionActionOnPsiEl
      */
     @Override
     public void invoke(@NotNull Project project, @NotNull PsiFile file,
-                       @Nullable("is null when called from inspection") Editor editor,
-                       @NotNull PsiElement startElement, @NotNull PsiElement endElement) {
+					   @Nullable("is null when called from inspection") Editor editor,
+					   @NotNull PsiElement startElement, @NotNull PsiElement endElement) {
         if (startElement instanceof IgnoreEntry) {
             removeCrlf(startElement);
             startElement.delete();

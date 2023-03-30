@@ -24,7 +24,7 @@
 
 package mobi.hsz.idea.gitignore.ui.template;
 
-import com.intellij.ui.CheckedTreeNode;
+import consulo.ui.ex.awt.tree.CheckedTreeNode;
 import mobi.hsz.idea.gitignore.util.Resources;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

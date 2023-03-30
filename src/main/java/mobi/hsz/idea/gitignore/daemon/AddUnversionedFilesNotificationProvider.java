@@ -24,18 +24,17 @@
 
 package mobi.hsz.idea.gitignore.daemon;
 
-import com.intellij.openapi.fileEditor.FileEditor;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiManager;
-import com.intellij.ui.EditorNotificationPanel;
-import com.intellij.ui.EditorNotifications;
-import com.intellij.util.containers.ContainerUtil;
-import consulo.awt.TargetAWT;
-import consulo.editor.notifications.EditorNotificationProvider;
-import consulo.ui.image.Image;
+import consulo.annotation.access.RequiredReadAction;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.dotignore.localize.IgnoreLocalize;
+import consulo.fileEditor.*;
+import consulo.language.psi.PsiFile;
+import consulo.language.psi.PsiManager;
+import consulo.project.Project;
+import consulo.util.collection.ContainerUtil;
+import consulo.util.lang.StringUtil;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.inject.Inject;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.command.AppendFileCommandAction;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
@@ -49,8 +48,11 @@ import mobi.hsz.idea.gitignore.util.exec.ExternalExec;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * Editor notification provider that suggests to add unversioned files to the .gitignore file.
@@ -58,7 +60,8 @@ import java.util.Map;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 1.4
  */
-public class AddUnversionedFilesNotificationProvider implements EditorNotificationProvider<EditorNotificationPanel> {
+@ExtensionImpl
+public class AddUnversionedFilesNotificationProvider implements EditorNotificationProvider {
     /** Current project. */
     @NotNull
     private final Project project;
@@ -73,7 +76,7 @@ public class AddUnversionedFilesNotificationProvider implements EditorNotificati
 
     /** List of unignored files. */
     @NotNull
-    private final List<String> unignoredFiles = ContainerUtil.newArrayList();
+    private final List<String> unignoredFiles = new ArrayList<>();
 
     /** Map to obtain if file was handled. */
     private final Map<VirtualFile, Boolean> handledMap = ContainerUtil.createConcurrentWeakKeyWeakValueMap();
@@ -84,24 +87,28 @@ public class AddUnversionedFilesNotificationProvider implements EditorNotificati
      * @param project       current project
      * @param notifications notifications component
      */
-    public AddUnversionedFilesNotificationProvider(@NotNull Project project,
-                                                   @NotNull EditorNotifications notifications) {
+    @Inject
+    public AddUnversionedFilesNotificationProvider(
+            @NotNull Project project,
+            @NotNull EditorNotifications notifications)
+    {
         this.project = project;
         this.notifications = notifications;
         this.settings = IgnoreSettings.getInstance();
     }
 
-    /**
-     * Creates notification panel for given file and checks if is allowed to show the notification.
-     * Only {@link GitLanguage} is currently supported.
-     *
-     * @param file       current file
-     * @param fileEditor current file editor
-     * @return created notification panel
-     */
+    @Nonnull
+    @Override
+    public String getId() {
+        return ".ignore-add-unversion-files";
+    }
+
+    @RequiredReadAction
     @Nullable
     @Override
-    public EditorNotificationPanel createNotificationPanel(@NotNull VirtualFile file, @NotNull FileEditor fileEditor) {
+    public EditorNotificationBuilder buildNotification(
+            @Nonnull VirtualFile file, @Nonnull FileEditor fileEditor, @Nonnull Supplier<EditorNotificationBuilder> supplier)
+    {
         // Break if feature is disabled in the Settings
         if (!settings.isAddUnversionedFiles()) {
             return null;
@@ -126,7 +133,7 @@ public class AddUnversionedFilesNotificationProvider implements EditorNotificati
             return null;
         }
 
-        return createPanel(project);
+        return createPanel(project, supplier.get());
     }
 
     /**
@@ -135,11 +142,10 @@ public class AddUnversionedFilesNotificationProvider implements EditorNotificati
      * @param project current project
      * @return notification panel
      */
-    private EditorNotificationPanel createPanel(@NotNull final Project project) {
-        final EditorNotificationPanel panel = new EditorNotificationPanel();
+    private EditorNotificationBuilder createPanel(@NotNull final Project project, EditorNotificationBuilder builder) {
         final IgnoreFileType fileType = GitFileType.INSTANCE;
-        panel.setText(IgnoreBundle.message("daemon.addUnversionedFiles"));
-        panel.createActionLabel(IgnoreBundle.message("daemon.addUnversionedFiles.create"), () -> {
+        builder.withText(IgnoreLocalize.daemonAddunversionedfiles());
+        builder.withAction(IgnoreLocalize.daemonAddunversionedfilesCreate(), (e) -> {
             final VirtualFile virtualFile = project.getBaseDir().findChild(GitLanguage.INSTANCE.getFilename());
             final PsiFile file = virtualFile != null ? PsiManager.getInstance(project).findFile(virtualFile) : null;
             if (file != null) {
@@ -155,19 +161,13 @@ public class AddUnversionedFilesNotificationProvider implements EditorNotificati
                 notifications.updateAllNotifications();
             }
         });
-        panel.createActionLabel(IgnoreBundle.message("daemon.cancel"), () -> {
+        builder.withAction(IgnoreLocalize.daemonCancel(), (e) -> {
             Properties.setAddUnversionedFiles(project);
             notifications.updateAllNotifications();
         });
 
-        try { // ignore if older SDK does not support panel icon
-            Image icon = fileType.getIcon();
-            if (icon != null) {
-                panel.icon(TargetAWT.to(icon));
-            }
-        } catch (NoSuchMethodError ignored) {
-        }
+        builder.withIcon(fileType.getIcon());
 
-        return panel;
+        return builder;
     }
 }

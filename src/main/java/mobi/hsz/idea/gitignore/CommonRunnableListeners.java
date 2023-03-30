@@ -24,14 +24,14 @@
 
 package mobi.hsz.idea.gitignore;
 
-import java.util.List;
-
+import consulo.module.Module;
+import consulo.module.content.layer.event.ModuleRootEvent;
+import consulo.module.content.layer.event.ModuleRootListener;
+import consulo.module.event.ModuleListener;
+import consulo.project.Project;
 import org.jetbrains.annotations.NotNull;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.project.ModuleListener;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.ModuleRootEvent;
-import com.intellij.openapi.roots.ModuleRootListener;
+
+import java.util.List;
 
 /**
  * Wrapper for common listeners.
@@ -39,7 +39,7 @@ import com.intellij.openapi.roots.ModuleRootListener;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 2.2.0
  */
-public class CommonRunnableListeners implements IgnoreManager.RefreshStatusesListener, ModuleRootListener, ModuleListener
+public class CommonRunnableListeners implements RefreshStatusesListener, ModuleRootListener, ModuleListener
 {
 	/**
 	 * Task to run.
@@ -58,7 +58,7 @@ public class CommonRunnableListeners implements IgnoreManager.RefreshStatusesLis
 	}
 
 	/**
-	 * {@link IgnoreManager.RefreshStatusesListener} event.
+	 * {@link RefreshStatusesListener} event.
 	 */
 	@Override
 	public void refresh()

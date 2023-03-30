@@ -24,9 +24,11 @@
 
 package mobi.hsz.idea.gitignore.file;
 
-import com.intellij.openapi.fileTypes.ExactFileNameMatcher;
-import com.intellij.openapi.fileTypes.FileTypeConsumer;
-import com.intellij.openapi.fileTypes.FileTypeFactory;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.virtualFileSystem.fileType.FileNameMatcherFactory;
+import consulo.virtualFileSystem.fileType.FileTypeConsumer;
+import consulo.virtualFileSystem.fileType.FileTypeFactory;
+import jakarta.inject.Inject;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
@@ -38,7 +40,15 @@ import org.jetbrains.annotations.NotNull;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 0.1
  */
+@ExtensionImpl
 public class IgnoreFileTypeFactory extends FileTypeFactory {
+    private final FileNameMatcherFactory fileNameMatcherFactory;
+
+    @Inject
+    public IgnoreFileTypeFactory(FileNameMatcherFactory fileNameMatcherFactory) {
+        this.fileNameMatcherFactory = fileNameMatcherFactory;
+    }
+
     /**
      * Assigns file types with languages.
      *
@@ -59,7 +69,7 @@ public class IgnoreFileTypeFactory extends FileTypeFactory {
      * @param fileType file type to consume
      */
     private void consume(@NotNull FileTypeConsumer consumer, @NotNull IgnoreFileType fileType) {
-        consumer.consume(fileType, new ExactFileNameMatcher(fileType.getIgnoreLanguage().getFilename()));
+        consumer.consume(fileType, fileNameMatcherFactory.createExactFileNameMatcher(fileType.getIgnoreLanguage().getFilename()));
         consumer.consume(fileType, fileType.getIgnoreLanguage().getExtension());
     }
 }

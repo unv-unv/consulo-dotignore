@@ -24,40 +24,37 @@
 
 package mobi.hsz.idea.gitignore;
 
-import java.util.concurrent.ConcurrentMap;
-
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import com.intellij.notification.Notification;
-import com.intellij.notification.NotificationType;
-import com.intellij.openapi.Disposable;
-import com.intellij.openapi.components.ProjectComponent;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.VcsRoot;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.util.messages.MessageBusConnection;
+import consulo.annotation.component.ComponentScope;
+import consulo.annotation.component.TopicImpl;
+import consulo.project.Project;
+import consulo.project.ui.notification.Notification;
+import consulo.project.ui.notification.NotificationType;
+import consulo.versionControlSystem.root.VcsRoot;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.inject.Inject;
 import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
 import mobi.hsz.idea.gitignore.ui.untrackFiles.UntrackFilesDialog;
 import mobi.hsz.idea.gitignore.util.Notify;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.concurrent.ConcurrentMap;
 
 /**
- * ProjectComponent instance to handle {@link IgnoreManager.TrackedIgnoredListener} event
+ * ProjectComponent instance to handle {@link TrackedIgnoredListener} event
  * and display {@link Notification} about tracked and ignored files which invokes {@link UntrackFilesDialog}.
  *
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 1.7
  */
-public class TrackedIgnoredFilesComponent implements IgnoreManager.TrackedIgnoredListener, ProjectComponent, Disposable
-{
+@TopicImpl(ComponentScope.PROJECT)
+public class TrackedIgnoredFilesComponent implements TrackedIgnoredListener {
     /** Disable action event. */
     @NonNls
     private static final String DISABLE_ACTION = "#disable";
 
-    /** {@link MessageBusConnection} instance. */
-    private MessageBusConnection messageBus;
-
     /** {@link IgnoreSettings} instance. */
-    private IgnoreSettings settings;
+    private final IgnoreSettings settings;
 
     /** Notification about tracked files was shown for current project. */
     private boolean notificationShown;
@@ -69,39 +66,14 @@ public class TrackedIgnoredFilesComponent implements IgnoreManager.TrackedIgnore
      *
      * @param project current project
      */
-    protected TrackedIgnoredFilesComponent(@NotNull Project project) {
+    @Inject
+    public TrackedIgnoredFilesComponent(@NotNull Project project, IgnoreSettings settings) {
         myProject = project;
-    }
-
-    /** Component initialization method. */
-    @Override
-    public void initComponent() {
-        settings = IgnoreSettings.getInstance();
-        messageBus = myProject.getMessageBus().connect();
-        messageBus.subscribe(IgnoreManager.TrackedIgnoredListener.TRACKED_IGNORED, this);
-    }
-
-    /** Component dispose method. */
-    @Override
-    public void dispose() {
-        if (messageBus != null) {
-            messageBus.disconnect();
-        }
+        this.settings = settings;
     }
 
     /**
-     * Returns component's name.
-     *
-     * @return component's name
-     */
-    @NotNull
-    @Override
-    public String getComponentName() {
-        return "TrackedIgnoredFilesComponent";
-    }
-
-    /**
-     * {@link IgnoreManager.TrackedIgnoredListener} method implementation to handle incoming files.
+     * {@link TrackedIgnoredListener} method implementation to handle incoming files.
      *
      * @param files tracked and ignored files list
      */

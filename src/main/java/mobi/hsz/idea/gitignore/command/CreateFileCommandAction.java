@@ -24,9 +24,9 @@
 
 package mobi.hsz.idea.gitignore.command;
 
-import com.intellij.openapi.project.Project;
-import com.intellij.psi.PsiDirectory;
-import com.intellij.psi.PsiFile;
+import consulo.language.psi.PsiDirectory;
+import consulo.language.psi.PsiFile;
+import consulo.project.Project;
 import mobi.hsz.idea.gitignore.file.IgnoreTemplatesFactory;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import org.jetbrains.annotations.NotNull;

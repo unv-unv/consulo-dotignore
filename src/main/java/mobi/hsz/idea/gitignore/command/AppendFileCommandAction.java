@@ -24,17 +24,17 @@
 
 package mobi.hsz.idea.gitignore.command;
 
-import com.intellij.notification.NotificationType;
-import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.EditorFactory;
-import com.intellij.openapi.editor.VisualPosition;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiDocumentManager;
-import com.intellij.psi.PsiFile;
-import com.intellij.util.containers.ContainerUtil;
+import consulo.codeEditor.Editor;
+import consulo.language.psi.PsiDocumentManager;
+import consulo.document.Document;
+import consulo.codeEditor.EditorFactory;
+import consulo.codeEditor.VisualPosition;
+import consulo.project.Project;
+import consulo.project.ui.notification.NotificationType;
+import consulo.util.lang.StringUtil;
+import consulo.language.psi.PsiFile;
+import consulo.util.collection.ContainerUtil;
+import consulo.virtualFileSystem.VirtualFile;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.psi.IgnoreEntry;
 import mobi.hsz.idea.gitignore.psi.IgnoreVisitor;
@@ -85,7 +85,7 @@ public class AppendFileCommandAction extends CommandAction<PsiFile> {
      * @param ignoreComments   ignore comments and empty lines
      */
     public AppendFileCommandAction(@NotNull Project project, @NotNull PsiFile file, @NotNull Set<String> content,
-                                   boolean ignoreDuplicates, boolean ignoreComments) {
+								   boolean ignoreDuplicates, boolean ignoreComments) {
         super(project);
         this.project = project;
         this.file = file;
@@ -108,7 +108,7 @@ public class AppendFileCommandAction extends CommandAction<PsiFile> {
      */
     public AppendFileCommandAction(@NotNull Project project, @NotNull PsiFile file, @NotNull final String content,
                                    boolean ignoreDuplicates, boolean ignoreComments) {
-        this(project, file, ContainerUtil.newHashSet(content), ignoreDuplicates, ignoreComments);
+        this(project, file, Set.of(content), ignoreDuplicates, ignoreComments);
     }
 
     /**

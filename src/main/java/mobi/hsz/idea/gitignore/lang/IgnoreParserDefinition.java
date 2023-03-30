@@ -24,24 +24,26 @@
 
 package mobi.hsz.idea.gitignore.lang;
 
+import consulo.language.ast.IFileElementType;
+import consulo.language.ast.TokenType;
 import org.jetbrains.annotations.NotNull;
-import com.intellij.lang.ASTNode;
-import com.intellij.lang.Language;
-import com.intellij.lang.ParserDefinition;
-import com.intellij.lang.PsiParser;
-import com.intellij.lexer.Lexer;
-import com.intellij.psi.FileViewProvider;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.TokenType;
-import com.intellij.psi.tree.IFileElementType;
-import com.intellij.psi.tree.TokenSet;
-import consulo.lang.LanguageVersion;
+import consulo.language.ast.ASTNode;
+import consulo.language.Language;
+import consulo.language.parser.ParserDefinition;
+import consulo.language.parser.PsiParser;
+import consulo.language.lexer.Lexer;
+import consulo.language.file.FileViewProvider;
+import consulo.language.psi.PsiElement;
+import consulo.language.psi.PsiFile;
+import consulo.language.ast.TokenSet;
+import consulo.language.version.LanguageVersion;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.lexer.IgnoreLexerAdapter;
 import mobi.hsz.idea.gitignore.parser.IgnoreParser;
 import mobi.hsz.idea.gitignore.psi.IgnoreFile;
 import mobi.hsz.idea.gitignore.psi.IgnoreTypes;
+
+import javax.annotation.Nonnull;
 
 /**
  * Defines the implementation of a parser for a custom language.
@@ -80,6 +82,18 @@ public class IgnoreParserDefinition implements ParserDefinition {
     /** Element type of the node describing a file in the specified language. */
     public static final IFileElementType FILE = new IFileElementType(Language.findInstance(IgnoreLanguage.class));
 
+    private final Language language;
+
+    public IgnoreParserDefinition(Language language) {
+        this.language = language;
+    }
+
+    @Nonnull
+    @Override
+    public Language getLanguage() {
+        return language;
+    }
+
     /**
      * Returns the lexer for lexing files in the specified project. This lexer does not need to support incremental
      * relexing - it is always called for the entire file.
@@ -116,7 +130,7 @@ public class IgnoreParserDefinition implements ParserDefinition {
      * Returns the set of token types which are treated as whitespace by the PSI builder. Tokens of those types are
      * automatically skipped by PsiBuilder. Whitespace elements on the bounds of nodes built by PsiBuilder are
      * automatically excluded from the text range of the nodes. <p><strong>It is strongly advised you return TokenSet
-     * that only contains {@link com.intellij.psi.TokenType#WHITE_SPACE}, which is suitable for all the languages unless
+     * that only contains {@link TokenType#WHITE_SPACE}, which is suitable for all the languages unless
      * you really need to use special whitespace token</strong>
      *
      * @return the set of whitespace token types.
@@ -178,21 +192,5 @@ public class IgnoreParserDefinition implements ParserDefinition {
             return ((IgnoreLanguage) viewProvider.getBaseLanguage()).createFile(viewProvider);
         }
         return new IgnoreFile(viewProvider, IgnoreFileType.INSTANCE);
-    }
-
-    /**
-     * Checks if the specified two token types need to be separated by a space according to the language grammar. For
-     * example, in Java two keywords are always separated by a space; a keyword and an opening parenthesis may be
-     * separated or not separated. This is used for automatic whitespace insertion during AST modification operations.
-     *
-     * @param left  the first token to check.
-     * @param right the second token to check.
-     * @return the spacing requirements.
-     *
-     * @since 6.0
-     */
-    @Override
-    public SpaceRequirements spaceExistanceTypeBetweenTokens(ASTNode left, ASTNode right) {
-        return SpaceRequirements.MAY;
     }
 }

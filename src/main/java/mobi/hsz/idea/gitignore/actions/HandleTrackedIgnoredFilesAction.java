@@ -24,20 +24,20 @@
 
 package mobi.hsz.idea.gitignore.actions;
 
-import java.util.concurrent.ConcurrentMap;
-
-import org.jetbrains.annotations.NotNull;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.CommonDataKeys;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.VcsRoot;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.util.containers.ContainerUtil;
+import consulo.language.editor.CommonDataKeys;
+import consulo.project.Project;
+import consulo.ui.ex.action.AnAction;
+import consulo.ui.ex.action.AnActionEvent;
+import consulo.util.collection.ContainerUtil;
+import consulo.versionControlSystem.root.VcsRoot;
+import consulo.virtualFileSystem.VirtualFile;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.IgnoreManager;
 import mobi.hsz.idea.gitignore.ui.untrackFiles.UntrackFilesDialog;
 import mobi.hsz.idea.gitignore.util.Icons;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Action that invokes {@link UntrackFilesDialog} dialog.
@@ -45,7 +45,8 @@ import mobi.hsz.idea.gitignore.util.Icons;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 1.7.2
  */
-public class HandleTrackedIgnoredFilesAction extends AnAction {
+public class HandleTrackedIgnoredFilesAction extends AnAction
+{
     /** Builds a new instance of {@link HandleTrackedIgnoredFilesAction}. */
     public HandleTrackedIgnoredFilesAction() {
         super(IgnoreBundle.message(
@@ -88,7 +89,7 @@ public class HandleTrackedIgnoredFilesAction extends AnAction {
      * @return map of files
      */
     private ConcurrentMap<VirtualFile, VcsRoot> getTrackedIgnoredFiles(@NotNull AnActionEvent event) {
-        final Project project = event.getProject();
+        final Project project = event.getData(Project.KEY);
 
         if (project != null) {
             return IgnoreManager.getInstance(project).getConfirmedIgnoredFiles();

@@ -29,16 +29,16 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
+import consulo.util.collection.ContainerUtil;
+import consulo.virtualFileSystem.VirtualFileManager;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import com.intellij.openapi.util.Pair;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.VirtualFileManager;
-import com.intellij.util.containers.ContainerUtil;
-import com.intellij.util.containers.ImmutableList;
+import consulo.util.lang.Pair;
+import consulo.util.lang.StringUtil;
+import consulo.virtualFileSystem.VirtualFile;
 
 /**
  * Entry containing information about the {@link VirtualFile} instance of the ignore file mapped with the collection
@@ -54,7 +54,7 @@ public class IgnoreEntryOccurrence implements Serializable {
 
     /** Collection of ignore entries. */
     @NotNull
-    private final ImmutableList<Pair<String, Boolean>> items;
+    private final List<Pair<String, Boolean>> items;
 
     /** Current ignore file. */
     @Nullable
@@ -68,7 +68,7 @@ public class IgnoreEntryOccurrence implements Serializable {
      */
     public IgnoreEntryOccurrence(@NotNull String url, @NotNull ArrayList<Pair<String, Boolean>> items) {
         this.url = url;
-        this.items = ContainerUtil.immutableList(items);
+        this.items = List.copyOf(items);
     }
 
     /**
@@ -132,7 +132,7 @@ public class IgnoreEntryOccurrence implements Serializable {
      * @return entries
      */
     @NotNull
-    public ImmutableList<Pair<String, Boolean>> getItems() {
+    public List<Pair<String, Boolean>> getItems() {
         return items;
     }
 

@@ -24,23 +24,27 @@
 
 package mobi.hsz.idea.gitignore;
 
-import com.intellij.openapi.components.ProjectComponent;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.FileIndex;
-import com.intellij.openapi.roots.ProjectRootManager;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vfs.*;
-import com.intellij.psi.search.FilenameIndex;
-import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.util.containers.ContainerUtil;
+import consulo.annotation.component.ComponentScope;
+import consulo.annotation.component.ServiceAPI;
+import consulo.annotation.component.ServiceImpl;
+import consulo.content.FileIndex;
+import consulo.disposer.Disposable;
+import consulo.language.psi.scope.GlobalSearchScope;
+import consulo.language.psi.search.FilenameIndex;
+import consulo.module.content.ProjectRootManager;
+import consulo.project.Project;
+import consulo.util.collection.ContainerUtil;
+import consulo.util.lang.StringUtil;
+import consulo.virtualFileSystem.VirtualFile;
+import consulo.virtualFileSystem.VirtualFileManager;
+import consulo.virtualFileSystem.event.*;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import mobi.hsz.idea.gitignore.util.Constants;
 import mobi.hsz.idea.gitignore.util.MatcherUtil;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Pattern;
 
@@ -52,8 +56,10 @@ import java.util.regex.Pattern;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 1.3.1
  */
-public class FilesIndexCacheProjectComponent implements ProjectComponent
-{
+@ServiceAPI(value = ComponentScope.PROJECT, lazy = false)
+@ServiceImpl
+@Singleton
+public class FilesIndexCacheProjectComponent implements Disposable {
     /** Concurrent cache map. */
     @NotNull
     private final ConcurrentMap<String, Collection<VirtualFile>> cacheMap;
@@ -126,23 +132,12 @@ public class FilesIndexCacheProjectComponent implements ProjectComponent
      *
      * @param project current project
      */
-    protected FilesIndexCacheProjectComponent(@NotNull final Project project) {
+    @Inject
+    public FilesIndexCacheProjectComponent(@NotNull final Project project) {
         cacheMap = ContainerUtil.newConcurrentMap();
         virtualFileManager = VirtualFileManager.getInstance();
         projectFileIndex = ProjectRootManager.getInstance(project).getFileIndex();
-    }
-
-    /** Registers {@link #virtualFileListener} when project is opened. */
-    @Override
-    public void projectOpened() {
         virtualFileManager.addVirtualFileListener(virtualFileListener);
-    }
-
-    /** Unregisters {@link #virtualFileListener} when project is closed. */
-    @Override
-    public void projectClosed() {
-        virtualFileManager.removeVirtualFileListener(virtualFileListener);
-        cacheMap.clear();
     }
 
     /**
@@ -180,17 +175,12 @@ public class FilesIndexCacheProjectComponent implements ProjectComponent
             return cacheMap.get(key);
         }
 
-        return ContainerUtil.newArrayList();
+        return Set.of();
     }
 
-    /**
-     * Returns component's name.
-     *
-     * @return component's name
-     */
-    @NotNull
     @Override
-    public String getComponentName() {
-        return "FilesIndexCacheProjectComponent";
+    public void dispose() {
+        virtualFileManager.removeVirtualFileListener(virtualFileListener);
+        cacheMap.clear();
     }
 }

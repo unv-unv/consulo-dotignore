@@ -24,23 +24,19 @@
 
 package mobi.hsz.idea.gitignore.outer;
 
-import com.intellij.ide.ui.UISettings;
-import com.intellij.ide.ui.UISettingsListener;
-import com.intellij.openapi.Disposable;
-import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.EditorFactory;
-import com.intellij.openapi.fileEditor.FileDocumentManager;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VfsUtil;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.ui.ScrollPaneFactory;
-import com.intellij.ui.TabbedPaneWrapper;
-import com.intellij.ui.components.JBLabel;
-import com.intellij.ui.components.labels.LinkLabel;
-import com.intellij.util.containers.ContainerUtil;
-import com.intellij.util.messages.MessageBusConnection;
-import com.intellij.util.ui.UIUtil;
+import consulo.application.ui.UISettings;
+import consulo.application.ui.event.UISettingsListener;
+import consulo.codeEditor.Editor;
+import consulo.codeEditor.EditorFactory;
+import consulo.component.messagebus.MessageBusConnection;
+import consulo.disposer.Disposable;
+import consulo.document.Document;
+import consulo.document.FileDocumentManager;
+import consulo.project.Project;
+import consulo.ui.ex.awt.*;
+import consulo.util.collection.ContainerUtil;
+import consulo.virtualFileSystem.VirtualFile;
+import consulo.virtualFileSystem.util.VirtualFileUtil;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
 import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
@@ -112,7 +108,7 @@ public class OuterIgnoreWrapper extends MouseAdapter implements ChangeListener, 
     /** Constructor. */
     @SuppressWarnings("unchecked")
     public OuterIgnoreWrapper(@NotNull final Project project, @NotNull final IgnoreLanguage language,
-                              @NotNull final List<VirtualFile> outerFiles) {
+							  @NotNull final List<VirtualFile> outerFiles) {
         this.outerFiles = outerFiles;
         settings = IgnoreSettings.getInstance();
 
@@ -131,7 +127,7 @@ public class OuterIgnoreWrapper extends MouseAdapter implements ChangeListener, 
 
         tabbedPanel = new TabbedPaneWrapper(project);
         messageBus = project.getMessageBus().connect();
-        messageBus.subscribe(UISettingsListener.TOPIC, uiSettings -> updateTabbedPanelPolicy());
+        messageBus.subscribe(UISettingsListener.class, uiSettings -> updateTabbedPanelPolicy());
         updateTabbedPanelPolicy();
 
         linkLabel = new LinkLabel(
@@ -139,7 +135,7 @@ public class OuterIgnoreWrapper extends MouseAdapter implements ChangeListener, 
                 null,
                 (aSource, aLinkData) -> Utils.openFile(project, outerFiles.get(tabbedPanel.getSelectedIndex()))
         );
-        final VirtualFile userHomeDir = VfsUtil.getUserHomeDir();
+        final VirtualFile userHomeDir = VirtualFileUtil.getUserHomeDir();
 
         for (final VirtualFile outerFile : outerFiles) {
             Document document = FileDocumentManager.getInstance().getDocument(outerFile);

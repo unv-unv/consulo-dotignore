@@ -24,20 +24,17 @@
 
 package mobi.hsz.idea.gitignore.util;
 
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vfs.VfsUtil;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.VirtualFileVisitor;
-import com.intellij.util.containers.ContainerUtil;
+import consulo.util.collection.ContainerUtil;
+import consulo.util.lang.StringUtil;
+import consulo.virtualFileSystem.VirtualFile;
+import consulo.virtualFileSystem.util.VirtualFileUtil;
+import consulo.virtualFileSystem.util.VirtualFileVisitor;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.psi.IgnoreEntry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -49,13 +46,19 @@ import java.util.regex.PatternSyntaxException;
  * @since 0.5
  */
 public class Glob {
-    /** Cache map that holds processed regex statements to the glob rules. */
+    /**
+     * Cache map that holds processed regex statements to the glob rules.
+     */
     private static final ConcurrentMap<String, String> GLOBS_CACHE = ContainerUtil.newConcurrentMap();
 
-    /** Cache map that holds compiled regex. */
+    /**
+     * Cache map that holds compiled regex.
+     */
     private static final ConcurrentMap<String, Pattern> PATTERNS_CACHE = ContainerUtil.newConcurrentMap();
 
-    /** Private constructor to prevent creating {@link Glob} instance. */
+    /**
+     * Private constructor to prevent creating {@link Glob} instance.
+     */
     private Glob() {
     }
 
@@ -68,7 +71,7 @@ public class Glob {
      */
     @Nullable
     public static VirtualFile findOne(@NotNull final VirtualFile root, @NotNull IgnoreEntry entry,
-                                            @NotNull MatcherUtil matcher) {
+                                      @NotNull MatcherUtil matcher) {
         final List<VirtualFile> files = find(root, ContainerUtil.newArrayList(entry), matcher, false).get(entry);
         return ContainerUtil.getFirstItem(files);
     }
@@ -87,7 +90,7 @@ public class Glob {
                                                            @NotNull final MatcherUtil matcher,
                                                            final boolean includeNested) {
         final ConcurrentMap<IgnoreEntry, List<VirtualFile>> result = ContainerUtil.newConcurrentMap();
-        final HashMap<IgnoreEntry, Pattern> map = ContainerUtil.newHashMap();
+        final HashMap<IgnoreEntry, Pattern> map = new HashMap<>();
 
         for (IgnoreEntry entry : entries) {
             result.put(entry, ContainerUtil.newArrayList());
@@ -102,7 +105,7 @@ public class Glob {
                 new VirtualFileVisitor<HashMap<IgnoreEntry, Pattern>>(VirtualFileVisitor.NO_FOLLOW_SYMLINKS) {
                     @Override
                     public boolean visitFile(@NotNull VirtualFile file) {
-                        final HashMap<IgnoreEntry, Pattern> current = ContainerUtil.newHashMap(getCurrentValue());
+                        final HashMap<IgnoreEntry, Pattern> current = new HashMap<>(getCurrentValue());
                         if (current.isEmpty()) {
                             return false;
                         }
@@ -129,7 +132,7 @@ public class Glob {
                     }
                 };
         visitor.setValueForChildren(map);
-        VfsUtil.visitChildrenRecursively(root, visitor);
+        VirtualFileUtil.visitChildrenRecursively(root, visitor);
 
         return result;
     }
@@ -147,11 +150,11 @@ public class Glob {
                                                             @NotNull List<IgnoreEntry> entries,
                                                             @NotNull MatcherUtil matcher,
                                                             boolean includeNested) {
-        final Map<IgnoreEntry, Set<String>> result = ContainerUtil.newHashMap();
+        final Map<IgnoreEntry, Set<String>> result = new HashMap<>();
 
         final Map<IgnoreEntry, List<VirtualFile>> files = find(root, entries, matcher, includeNested);
         for (Map.Entry<IgnoreEntry, List<VirtualFile>> item : files.entrySet()) {
-            final Set<String> set = ContainerUtil.newHashSet();
+            final Set<String> set = new HashSet<>();
             for (VirtualFile file : item.getValue()) {
                 set.add(Utils.getRelativePath(root, file));
             }
@@ -237,7 +240,8 @@ public class Glob {
                 PATTERNS_CACHE.put(regex, Pattern.compile(regex));
             }
             return PATTERNS_CACHE.get(regex);
-        } catch (PatternSyntaxException e) {
+        }
+        catch (PatternSyntaxException e) {
             return null;
         }
     }
@@ -265,17 +269,22 @@ public class Glob {
             sb.append("(?:[^/]*?/)*");
             beginIndex = 2;
             doubleStar = true;
-        } else if (StringUtil.startsWith(glob, "*/")) {
+        }
+        else if (StringUtil.startsWith(glob, "*/")) {
             sb.append("[^/]*");
             beginIndex = 1;
             star = true;
-        } else if (StringUtil.equals(Constants.STAR, glob)) {
+        }
+        else if (StringUtil.equals(Constants.STAR, glob)) {
             sb.append(".*");
-        } else if (StringUtil.startsWithChar(glob, '*')) {
+        }
+        else if (StringUtil.startsWithChar(glob, '*')) {
             sb.append(".*?");
-        } else if (StringUtil.startsWithChar(glob, '/')) {
+        }
+        else if (StringUtil.startsWithChar(glob, '/')) {
             beginIndex = 1;
-        } else {
+        }
+        else {
             int slashes = StringUtil.countChars(glob, '/');
             if (slashes == 0 || (slashes == 1 && StringUtil.endsWithChar(glob, '/'))) {
                 sb.append("(?:[^/]*?/)*");
@@ -287,12 +296,14 @@ public class Glob {
             if (bracket && ch != ']') {
                 sb.append(ch);
                 continue;
-            } else if (doubleStar) {
+            }
+            else if (doubleStar) {
                 doubleStar = false;
                 if (ch == '/') {
                     sb.append("(?:[^/]*/)*?");
                     continue;
-                } else {
+                }
+                else {
                     sb.append("[^/]*?");
                 }
             }
@@ -302,19 +313,23 @@ public class Glob {
                     sb.append("\\*");
                     escape = false;
                     star = false;
-                } else if (star) {
+                }
+                else if (star) {
                     char prev = sb.length() > 0 ? sb.charAt(sb.length() - 1) : '\0';
                     if (prev == '\0' || prev == '^' || prev == '/') {
                         doubleStar = true;
-                    } else {
+                    }
+                    else {
                         sb.append("[^/]*?");
                     }
                     star = false;
-                } else {
+                }
+                else {
                     star = true;
                 }
                 continue;
-            } else if (star) {
+            }
+            else if (star) {
                 sb.append("[^/]*?");
                 star = false;
             }
@@ -325,7 +340,8 @@ public class Glob {
                     if (escape) {
                         sb.append("\\\\");
                         escape = false;
-                    } else {
+                    }
+                    else {
                         escape = true;
                     }
                     break;
@@ -334,7 +350,8 @@ public class Glob {
                     if (escape) {
                         sb.append("\\?");
                         escape = false;
-                    } else {
+                    }
+                    else {
                         sb.append('.');
                     }
                     break;
@@ -343,7 +360,8 @@ public class Glob {
                     if (escape) {
                         sb.append('\\');
                         escape = false;
-                    } else {
+                    }
+                    else {
                         bracket = true;
                     }
                     sb.append(ch);
@@ -382,15 +400,18 @@ public class Glob {
         if (star || doubleStar) {
             if (StringUtil.endsWithChar(sb, '/')) {
                 sb.append(acceptChildren ? ".+" : "[^/]+/?");
-            } else {
+            }
+            else {
                 sb.append("[^/]*/?");
             }
-        } else {
+        }
+        else {
             if (StringUtil.endsWithChar(sb, '/')) {
                 if (acceptChildren) {
                     sb.append("[^/]*");
                 }
-            } else {
+            }
+            else {
                 sb.append(acceptChildren ? "(?:/.*)?" : "/?");
             }
         }
@@ -401,7 +422,9 @@ public class Glob {
         return sb.toString();
     }
 
-    /** Clears {@link Glob#GLOBS_CACHE} cache. */
+    /**
+     * Clears {@link Glob#GLOBS_CACHE} cache.
+     */
     public static void clearCache() {
         GLOBS_CACHE.clear();
         PATTERNS_CACHE.clear();

@@ -1,6 +1,6 @@
 package mobi.hsz.idea.gitignore.inspections;
 
-import com.intellij.openapi.util.text.StringUtil;
+import consulo.util.lang.StringUtil;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
 import mobi.hsz.idea.gitignore.lang.kind.GitLanguage;
 import org.jetbrains.annotations.NotNull;

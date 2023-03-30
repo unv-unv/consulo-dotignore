@@ -24,11 +24,11 @@
 
 package mobi.hsz.idea.gitignore.indexing;
 
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.psi.search.SearchScope;
+import consulo.project.Project;
+import consulo.language.psi.scope.GlobalSearchScope;
+import consulo.content.scope.SearchScope;
+import consulo.module.Module;
+import consulo.virtualFileSystem.VirtualFile;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,7 +40,8 @@ import java.util.HashSet;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 2.0
  */
-public class IgnoreSearchScope extends GlobalSearchScope {
+public class IgnoreSearchScope extends GlobalSearchScope
+{
     private IgnoreSearchScope(@NotNull Project project) {
         super(project);
     }

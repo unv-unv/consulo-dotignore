@@ -1,11 +1,12 @@
 package mobi.hsz.idea.gitignore.lexer;
 
-import com.intellij.lexer.*;
-import com.intellij.psi.tree.IElementType;
-import com.intellij.openapi.vfs.VirtualFile;
-import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
+import consulo.language.ast.IElementType;
+import consulo.language.lexer.FlexLexer;
+import consulo.virtualFileSystem.VirtualFile;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
+import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
 import org.jetbrains.annotations.Nullable;
+
 import static mobi.hsz.idea.gitignore.psi.IgnoreTypes.*;
 %%
 

@@ -24,8 +24,8 @@
 
 package mobi.hsz.idea.gitignore.command;
 
-import com.intellij.openapi.command.WriteCommandAction;
-import com.intellij.openapi.project.Project;
+import consulo.language.editor.WriteCommandAction;
+import consulo.project.Project;
 import org.jetbrains.annotations.NotNull;
 
 /**

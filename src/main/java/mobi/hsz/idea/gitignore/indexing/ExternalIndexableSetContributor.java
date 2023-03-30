@@ -24,10 +24,11 @@
 
 package mobi.hsz.idea.gitignore.indexing;
 
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.util.containers.ContainerUtil;
-import com.intellij.util.indexing.IndexableSetContributor;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.util.collection.ContainerUtil;
+import consulo.virtualFileSystem.VirtualFile;
+import consulo.language.psi.stub.IndexableSetContributor;
+import consulo.project.Project;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.IgnoreManager;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
@@ -45,6 +46,7 @@ import java.util.Set;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 2.0
  */
+@ExtensionImpl
 public class ExternalIndexableSetContributor extends IndexableSetContributor {
     /** Empty set. */
     private static final Set<VirtualFile> EMPTY_SET = Collections.emptySet();
@@ -60,7 +62,7 @@ public class ExternalIndexableSetContributor extends IndexableSetContributor {
      */
     @NotNull
     public static HashSet<VirtualFile> getAdditionalFiles(@NotNull Project project) {
-        final HashSet<VirtualFile> files = ContainerUtil.newHashSet();
+        final HashSet<VirtualFile> files = new HashSet<>();
 
         if (CACHE.containsKey(project)) {
             files.addAll(ContainerUtil.filter(CACHE.get(project), VirtualFile::isValid));

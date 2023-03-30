@@ -24,12 +24,14 @@
 
 package mobi.hsz.idea.gitignore.settings;
 
-import com.intellij.openapi.options.Configurable;
-import com.intellij.openapi.options.ConfigurationException;
-import com.intellij.openapi.options.SearchableConfigurable;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Comparing;
-import com.intellij.openapi.vcs.VcsConfigurableProvider;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.configurable.Configurable;
+import consulo.configurable.ConfigurationException;
+import consulo.configurable.SearchableConfigurable;
+import consulo.project.Project;
+import consulo.util.lang.Comparing;
+import consulo.versionControlSystem.VcsConfigurableProvider;
+import jakarta.inject.Inject;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.ui.IgnoreSettingsPanel;
 import mobi.hsz.idea.gitignore.util.Utils;
@@ -44,6 +46,7 @@ import javax.swing.*;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 0.6.1
  */
+@ExtensionImpl
 public class IgnoreSettingsConfigurable implements SearchableConfigurable, VcsConfigurableProvider {
     /** The settings storage object. */
     private final IgnoreSettings settings;
@@ -51,9 +54,9 @@ public class IgnoreSettingsConfigurable implements SearchableConfigurable, VcsCo
     /** The settings UI form. */
     private IgnoreSettingsPanel settingsPanel;
 
-    /** Build a new instance of {@link IgnoreSettingsConfigurable}. */
-    public IgnoreSettingsConfigurable() {
-        settings = IgnoreSettings.getInstance();
+    @Inject
+    public IgnoreSettingsConfigurable(IgnoreSettings settings) {
+        this.settings = settings;
     }
 
     /**
@@ -153,7 +156,7 @@ public class IgnoreSettingsConfigurable implements SearchableConfigurable, VcsCo
     /** Disposes the Swing components used for displaying the configuration. */
     @Override
     public void disposeUIResources() {
-        if(settingsPanel != null) {
+        if (settingsPanel != null) {
             settingsPanel.dispose();
             settingsPanel = null;
         }

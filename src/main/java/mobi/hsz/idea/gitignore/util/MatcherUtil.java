@@ -24,15 +24,16 @@
 
 package mobi.hsz.idea.gitignore.util;
 
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import consulo.util.collection.ContainerUtil;
+import consulo.util.collection.primitive.ints.IntMaps;
+import consulo.util.collection.primitive.ints.IntObjectMap;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import com.intellij.util.containers.ContainerUtil;
-import com.intellij.util.containers.IntObjectCache;
+
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Util class to speed up and limit regex operation on the files paths.
@@ -42,7 +43,7 @@ import com.intellij.util.containers.IntObjectCache;
  */
 public class MatcherUtil {
     /** Stores calculated matching results. */
-    private final IntObjectCache<Boolean> cache = new IntObjectCache<>();
+    private final IntObjectMap<Boolean> cache = IntMaps.newIntObjectHashMap();
 
     /**
      * Extracts alphanumeric parts from the regex pattern and checks if any of them is contained in the tested path.

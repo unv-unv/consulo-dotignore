@@ -24,15 +24,15 @@
 
 package mobi.hsz.idea.gitignore.lang.kind;
 
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VfsUtil;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.VirtualFileVisitor;
-import com.intellij.util.containers.ContainerUtil;
+import consulo.project.Project;
+import consulo.virtualFileSystem.VirtualFile;
+import consulo.virtualFileSystem.util.VirtualFileUtil;
+import consulo.virtualFileSystem.util.VirtualFileVisitor;
+import consulo.util.collection.ContainerUtil;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.file.type.kind.GitExcludeFileType;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
-import mobi.hsz.idea.gitignore.outer.OuterIgnoreLoaderComponent.OuterFileFetcher;
+import mobi.hsz.idea.gitignore.outer.OuterFileFetcher;
 import mobi.hsz.idea.gitignore.util.Icons;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -88,7 +88,7 @@ public class GitExcludeLanguage extends IgnoreLanguage {
 
                             final VirtualFile modules = root.findChild("modules");
                             if (modules != null) {
-                                VfsUtil.visitChildrenRecursively(modules, new VirtualFileVisitor() {
+                                VirtualFileUtil.visitChildrenRecursively(modules, new VirtualFileVisitor() {
                                     @Override
                                     public boolean visitFile(@NotNull VirtualFile dir) {
                                         if (dir.findChild("index") != null) {

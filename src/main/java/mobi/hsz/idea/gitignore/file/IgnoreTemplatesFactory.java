@@ -24,13 +24,12 @@
 
 package mobi.hsz.idea.gitignore.file;
 
-import com.intellij.ide.fileTemplates.FileTemplateGroupDescriptor;
-import com.intellij.ide.fileTemplates.FileTemplateGroupDescriptorFactory;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.psi.PsiDirectory;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiFileFactory;
-import com.intellij.util.IncorrectOperationException;
+import consulo.fileTemplate.FileTemplateGroupDescriptor;
+import consulo.fileTemplate.FileTemplateGroupDescriptorFactory;
+import consulo.language.psi.PsiDirectory;
+import consulo.language.psi.PsiFile;
+import consulo.language.psi.PsiFileFactory;
+import consulo.language.util.IncorrectOperationException;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
@@ -89,14 +88,9 @@ public class IgnoreTemplatesFactory implements FileTemplateGroupDescriptorFactor
         final PsiFileFactory factory = PsiFileFactory.getInstance(directory.getProject());
         final IgnoreLanguage language = fileType.getIgnoreLanguage();
 
-        String content = StringUtil.join(TEMPLATE_NOTE, Constants.NEWLINE);
+        String content = TEMPLATE_NOTE + Constants.NEWLINE;
         if (language.isSyntaxSupported() && !IgnoreBundle.Syntax.GLOB.equals(language.getDefaultSyntax())) {
-            content = StringUtil.join(
-                    content,
-                    IgnoreBundle.Syntax.GLOB.getPresentation(),
-                    Constants.NEWLINE,
-                    Constants.NEWLINE
-            );
+            content = content + IgnoreBundle.Syntax.GLOB.getPresentation() + Constants.NEWLINE + Constants.NEWLINE;
         }
         final PsiFile file = factory.createFileFromText(filename, fileType, content);
         return (PsiFile) directory.add(file);

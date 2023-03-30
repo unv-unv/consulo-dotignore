@@ -24,14 +24,13 @@
 
 package mobi.hsz.idea.gitignore.daemon;
 
-import com.intellij.openapi.fileEditor.FileEditor;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.ui.EditorNotificationPanel;
-import com.intellij.ui.EditorNotifications;
-import consulo.awt.TargetAWT;
-import consulo.editor.notifications.EditorNotificationProvider;
-import mobi.hsz.idea.gitignore.IgnoreBundle;
+import consulo.annotation.access.RequiredReadAction;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.dotignore.localize.IgnoreLocalize;
+import consulo.fileEditor.*;
+import consulo.project.Project;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.inject.Inject;
 import mobi.hsz.idea.gitignore.IgnoreManager;
 import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
 import mobi.hsz.idea.gitignore.util.Icons;
@@ -39,13 +38,17 @@ import mobi.hsz.idea.gitignore.util.Properties;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
+import java.util.function.Supplier;
+
 /**
  * Editor notification provider that informs about the attempt of the ignored file modification.
  *
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 1.8
  */
-public class IgnoredEditingNotificationProvider implements EditorNotificationProvider<EditorNotificationPanel> {
+@ExtensionImpl
+public class IgnoredEditingNotificationProvider implements EditorNotificationProvider {
     /** Current project. */
     @NotNull
     private final Project project;
@@ -68,6 +71,7 @@ public class IgnoredEditingNotificationProvider implements EditorNotificationPro
      * @param project       current project
      * @param notifications notifications component
      */
+    @Inject
     public IgnoredEditingNotificationProvider(@NotNull Project project, @NotNull EditorNotifications notifications) {
         this.project = project;
         this.notifications = notifications;
@@ -75,36 +79,32 @@ public class IgnoredEditingNotificationProvider implements EditorNotificationPro
         this.manager = IgnoreManager.getInstance(project);
     }
 
+    @Nonnull
+    @Override
+    public String getId() {
+        return ".ignore-ignored-editing";
+    }
 
-    /**
-     * Creates notification panel for given file and checks if is allowed to show the notification.
-     *
-     * @param file       current file
-     * @param fileEditor current file editor
-     * @return created notification panel
-     */
+    @RequiredReadAction
     @Nullable
     @Override
-    public EditorNotificationPanel createNotificationPanel(@NotNull final VirtualFile file,
-                                                           @NotNull FileEditor fileEditor) {
+    public EditorNotificationBuilder buildNotification(
+            @Nonnull VirtualFile file, @Nonnull FileEditor fileEditor, @Nonnull Supplier<EditorNotificationBuilder> supplier)
+    {
         if (!settings.isNotifyIgnoredEditing() || !manager.isFileIgnored(file) ||
                 Properties.isDismissedIgnoredEditingNotification(project, file)) {
             return null;
         }
 
-        final EditorNotificationPanel panel = new EditorNotificationPanel();
+        EditorNotificationBuilder builder = supplier.get();
 
-        panel.setText(IgnoreBundle.message("daemon.ignoredEditing"));
-        panel.createActionLabel(IgnoreBundle.message("daemon.ok"), () -> {
+        builder.withText(IgnoreLocalize.daemonIgnoredediting());
+        builder.withAction(IgnoreLocalize.daemonOk(), (e) -> {
             Properties.setDismissedIgnoredEditingNotification(project, file);
             notifications.updateAllNotifications();
         });
 
-        try { // ignore if older SDK does not support panel icon
-            panel.icon(TargetAWT.to(Icons.IGNORE));
-        } catch (NoSuchMethodError ignored) {
-        }
-
-        return panel;
+        builder.withIcon(Icons.IGNORE);
+        return builder;
     }
 }

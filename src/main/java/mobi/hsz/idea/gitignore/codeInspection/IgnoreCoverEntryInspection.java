@@ -24,29 +24,31 @@
 
 package mobi.hsz.idea.gitignore.codeInspection;
 
-import com.intellij.codeInspection.InspectionManager;
-import com.intellij.codeInspection.LocalInspectionTool;
-import com.intellij.codeInspection.ProblemDescriptor;
-import com.intellij.codeInspection.ProblemsHolder;
-import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.fileEditor.FileDocumentManager;
-import com.intellij.openapi.progress.ProgressManager;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Pair;
-import com.intellij.openapi.vfs.*;
-import com.intellij.psi.PsiFile;
-import com.intellij.util.containers.ContainerUtil;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.application.progress.ProgressManager;
+import consulo.document.Document;
+import consulo.document.FileDocumentManager;
+import consulo.dotignore.codeInspection.IgnoreInspection;
+import consulo.language.editor.inspection.ProblemDescriptor;
+import consulo.language.editor.inspection.ProblemsHolder;
+import consulo.language.editor.inspection.scheme.InspectionManager;
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
+import consulo.language.psi.PsiFile;
+import consulo.project.Project;
+import consulo.util.collection.ContainerUtil;
+import consulo.util.lang.Pair;
+import consulo.virtualFileSystem.VirtualFile;
+import consulo.virtualFileSystem.VirtualFileManager;
+import consulo.virtualFileSystem.event.*;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.IgnoreManager;
 import mobi.hsz.idea.gitignore.psi.IgnoreEntry;
 import mobi.hsz.idea.gitignore.psi.IgnoreFile;
-import mobi.hsz.idea.gitignore.util.Constants;
-import mobi.hsz.idea.gitignore.util.Glob;
-import mobi.hsz.idea.gitignore.util.MatcherUtil;
-import mobi.hsz.idea.gitignore.util.Utils;
+import mobi.hsz.idea.gitignore.util.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.concurrent.ConcurrentMap;
 
@@ -56,7 +58,8 @@ import java.util.concurrent.ConcurrentMap;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 0.5
  */
-public class IgnoreCoverEntryInspection extends LocalInspectionTool {
+@ExtensionImpl
+public class IgnoreCoverEntryInspection extends IgnoreInspection {
     /** Cache map to store handled entries' paths. */
     private final ConcurrentMap<String, Set<String>> cacheMap;
 
@@ -92,6 +95,18 @@ public class IgnoreCoverEntryInspection extends LocalInspectionTool {
             cacheMap.clear();
         }
     };
+
+    @Nonnull
+    @Override
+    public String getDisplayName() {
+        return IgnoreBundle.message("codeInspection.coverEntry");
+    }
+
+    @Nonnull
+    @Override
+    public HighlightDisplayLevel getDefaultLevel() {
+        return HighlightDisplayLevel.WARNING;
+    }
 
     /**
      * Builds a new instance of {@link IgnoreCoverEntryInspection}.
@@ -136,12 +151,12 @@ public class IgnoreCoverEntryInspection extends LocalInspectionTool {
             return null;
         }
 
-        final Set<String> ignored = ContainerUtil.newHashSet();
-        final Set<String> unignored = ContainerUtil.newHashSet();
+        final Set<String> ignored = new HashSet<>();
+        final Set<String> unignored = new HashSet<>();
 
         final ProblemsHolder problemsHolder = new ProblemsHolder(manager, file, isOnTheFly);
-        final List<Pair<IgnoreEntry, IgnoreEntry>> result = ContainerUtil.newArrayList();
-        final Map<IgnoreEntry, Set<String>> map = ContainerUtil.newHashMap();
+        final List<Pair<IgnoreEntry, IgnoreEntry>> result = new ArrayList<>();
+        final Map<IgnoreEntry, Set<String>> map = new HashMap<>();
 
         final ArrayList<IgnoreEntry> entries = ContainerUtil.newArrayList(Arrays.asList(
                 ((IgnoreFile) file).findChildrenByClass(IgnoreEntry.class)
@@ -212,8 +227,8 @@ public class IgnoreCoverEntryInspection extends LocalInspectionTool {
     private Map<IgnoreEntry, Set<String>> getPathsSet(@NotNull VirtualFile contextDirectory,
                                                       @NotNull ArrayList<IgnoreEntry> entries,
                                                       @NotNull MatcherUtil matcher) {
-        final Map<IgnoreEntry, Set<String>> result = ContainerUtil.newHashMap();
-        final ArrayList<IgnoreEntry> notCached = ContainerUtil.newArrayList();
+        final Map<IgnoreEntry, Set<String>> result = new HashMap<>();
+        final ArrayList<IgnoreEntry> notCached = new ArrayList<>();
 
         for (IgnoreEntry entry : entries) {
             ProgressManager.checkCanceled();

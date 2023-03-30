@@ -24,23 +24,25 @@
 
 package mobi.hsz.idea.gitignore.util.exec;
 
-import com.intellij.execution.process.BaseOSProcessHandler;
-import com.intellij.execution.process.ProcessHandler;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vcs.VcsRoot;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.util.concurrency.AppExecutorUtil;
-import com.intellij.util.containers.ContainerUtil;
+import consulo.logging.Logger;
+import consulo.process.ExecutionException;
+import consulo.process.ProcessHandler;
+import consulo.process.ProcessHandlerBuilder;
+import consulo.process.cmd.GeneralCommandLine;
+import consulo.process.event.ProcessEvent;
+import consulo.process.event.ProcessListener;
+import consulo.project.Project;
+import consulo.util.collection.ContainerUtil;
+import consulo.util.collection.Lists;
 import consulo.util.dataholder.Key;
+import consulo.util.lang.StringUtil;
+import consulo.versionControlSystem.root.VcsRoot;
+import consulo.virtualFileSystem.VirtualFile;
 import git4idea.config.GitExecutableManager;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
 import mobi.hsz.idea.gitignore.lang.kind.GitLanguage;
 import mobi.hsz.idea.gitignore.util.Utils;
-import mobi.hsz.idea.gitignore.util.exec.parser.ExecutionOutputParser;
-import mobi.hsz.idea.gitignore.util.exec.parser.GitExcludesOutputParser;
-import mobi.hsz.idea.gitignore.util.exec.parser.GitUnignoredFilesOutputParser;
-import mobi.hsz.idea.gitignore.util.exec.parser.SimpleOutputParser;
+import mobi.hsz.idea.gitignore.util.exec.parser.*;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -49,8 +51,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Class that holds util methods for calling external executables (i.e. git/hg)
@@ -59,6 +59,7 @@ import java.util.concurrent.TimeUnit;
  * @since 1.4
  */
 public class ExternalExec {
+    private static final Logger LOG = Logger.getInstance(ExternalExec.class);
     /** Default external exec timeout. */
     private static final int DEFAULT_TIMEOUT = 5000;
 
@@ -104,8 +105,10 @@ public class ExternalExec {
      * @return unignored files list
      */
     @NotNull
-    public static List<String> getUnignoredFiles(@NotNull IgnoreLanguage language, @NotNull Project project,
-                                                 @NotNull VirtualFile file) {
+    public static List<String> getUnignoredFiles(
+            @NotNull IgnoreLanguage language, @NotNull Project project,
+            @NotNull VirtualFile file)
+    {
         if (!Utils.isInProject(file, project)) {
             return ContainerUtil.newArrayList();
         }
@@ -116,7 +119,7 @@ public class ExternalExec {
                 file.getParent(),
                 new GitUnignoredFilesOutputParser()
         );
-        return ContainerUtil.notNullize(result);
+        return Lists.notNullize(result);
     }
 
     /**
@@ -133,7 +136,7 @@ public class ExternalExec {
                 vcsRoot.getPath(),
                 new SimpleOutputParser()
         );
-        return ContainerUtil.notNullize(result);
+        return Lists.notNullize(result);
     }
 
     /**
@@ -177,8 +180,10 @@ public class ExternalExec {
      * @return result of the call
      */
     @Nullable
-    private static <T> T runForSingle(@NotNull IgnoreLanguage language, @NotNull String command,
-                                      @Nullable VirtualFile directory, @NotNull final ExecutionOutputParser<T> parser) {
+    private static <T> T runForSingle(
+            @NotNull IgnoreLanguage language, @NotNull String command,
+            @Nullable VirtualFile directory, @NotNull final ExecutionOutputParser<T> parser)
+    {
         return ContainerUtil.getFirstItem(run(language, command, directory, parser));
     }
 
@@ -189,9 +194,11 @@ public class ExternalExec {
      * @param command   to call
      * @param directory current working directory
      */
-    private static void run(@NotNull IgnoreLanguage language,
-                            @NotNull String command,
-                            @Nullable VirtualFile directory) {
+    private static void run(
+            @NotNull IgnoreLanguage language,
+            @NotNull String command,
+            @Nullable VirtualFile directory)
+    {
         run(language, command, directory, null);
     }
 
@@ -206,10 +213,12 @@ public class ExternalExec {
      * @return result of the call
      */
     @Nullable
-    private static <T> ArrayList<T> run(@NotNull IgnoreLanguage language,
-                                        @NotNull String command,
-                                        @Nullable VirtualFile directory,
-                                        @Nullable final ExecutionOutputParser<T> parser) {
+    private static <T> ArrayList<T> run(
+            @NotNull IgnoreLanguage language,
+            @NotNull String command,
+            @Nullable VirtualFile directory,
+            @Nullable final ExecutionOutputParser<T> parser)
+    {
         final String bin = bin(language);
         if (bin == null) {
             return null;
@@ -220,21 +229,18 @@ public class ExternalExec {
             final File workingDirectory = directory != null ? new File(directory.getPath()) : null;
             final Process process = Runtime.getRuntime().exec(cmd, null, workingDirectory);
 
-            ProcessHandler handler = new BaseOSProcessHandler(process, StringUtil.join(cmd, " "), null) {
-                @NotNull
-                @Override
-                public Future<?> executeTask(@NotNull Runnable task) {
-                    return AppExecutorUtil.getAppScheduledExecutorService().schedule(task, 0, TimeUnit.SECONDS);
-                }
+            GeneralCommandLine commandLine = new GeneralCommandLine(bin, command);
+            commandLine.withWorkDirectory(workingDirectory);
 
+            ProcessHandler handler = ProcessHandlerBuilder.create(commandLine).build();
+            handler.addProcessListener(new ProcessListener() {
                 @Override
-                public void notifyTextAvailable(@NotNull String text, @NotNull Key outputType) {
+                public void onTextAvailable(ProcessEvent event, Key outputType) {
                     if (parser != null) {
-                        parser.onTextAvailable(text, outputType);
+                        parser.onTextAvailable(event.getText(), outputType);
                     }
                 }
-            };
-
+            });
             handler.startNotify();
             if (!handler.waitFor(DEFAULT_TIMEOUT)) {
                 return null;
@@ -246,7 +252,8 @@ public class ExternalExec {
                 }
                 return parser.getOutput();
             }
-        } catch (IOException ignored) {
+        } catch (IOException | ExecutionException e) {
+            LOG.warn(e);
         }
 
         return null;

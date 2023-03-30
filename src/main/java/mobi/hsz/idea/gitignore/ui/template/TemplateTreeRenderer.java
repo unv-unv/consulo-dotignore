@@ -24,17 +24,14 @@
 
 package mobi.hsz.idea.gitignore.ui.template;
 
-import java.awt.Color;
-import java.awt.Font;
-
-import javax.swing.JTree;
-
-import com.intellij.ide.ui.search.SearchUtil;
-import com.intellij.ui.CheckboxTree;
-import com.intellij.ui.JBColor;
-import com.intellij.ui.SimpleTextAttributes;
-import com.intellij.util.ui.UIUtil;
+import consulo.ui.ex.JBColor;
+import consulo.ui.ex.SimpleTextAttributes;
+import consulo.ui.ex.awt.UIUtil;
+import consulo.ui.ex.awt.tree.CheckboxTree;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * {@link TemplateTreeRenderer} implementation of checkbox renderer.
@@ -77,7 +74,7 @@ public abstract class TemplateTreeRenderer extends CheckboxTree.CheckboxTreeCell
             getCheckbox().setVisible(false);
         }
 
-        SearchUtil.appendFragments(getFilter(), text, style, foreground, background, getTextRenderer());
+        // TODO migrated to speed search ? SearchUtil.appendFragments(getFilter(), text, style, foreground, background, getTextRenderer());
         getTextRenderer().append(hint, selected ? new SimpleTextAttributes(Font.PLAIN, foreground) :
                 SimpleTextAttributes.GRAYED_ATTRIBUTES);
         setForeground(foreground);

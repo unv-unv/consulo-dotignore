@@ -24,12 +24,14 @@
 
 package mobi.hsz.idea.gitignore.codeInspection;
 
-import com.intellij.codeInspection.InspectionManager;
-import com.intellij.codeInspection.LocalInspectionTool;
-import com.intellij.codeInspection.ProblemDescriptor;
-import com.intellij.codeInspection.ProblemsHolder;
-import com.intellij.psi.PsiFile;
-import com.intellij.util.containers.MultiMap;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.dotignore.codeInspection.IgnoreInspection;
+import consulo.language.editor.inspection.ProblemDescriptor;
+import consulo.language.editor.inspection.ProblemsHolder;
+import consulo.language.editor.inspection.scheme.InspectionManager;
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
+import consulo.language.psi.PsiFile;
+import consulo.util.collection.MultiMap;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.psi.IgnoreEntry;
 import mobi.hsz.idea.gitignore.psi.IgnoreFile;
@@ -37,6 +39,7 @@ import mobi.hsz.idea.gitignore.psi.IgnoreVisitor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
@@ -47,7 +50,20 @@ import java.util.Map;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 0.5
  */
-public class IgnoreDuplicateEntryInspection extends LocalInspectionTool {
+@ExtensionImpl
+public class IgnoreDuplicateEntryInspection extends IgnoreInspection {
+    @Nonnull
+    @Override
+    public HighlightDisplayLevel getDefaultLevel() {
+        return HighlightDisplayLevel.ERROR;
+    }
+
+    @Nonnull
+    @Override
+    public String getDisplayName() {
+        return IgnoreBundle.message("codeInspection.duplicateEntry");
+    }
+
     /**
      * Reports problems at file level. Checks if entries are duplicated by other entries.
      *
@@ -59,14 +75,16 @@ public class IgnoreDuplicateEntryInspection extends LocalInspectionTool {
      */
     @Nullable
     @Override
-    public ProblemDescriptor[] checkFile(@NotNull PsiFile file, @NotNull InspectionManager manager,
-                                         boolean isOnTheFly) {
+    public ProblemDescriptor[] checkFile(
+            @NotNull PsiFile file, @NotNull InspectionManager manager,
+            boolean isOnTheFly)
+    {
         if (!(file instanceof IgnoreFile)) {
             return null;
         }
 
         final ProblemsHolder problemsHolder = new ProblemsHolder(manager, file, isOnTheFly);
-        final MultiMap<String, IgnoreEntry> entries = MultiMap.create();
+        final consulo.util.collection.MultiMap<String, IgnoreEntry> entries = MultiMap.create();
 
         file.acceptChildren(new IgnoreVisitor() {
             @Override

@@ -24,7 +24,7 @@
 
 package mobi.hsz.idea.gitignore.actions;
 
-import com.intellij.openapi.actionSystem.Presentation;
+import consulo.ui.ex.action.Presentation;
 import mobi.hsz.idea.gitignore.Common;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import org.junit.Assert;

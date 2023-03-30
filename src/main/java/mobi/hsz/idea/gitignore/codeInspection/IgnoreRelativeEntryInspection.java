@@ -24,11 +24,13 @@
 
 package mobi.hsz.idea.gitignore.codeInspection;
 
-import com.intellij.codeInspection.InspectionManager;
-import com.intellij.codeInspection.LocalInspectionTool;
-import com.intellij.codeInspection.ProblemDescriptor;
-import com.intellij.codeInspection.ProblemsHolder;
-import com.intellij.psi.PsiFile;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.dotignore.codeInspection.IgnoreInspection;
+import consulo.language.editor.inspection.ProblemDescriptor;
+import consulo.language.editor.inspection.ProblemsHolder;
+import consulo.language.editor.inspection.scheme.InspectionManager;
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
+import consulo.language.psi.PsiFile;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.psi.IgnoreEntry;
 import mobi.hsz.idea.gitignore.psi.IgnoreFile;
@@ -36,13 +38,28 @@ import mobi.hsz.idea.gitignore.psi.IgnoreVisitor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
+
 /**
  * Inspection tool that checks if entry is relative.
  *
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 0.8
  */
-public class IgnoreRelativeEntryInspection extends LocalInspectionTool {
+@ExtensionImpl
+public class IgnoreRelativeEntryInspection extends IgnoreInspection {
+    @Nonnull
+    @Override
+    public HighlightDisplayLevel getDefaultLevel() {
+        return HighlightDisplayLevel.ERROR;
+    }
+
+    @Nonnull
+    @Override
+    public String getDisplayName() {
+        return IgnoreBundle.message("codeInspection.relativeEntry");
+    }
+
     /**
      * Checks if entries are relative.
      *
@@ -54,8 +71,10 @@ public class IgnoreRelativeEntryInspection extends LocalInspectionTool {
      */
     @Nullable
     @Override
-    public ProblemDescriptor[] checkFile(@NotNull PsiFile file,
-                                         @NotNull InspectionManager manager, boolean isOnTheFly) {
+    public ProblemDescriptor[] checkFile(
+            @NotNull PsiFile file,
+            @NotNull InspectionManager manager, boolean isOnTheFly)
+    {
         if (!(file instanceof IgnoreFile)) {
             return null;
         }

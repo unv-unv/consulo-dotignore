@@ -24,7 +24,7 @@
 
 package mobi.hsz.idea.gitignore.psi;
 
-import com.intellij.psi.tree.IElementType;
+import consulo.language.ast.IElementType;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
 import org.jetbrains.annotations.NonNls;
@@ -36,7 +36,8 @@ import org.jetbrains.annotations.NotNull;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 0.1
  */
-public class IgnoreTokenType extends IElementType {
+public class IgnoreTokenType extends IElementType
+{
     /** Token debug name. */
     private final String debugName;
 

@@ -24,28 +24,17 @@
 
 package mobi.hsz.idea.gitignore.ui.untrackFiles;
 
-import com.intellij.ide.CommonActionsManager;
-import com.intellij.ide.DefaultTreeExpander;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionPlaces;
-import com.intellij.openapi.actionSystem.ActionToolbar;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.EditorFactory;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.openapi.vcs.VcsRoot;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.ui.CheckboxTree;
-import com.intellij.ui.ScrollPaneFactory;
-import com.intellij.ui.components.JBLabel;
-import com.intellij.util.containers.ContainerUtil;
-import com.intellij.util.ui.JBUI;
-import com.intellij.util.ui.UIUtil;
-import com.intellij.util.ui.tree.TreeModelAdapter;
-import com.intellij.util.ui.tree.TreeUtil;
+import consulo.application.ApplicationManager;
+import consulo.codeEditor.Editor;
+import consulo.codeEditor.EditorFactory;
+import consulo.document.Document;
+import consulo.project.Project;
+import consulo.ui.ex.TreeExpander;
+import consulo.ui.ex.action.*;
+import consulo.ui.ex.awt.*;
+import consulo.ui.ex.awt.tree.*;
+import consulo.versionControlSystem.root.VcsRoot;
+import consulo.virtualFileSystem.VirtualFile;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.util.Utils;
 import mobi.hsz.idea.gitignore.util.exec.ExternalExec;
@@ -61,7 +50,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 
-import static mobi.hsz.idea.gitignore.IgnoreManager.RefreshTrackedIgnoredListener.TRACKED_IGNORED_REFRESH;
+import static mobi.hsz.idea.gitignore.RefreshTrackedIgnoredListener.TRACKED_IGNORED_REFRESH;
 
 /**
  * Dialog that lists all untracked but indexed files in a tree view, allows select specific files
@@ -85,7 +74,7 @@ public class UntrackFilesDialog extends DialogWrapper {
 
     /** Map of the tree view {@link FileTreeNode} nodes. */
     @NotNull
-    private final Map<VirtualFile, FileTreeNode> nodes = ContainerUtil.newHashMap();
+    private final Map<VirtualFile, FileTreeNode> nodes = new HashMap<>();
 
     /** Commands editor with syntax highlight. */
     private Editor commands;
@@ -97,7 +86,7 @@ public class UntrackFilesDialog extends DialogWrapper {
     private CheckboxTree tree;
 
     /** Tree expander responsible for expanding and collapsing tree structure. */
-    private DefaultTreeExpander treeExpander;
+    private TreeExpander treeExpander;
 
     /** Listener that checks if files list has been changed and rewrites commands in {@link #commandsDocument}. */
     @NotNull
@@ -295,7 +284,7 @@ public class UntrackFilesDialog extends DialogWrapper {
                 continue;
             }
 
-            ArrayList<VirtualFile> list = ContainerUtil.getOrCreate(result, vcsRoot, new ArrayList<>());
+            ArrayList<VirtualFile> list = result.computeIfAbsent(vcsRoot, c -> new ArrayList<>());
             list.add(file);
 
             result.put(vcsRoot, list);

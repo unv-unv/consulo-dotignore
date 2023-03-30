@@ -24,9 +24,12 @@
 
 package mobi.hsz.idea.gitignore.indexing;
 
-import com.intellij.openapi.project.DumbAware;
-import com.intellij.util.indexing.*;
-import com.intellij.util.io.KeyDescriptor;
+import consulo.application.dumb.DumbAware;
+import consulo.index.io.KeyDescriptor;
+import consulo.index.io.DataIndexer;
+import consulo.language.psi.stub.FileBasedIndex;
+import consulo.language.psi.stub.FileBasedIndexExtension;
+import consulo.language.psi.stub.FileContent;
 import org.jetbrains.annotations.NotNull;
 
 /**

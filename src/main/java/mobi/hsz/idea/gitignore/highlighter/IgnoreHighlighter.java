@@ -24,18 +24,18 @@
 
 package mobi.hsz.idea.gitignore.highlighter;
 
-import com.intellij.lexer.Lexer;
-import com.intellij.openapi.editor.colors.TextAttributesKey;
-import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.tree.IElementType;
-import com.intellij.util.containers.ContainerUtil;
+import consulo.colorScheme.TextAttributesKey;
+import consulo.language.ast.IElementType;
+import consulo.language.editor.highlight.SyntaxHighlighterBase;
+import consulo.language.lexer.Lexer;
+import consulo.project.Project;
+import consulo.virtualFileSystem.VirtualFile;
 import mobi.hsz.idea.gitignore.lang.IgnoreParserDefinition;
 import mobi.hsz.idea.gitignore.lexer.IgnoreLexerAdapter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -46,7 +46,7 @@ import java.util.Map;
  */
 public class IgnoreHighlighter extends SyntaxHighlighterBase {
     /** Attributes map. */
-    private static final Map<IElementType, TextAttributesKey> ATTRIBUTES = ContainerUtil.newHashMap();
+    private static final Map<IElementType, TextAttributesKey> ATTRIBUTES = new HashMap<>();
 
     /* Binds parser definitions with highlighter colors. */
     static {

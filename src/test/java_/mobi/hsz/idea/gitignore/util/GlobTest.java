@@ -1,6 +1,6 @@
 package mobi.hsz.idea.gitignore.util;
 
-import com.intellij.openapi.vfs.VirtualFile;
+import consulo.virtualFileSystem.VirtualFile;
 import mobi.hsz.idea.gitignore.Common;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.file.type.kind.GitFileType;

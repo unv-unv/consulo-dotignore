@@ -24,10 +24,10 @@
 
 package mobi.hsz.idea.gitignore.util.exec.parser;
 
-import com.intellij.execution.process.ProcessOutputTypes;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.util.containers.ContainerUtil;
+import consulo.util.collection.ContainerUtil;
+import consulo.process.ProcessOutputTypes;
 import consulo.util.dataholder.Key;
+import consulo.util.lang.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

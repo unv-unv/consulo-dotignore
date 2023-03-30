@@ -24,14 +24,18 @@
 
 package mobi.hsz.idea.gitignore.codeInspection;
 
-import com.intellij.codeInspection.LocalInspectionTool;
-import com.intellij.codeInspection.ProblemsHolder;
-import com.intellij.psi.PsiElementVisitor;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.dotignore.codeInspection.IgnoreInspection;
+import consulo.language.editor.inspection.ProblemsHolder;
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
+import consulo.language.psi.PsiElementVisitor;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
 import mobi.hsz.idea.gitignore.psi.IgnoreSyntax;
 import mobi.hsz.idea.gitignore.psi.IgnoreVisitor;
 import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
 
 /**
  * Inspection tool that checks if syntax entry has correct value.
@@ -39,7 +43,20 @@ import org.jetbrains.annotations.NotNull;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 0.5
  */
-public class IgnoreSyntaxEntryInspection extends LocalInspectionTool {
+@ExtensionImpl
+public class IgnoreSyntaxEntryInspection extends IgnoreInspection {
+    @Nonnull
+    @Override
+    public String getDisplayName() {
+        return IgnoreBundle.message("codeInspection.syntaxEntry");
+    }
+
+    @Nonnull
+    @Override
+    public HighlightDisplayLevel getDefaultLevel() {
+        return HighlightDisplayLevel.ERROR;
+    }
+
     /**
      * Checks if syntax entry has correct value.
      *

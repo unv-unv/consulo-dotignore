@@ -24,13 +24,18 @@
 
 package mobi.hsz.idea.gitignore.settings;
 
-import com.intellij.openapi.components.PersistentStateComponent;
-import com.intellij.openapi.components.ServiceManager;
-import com.intellij.openapi.components.State;
-import com.intellij.openapi.components.Storage;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.util.containers.ConcurrentList;
-import com.intellij.util.containers.ContainerUtil;
+import consulo.annotation.component.ComponentScope;
+import consulo.annotation.component.ServiceAPI;
+import consulo.annotation.component.ServiceImpl;
+import consulo.component.persist.Storage;
+import consulo.util.collection.ConcurrentList;
+import consulo.util.collection.Lists;
+import consulo.util.lang.StringUtil;
+import consulo.util.collection.ContainerUtil;
+import consulo.component.persist.PersistentStateComponent;
+import consulo.component.persist.State;
+import consulo.ide.ServiceManager;
+import jakarta.inject.Singleton;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
 import mobi.hsz.idea.gitignore.util.Constants;
@@ -50,6 +55,9 @@ import java.util.TreeMap;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 0.6.1
  */
+@ServiceAPI(ComponentScope.APPLICATION)
+@ServiceImpl
+@Singleton
 @State(name = "IgnoreSettings", storages = @Storage("ignore.xml"))
 public class IgnoreSettings implements PersistentStateComponent<Element>, Listenable<IgnoreSettings.Listener> {
     /** Settings keys. */
@@ -132,7 +140,7 @@ public class IgnoreSettings implements PersistentStateComponent<Element>, Listen
     private final List<UserTemplate> userTemplates = ContainerUtil.newArrayList(DEFAULT_TEMPLATE);
 
     /** Listeners list. */
-    private final ConcurrentList<Listener> listeners = ContainerUtil.createConcurrentList();
+    private final ConcurrentList<Listener> listeners = Lists.newLockFreeCopyOnWriteList();
 
     /**
      * Get the instance of this service.
@@ -248,7 +256,7 @@ public class IgnoreSettings implements PersistentStateComponent<Element>, Listen
         Element languagesElement = element.getChild(KEY.LANGUAGES.toString());
         if (languagesElement != null) {
             for (Element languageElement : languagesElement.getChildren()) {
-                TreeMap<IgnoreLanguagesSettings.KEY, Object> data = ContainerUtil.newTreeMap();
+                TreeMap<IgnoreLanguagesSettings.KEY, Object> data = new TreeMap<>();
                 for (IgnoreLanguagesSettings.KEY key : IgnoreLanguagesSettings.KEY.values()) {
                     data.put(key, languageElement.getAttributeValue(key.name()));
                 }
@@ -683,7 +691,8 @@ public class IgnoreSettings implements PersistentStateComponent<Element>, Listen
 
     /** Helper class for the {@link IgnoreLanguage} settings. */
     public static class IgnoreLanguagesSettings
-            extends LinkedHashMap<IgnoreLanguage, TreeMap<IgnoreLanguagesSettings.KEY, Object>> {
+            extends LinkedHashMap<IgnoreLanguage, TreeMap<IgnoreLanguagesSettings.KEY, Object>>
+    {
         /** Settings keys. */
         public enum KEY {
             NEW_FILE, ENABLE

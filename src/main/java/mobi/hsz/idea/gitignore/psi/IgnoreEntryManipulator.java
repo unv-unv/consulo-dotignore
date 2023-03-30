@@ -24,15 +24,18 @@
 
 package mobi.hsz.idea.gitignore.psi;
 
-import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.AbstractElementManipulator;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiFileFactory;
-import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.util.IncorrectOperationException;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.document.util.TextRange;
+import consulo.language.psi.AbstractElementManipulator;
+import consulo.language.psi.PsiFile;
+import consulo.language.psi.PsiFileFactory;
+import consulo.language.psi.util.PsiTreeUtil;
+import consulo.language.util.IncorrectOperationException;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
 import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
 
 /**
  * Entry manipulator.
@@ -40,6 +43,7 @@ import org.jetbrains.annotations.NotNull;
  * @author Alexander Zolotov <alexander.zolotov@jetbrains.com>
  * @since 0.5
  */
+@ExtensionImpl
 public class IgnoreEntryManipulator extends AbstractElementManipulator<IgnoreEntry> {
     /**
      * Changes the element's text to a new value
@@ -48,7 +52,6 @@ public class IgnoreEntryManipulator extends AbstractElementManipulator<IgnoreEnt
      * @param range      range within the element
      * @param newContent new element text
      * @return changed element
-     *
      * @throws IncorrectOperationException if something goes wrong
      */
     @Override
@@ -84,5 +87,11 @@ public class IgnoreEntryManipulator extends AbstractElementManipulator<IgnoreEnt
             );
         }
         return super.getRangeInElement(element);
+    }
+
+    @Nonnull
+    @Override
+    public Class<IgnoreEntry> getElementClass() {
+        return IgnoreEntry.class;
     }
 }

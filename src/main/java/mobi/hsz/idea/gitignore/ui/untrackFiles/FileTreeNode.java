@@ -24,10 +24,10 @@
 
 package mobi.hsz.idea.gitignore.ui.untrackFiles;
 
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.VcsRoot;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.ui.CheckedTreeNode;
+import consulo.project.Project;
+import consulo.ui.ex.awt.tree.CheckedTreeNode;
+import consulo.versionControlSystem.root.VcsRoot;
+import consulo.virtualFileSystem.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

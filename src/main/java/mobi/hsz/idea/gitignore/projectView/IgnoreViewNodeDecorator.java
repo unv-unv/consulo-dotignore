@@ -24,23 +24,23 @@
 
 package mobi.hsz.idea.gitignore.projectView;
 
-import com.intellij.ide.projectView.PresentationData;
-import com.intellij.ide.projectView.ProjectViewNode;
-import com.intellij.ide.projectView.ProjectViewNodeDecorator;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.packageDependencies.ui.PackageDependenciesNode;
-import com.intellij.ui.ColoredTreeCellRenderer;
-import com.intellij.ui.SimpleTextAttributes;
-import com.intellij.util.containers.ContainerUtil;
-import com.intellij.util.ui.UIUtil;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.project.Project;
+import consulo.project.ui.view.tree.ProjectViewNode;
+import consulo.project.ui.view.tree.ProjectViewNodeDecorator;
+import consulo.ui.ex.SimpleTextAttributes;
+import consulo.ui.ex.awt.UIUtil;
+import consulo.ui.ex.tree.PresentationData;
+import consulo.util.collection.ContainerUtil;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.inject.Inject;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.IgnoreManager;
 import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
 import mobi.hsz.idea.gitignore.util.Utils;
 import org.jetbrains.annotations.NotNull;
 
-import static com.intellij.ui.SimpleTextAttributes.STYLE_SMALLER;
+import static consulo.ui.ex.SimpleTextAttributes.STYLE_SMALLER;
 
 /**
  * {@link ProjectViewNodeDecorator} implementation to show on the Project Tree if ignored file is
@@ -49,6 +49,7 @@ import static com.intellij.ui.SimpleTextAttributes.STYLE_SMALLER;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 1.7
  */
+@ExtensionImpl
 public class IgnoreViewNodeDecorator implements ProjectViewNodeDecorator {
     /** Label text attribute for ignored content. */
     private static final SimpleTextAttributes GRAYED_SMALL_ATTRIBUTES =
@@ -66,6 +67,7 @@ public class IgnoreViewNodeDecorator implements ProjectViewNodeDecorator {
      *
      * @param project current project
      */
+    @Inject
     public IgnoreViewNodeDecorator(@NotNull Project project) {
         this.manager = IgnoreManager.getInstance(project);
         this.ignoreSettings = IgnoreSettings.getInstance();
@@ -105,15 +107,5 @@ public class IgnoreViewNodeDecorator implements ProjectViewNodeDecorator {
                 );
             }
         }
-    }
-
-    /**
-     * Modifies the presentation of a package dependencies view node.
-     *
-     * @param node         the node to modify.
-     * @param cellRenderer the current renderer for the node, which you can modify as necessary.
-     */
-    @Override
-    public void decorate(PackageDependenciesNode node, ColoredTreeCellRenderer cellRenderer) {
     }
 }

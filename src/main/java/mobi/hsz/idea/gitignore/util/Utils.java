@@ -24,33 +24,29 @@
 
 package mobi.hsz.idea.gitignore.util;
 
-import com.intellij.ide.plugins.PluginManager;
-import com.intellij.ide.projectView.PresentationData;
-import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.EditorFactory;
-import com.intellij.openapi.editor.EditorSettings;
-import com.intellij.openapi.editor.colors.EditorColors;
-import com.intellij.openapi.editor.colors.EditorColorsScheme;
-import com.intellij.openapi.editor.ex.EditorEx;
-import com.intellij.openapi.fileEditor.FileEditorManager;
-import com.intellij.openapi.fileTypes.FileType;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleManager;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.ModifiableRootModel;
-import com.intellij.openapi.roots.ModuleRootManager;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vfs.VfsUtilCore;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.FileViewProvider;
-import com.intellij.psi.PsiDirectory;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiManager;
-import com.intellij.ui.SimpleTextAttributes;
-import com.intellij.util.containers.ContainerUtil;
+import consulo.codeEditor.*;
+import consulo.colorScheme.EditorColorsScheme;
 import consulo.container.plugin.PluginDescriptor;
 import consulo.container.plugin.PluginId;
+import consulo.container.plugin.PluginManager;
+import consulo.document.Document;
+import consulo.fileEditor.FileEditorManager;
+import consulo.language.file.FileViewProvider;
+import consulo.language.psi.PsiDirectory;
+import consulo.language.psi.PsiFile;
+import consulo.language.psi.PsiManager;
+import consulo.module.Module;
+import consulo.module.ModuleManager;
+import consulo.module.content.ModuleRootManager;
+import consulo.module.content.layer.ModifiableRootModel;
+import consulo.project.Project;
+import consulo.ui.ex.SimpleTextAttributes;
+import consulo.ui.ex.tree.PresentationData;
+import consulo.util.collection.ContainerUtil;
+import consulo.util.lang.StringUtil;
+import consulo.virtualFileSystem.VirtualFile;
+import consulo.virtualFileSystem.fileType.FileType;
+import consulo.virtualFileSystem.util.VirtualFileUtil;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.command.CreateFileCommandAction;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
@@ -62,7 +58,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static com.intellij.ui.SimpleTextAttributes.REGULAR_ATTRIBUTES;
+import static consulo.ui.ex.SimpleTextAttributes.REGULAR_ATTRIBUTES;
 
 /**
  * {@link Utils} class that contains various methods.
@@ -71,7 +67,9 @@ import static com.intellij.ui.SimpleTextAttributes.REGULAR_ATTRIBUTES;
  * @since 0.3.3
  */
 public class Utils {
-    /** Private constructor to prevent creating {@link Utils} instance. */
+    /**
+     * Private constructor to prevent creating {@link Utils} instance.
+     */
     private Utils() {
     }
 
@@ -84,7 +82,7 @@ public class Utils {
      */
     @Nullable
     public static String getRelativePath(@NotNull VirtualFile directory, @NotNull VirtualFile file) {
-        final String path = VfsUtilCore.getRelativePath(file, directory, '/');
+        final String path = VirtualFileUtil.getRelativePath(file, directory, '/');
         return path == null ? null : path + (file.isDirectory() ? '/' : "");
     }
 
@@ -113,7 +111,8 @@ public class Utils {
         if (file == null && virtualFile == null && createIfMissing) {
             try {
                 file = new CreateFileCommandAction(project, directory, fileType).execute();
-            } catch (Throwable throwable) {
+            }
+            catch (Throwable throwable) {
                 throwable.printStackTrace();
             }
         }
@@ -178,7 +177,7 @@ public class Utils {
             throws ExternalFileException {
         List<VirtualFile> files = ContainerUtil.newArrayList();
         if (file.getCanonicalPath() == null || project.getBaseDir() == null ||
-                !VfsUtilCore.isAncestor(project.getBaseDir(), file, true)) {
+                !VirtualFileUtil.isAncestor(project.getBaseDir(), file, true)) {
             throw new ExternalFileException();
         }
         VirtualFile baseDir = project.getBaseDir();
@@ -187,7 +186,8 @@ public class Utils {
                 file = file.getParent();
                 VirtualFile ignoreFile = file.findChild(fileType.getIgnoreLanguage().getFilename());
                 ContainerUtil.addIfNotNull(files, ignoreFile);
-            } while (!file.equals(project.getBaseDir()));
+            }
+            while (!file.equals(project.getBaseDir()));
         }
         return files;
     }
@@ -340,7 +340,7 @@ public class Utils {
      * @return plugin is enabled
      */
     private static boolean isPluginEnabled(@NotNull final String id) {
-        PluginDescriptor p = PluginManager.getPlugin(PluginId.getId(id));
+        PluginDescriptor p = PluginManager.findPlugin(PluginId.getId(id));
         return p != null && p.isEnabled();
     }
 

@@ -1,14 +1,15 @@
 package mobi.hsz.idea.gitignore.resolving;
 
-import com.intellij.openapi.vfs.VfsUtilCore;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFileSystemItem;
-import com.intellij.psi.PsiPolyVariantReference;
-import com.intellij.psi.ResolveResult;
+import consulo.ide.impl.idea.openapi.vfs.VfsUtilCore;
+import consulo.language.psi.PsiElement;
+import consulo.util.collection.ContainerUtil;
+import consulo.virtualFileSystem.VirtualFile;
+import consulo.language.psi.PsiFileSystemItem;
+import consulo.language.psi.PsiPolyVariantReference;
+import consulo.language.psi.ResolveResult;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
-import com.intellij.util.Function;
-import com.intellij.util.containers.ContainerUtil;
+import java.util.function.Function;
+
 import mobi.hsz.idea.gitignore.file.type.kind.GitFileType;
 import org.jetbrains.annotations.NotNull;
 

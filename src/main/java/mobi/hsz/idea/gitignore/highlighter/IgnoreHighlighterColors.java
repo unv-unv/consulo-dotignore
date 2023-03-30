@@ -24,7 +24,7 @@
 
 package mobi.hsz.idea.gitignore.highlighter;
 
-import com.intellij.openapi.editor.colors.TextAttributesKey;
+import consulo.colorScheme.TextAttributesKey;
 
 /**
  * Contains highlighter attributes definitions.

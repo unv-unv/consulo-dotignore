@@ -1,7 +1,7 @@
 package mobi.hsz.idea.gitignore.completion;
 
-import com.intellij.openapi.application.Result;
-import com.intellij.openapi.command.WriteCommandAction;
+import consulo.application.Result;
+import consulo.language.editor.WriteCommandAction;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
 import mobi.hsz.idea.gitignore.file.type.kind.GitFileType;
 import org.jetbrains.annotations.NotNull;

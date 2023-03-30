@@ -24,14 +24,19 @@
 
 package mobi.hsz.idea.gitignore.reference;
 
-import com.intellij.psi.*;
-import com.intellij.util.ProcessingContext;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.language.Language;
+import consulo.language.psi.*;
+import consulo.language.util.ProcessingContext;
+import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
 import mobi.hsz.idea.gitignore.psi.IgnoreEntry;
 import mobi.hsz.idea.gitignore.psi.IgnoreFile;
 import org.jetbrains.annotations.NotNull;
 
-import static com.intellij.patterns.PlatformPatterns.psiElement;
-import static com.intellij.patterns.PlatformPatterns.psiFile;
+import javax.annotation.Nonnull;
+
+import static consulo.language.pattern.PlatformPatterns.psiElement;
+import static consulo.language.pattern.PlatformPatterns.psiFile;
 
 /**
  * PSI elements references contributor.
@@ -39,6 +44,7 @@ import static com.intellij.patterns.PlatformPatterns.psiFile;
  * @author Alexander Zolotov <alexander.zolotov@jetbrains.com>
  * @since 0.5
  */
+@ExtensionImpl
 public class IgnoreReferenceContributor extends PsiReferenceContributor {
     /**
      * Registers new references provider for PSI element.
@@ -51,7 +57,15 @@ public class IgnoreReferenceContributor extends PsiReferenceContributor {
                 new IgnoreReferenceProvider());
     }
 
-    /** Reference provider definition. */
+    @Nonnull
+    @Override
+    public Language getLanguage() {
+        return IgnoreLanguage.INSTANCE;
+    }
+
+    /**
+     * Reference provider definition.
+     */
     private static class IgnoreReferenceProvider extends PsiReferenceProvider {
         /**
          * Returns references for given @{link PsiElement}.
@@ -62,8 +76,10 @@ public class IgnoreReferenceContributor extends PsiReferenceContributor {
          */
         @NotNull
         @Override
-        public PsiReference[] getReferencesByElement(@NotNull PsiElement psiElement,
-                                                     @NotNull ProcessingContext processingContext) {
+        public PsiReference[] getReferencesByElement(
+                @NotNull PsiElement psiElement,
+                @NotNull ProcessingContext processingContext)
+        {
             if (psiElement instanceof IgnoreEntry) {
                 return new IgnoreReferenceSet((IgnoreEntry) psiElement).getAllReferences();
             }

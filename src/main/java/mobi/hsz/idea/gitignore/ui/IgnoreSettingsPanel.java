@@ -24,65 +24,50 @@
 
 package mobi.hsz.idea.gitignore.ui;
 
-import static mobi.hsz.idea.gitignore.settings.IgnoreSettings.IgnoreLanguagesSettings.KEY.ENABLE;
-import static mobi.hsz.idea.gitignore.settings.IgnoreSettings.IgnoreLanguagesSettings.KEY.NEW_FILE;
-
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TreeMap;
-
-import javax.swing.JCheckBox;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
-import javax.swing.table.AbstractTableModel;
-
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import com.intellij.icons.AllIcons;
-import com.intellij.ide.BrowserUtil;
-import com.intellij.openapi.Disposable;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
-import com.intellij.openapi.actionSystem.LangDataKeys;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.command.CommandProcessor;
-import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.EditorFactory;
-import com.intellij.openapi.editor.event.DocumentEvent;
-import com.intellij.openapi.editor.event.DocumentListener;
-import com.intellij.openapi.fileChooser.FileChooser;
-import com.intellij.openapi.fileChooser.FileChooserDescriptor;
-import com.intellij.openapi.fileChooser.FileChooserFactory;
-import com.intellij.openapi.fileChooser.FileSaverDescriptor;
-import com.intellij.openapi.ui.InputValidatorEx;
-import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.ui.Splitter;
-import com.intellij.openapi.util.JDOMUtil;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.VirtualFileWrapper;
-import com.intellij.ui.AddEditDeleteListPanel;
-import com.intellij.ui.ScrollPaneFactory;
-import com.intellij.ui.ToolbarDecorator;
-import com.intellij.ui.components.JBLabel;
-import com.intellij.ui.components.labels.ActionLink;
-import com.intellij.ui.table.JBTable;
-import com.intellij.util.containers.ContainerUtil;
-import com.intellij.util.ui.JBUI;
-import consulo.fileTypes.ArchiveFileType;
+import consulo.application.AllIcons;
+import consulo.application.ApplicationManager;
+import consulo.codeEditor.Editor;
+import consulo.codeEditor.EditorFactory;
+import consulo.disposer.Disposable;
+import consulo.document.Document;
+import consulo.document.event.DocumentEvent;
+import consulo.document.event.DocumentListener;
+import consulo.fileChooser.*;
+import consulo.language.editor.LangDataKeys;
+import consulo.platform.Platform;
+import consulo.ui.ex.InputValidatorEx;
+import consulo.ui.ex.action.AnAction;
+import consulo.ui.ex.action.AnActionEvent;
+import consulo.ui.ex.action.DefaultActionGroup;
+import consulo.ui.ex.awt.*;
+import consulo.ui.ex.awt.table.JBTable;
+import consulo.undoRedo.CommandProcessor;
+import consulo.util.collection.ContainerUtil;
+import consulo.util.jdom.JDOMUtil;
+import consulo.util.lang.StringUtil;
+import consulo.virtualFileSystem.VirtualFile;
+import consulo.virtualFileSystem.VirtualFileWrapper;
+import consulo.virtualFileSystem.archive.ArchiveFileType;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
 import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
 import mobi.hsz.idea.gitignore.util.Constants;
 import mobi.hsz.idea.gitignore.util.Utils;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import java.awt.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TreeMap;
+
+import static mobi.hsz.idea.gitignore.settings.IgnoreSettings.IgnoreLanguagesSettings.KEY.ENABLE;
+import static mobi.hsz.idea.gitignore.settings.IgnoreSettings.IgnoreLanguagesSettings.KEY.NEW_FILE;
 
 /**
  * UI form for {@link IgnoreSettings} edition.
@@ -170,7 +155,7 @@ public class IgnoreSettingsPanel implements Disposable {
         final ActionLink action = new ActionLink(title, new AnAction() {
             @Override
             public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
-                BrowserUtil.browse(url);
+                Platform.current().openInBrowser(url);
             }
         });
         action.setBorder(JBUI.Borders.empty(0, 5));
@@ -417,7 +402,7 @@ public class IgnoreSettingsPanel implements Disposable {
                             event.getData(LangDataKeys.MODULE)
                     );
 
-                    final VirtualFile file = FileChooser.chooseFile(descriptor, templatesListPanel, null, null);
+                    final VirtualFile file = IdeaFileChooser.chooseFile(descriptor, templatesListPanel, null, null);
                     if (file != null) {
                         try {
                             final org.jdom.Document document = JDOMUtil.loadDocument(file.getInputStream());

@@ -24,29 +24,23 @@
 
 package mobi.hsz.idea.gitignore.actions;
 
-import static mobi.hsz.idea.gitignore.IgnoreBundle.BUNDLE_NAME;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.PropertyKey;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.CommonDataKeys;
-import com.intellij.openapi.actionSystem.Presentation;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.util.containers.ContainerUtil;
+import consulo.language.editor.CommonDataKeys;
+import consulo.project.Project;
+import consulo.ui.ex.action.*;
+import consulo.util.lang.StringUtil;
+import consulo.virtualFileSystem.VirtualFile;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
 import mobi.hsz.idea.gitignore.util.ExternalFileException;
 import mobi.hsz.idea.gitignore.util.Utils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.PropertyKey;
+
+import java.util.*;
+
+import static mobi.hsz.idea.gitignore.IgnoreBundle.BUNDLE_NAME;
 
 /**
  * Group action that ignores specified file or directory.
@@ -62,7 +56,7 @@ public class IgnoreFileGroupAction extends ActionGroup {
 
     /** List of suitable Gitignore {@link VirtualFile}s that can be presented in an IgnoreFile action. */
     @NotNull
-    private final Map<IgnoreFileType, List<VirtualFile>> files = ContainerUtil.newHashMap();
+    private final Map<IgnoreFileType, List<VirtualFile>> files = new HashMap<>();
 
     /** Action presentation's text for single element. */
     @PropertyKey(resourceBundle = BUNDLE_NAME)
@@ -87,9 +81,11 @@ public class IgnoreFileGroupAction extends ActionGroup {
      * @param textKey        Action presentation's text key
      * @param descriptionKey Action presentation's description key
      */
-    public IgnoreFileGroupAction(@PropertyKey(resourceBundle = BUNDLE_NAME) String textKey,
-                                 @PropertyKey(resourceBundle = BUNDLE_NAME) String descriptionKey,
-                                 @PropertyKey(resourceBundle = BUNDLE_NAME) String textSingleKey) {
+    public IgnoreFileGroupAction(
+            @PropertyKey(resourceBundle = BUNDLE_NAME) String textKey,
+            @PropertyKey(resourceBundle = BUNDLE_NAME) String descriptionKey,
+            @PropertyKey(resourceBundle = BUNDLE_NAME) String textSingleKey)
+    {
         final Presentation p = getTemplatePresentation();
         p.setText(IgnoreBundle.message(textKey));
         p.setDescription(IgnoreBundle.message(descriptionKey));

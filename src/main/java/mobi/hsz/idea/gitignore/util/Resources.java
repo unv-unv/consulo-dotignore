@@ -24,19 +24,19 @@
 
 package mobi.hsz.idea.gitignore.util;
 
+import consulo.container.plugin.PluginManager;
+import consulo.logging.Logger;
+import consulo.util.collection.ContainerUtil;
+import consulo.util.io.FileUtil;
+import mobi.hsz.idea.gitignore.lang.kind.GitLanguage;
+import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
-
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import com.intellij.ide.plugins.PluginManager;
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.util.io.FileUtil;
-import com.intellij.util.containers.ContainerUtil;
-import mobi.hsz.idea.gitignore.lang.kind.GitLanguage;
-import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
 
 /**
  * {@link Resources} util class that contains methods that work on plugin resources.

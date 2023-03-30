@@ -24,28 +24,26 @@
 
 package mobi.hsz.idea.gitignore.daemon;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import com.intellij.codeHighlighting.Pass;
-import com.intellij.codeInsight.daemon.LineMarkerInfo;
-import com.intellij.codeInsight.daemon.LineMarkerProvider;
-import com.intellij.icons.AllIcons;
-import com.intellij.openapi.editor.markup.GutterIconRenderer;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiElement;
-import com.intellij.util.PlatformIcons;
-import com.intellij.util.containers.ContainerUtil;
+import consulo.application.AllIcons;
+import consulo.codeEditor.markup.GutterIconRenderer;
+import consulo.language.Language;
+import consulo.language.editor.Pass;
+import consulo.language.editor.gutter.LineMarkerInfo;
+import consulo.language.editor.gutter.LineMarkerProvider;
+import consulo.language.psi.PsiElement;
+import consulo.project.Project;
+import consulo.virtualFileSystem.VirtualFile;
 import mobi.hsz.idea.gitignore.IgnoreManager;
 import mobi.hsz.idea.gitignore.psi.IgnoreEntryDirectory;
 import mobi.hsz.idea.gitignore.psi.IgnoreEntryFile;
 import mobi.hsz.idea.gitignore.util.Glob;
 import mobi.hsz.idea.gitignore.util.MatcherUtil;
 import mobi.hsz.idea.gitignore.util.Utils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nonnull;
+import java.util.HashMap;
 
 /**
  * {@link LineMarkerProvider} that marks entry lines with directory icon if they point to the directory in virtual
@@ -56,7 +54,19 @@ import mobi.hsz.idea.gitignore.util.Utils;
  */
 public class IgnoreDirectoryMarkerProvider implements LineMarkerProvider {
     /** Cache map. */
-    private final HashMap<String, Boolean> cache = ContainerUtil.newHashMap();
+    private final HashMap<String, Boolean> cache = new HashMap<>();
+
+    private final Language language;
+
+    public IgnoreDirectoryMarkerProvider(Language language) {
+        this.language = language;
+    }
+
+    @Nonnull
+    @Override
+    public Language getLanguage() {
+        return language;
+    }
 
     /**
      * Returns {@link LineMarkerInfo} with set {@link PlatformIcons#FOLDER_ICON} if entry points to the directory.
@@ -92,7 +102,8 @@ public class IgnoreDirectoryMarkerProvider implements LineMarkerProvider {
         }
 
         if (isDirectory) {
-            return new LineMarkerInfo<>(element.getFirstChild(), element.getTextRange(), AllIcons.Nodes.TreeOpen, Pass.UPDATE_ALL, null, null, GutterIconRenderer.Alignment.CENTER);
+            return new LineMarkerInfo<>(element.getFirstChild(), element.getTextRange(), AllIcons.Nodes.TreeOpen, Pass.UPDATE_ALL, null, null,
+                    GutterIconRenderer.Alignment.CENTER);
         }
         return null;
     }

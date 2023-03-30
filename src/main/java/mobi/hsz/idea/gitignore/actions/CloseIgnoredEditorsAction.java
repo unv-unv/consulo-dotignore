@@ -24,13 +24,13 @@
 
 package mobi.hsz.idea.gitignore.actions;
 
-import com.intellij.ide.actions.CloseEditorsActionBase;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.FileStatusManager;
-import com.intellij.openapi.vcs.ProjectLevelVcsManager;
-import consulo.fileEditor.impl.EditorComposite;
-import consulo.fileEditor.impl.EditorWindow;
+import consulo.fileEditor.FileEditorComposite;
+import consulo.fileEditor.FileEditorWindow;
+import consulo.fileEditor.action.CloseEditorsActionBase;
+import consulo.project.Project;
+import consulo.ui.ex.action.AnActionEvent;
+import consulo.versionControlSystem.ProjectLevelVcsManager;
+import consulo.virtualFileSystem.status.FileStatusManager;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.vcs.IgnoreFileStatusProvider;
 
@@ -47,7 +47,7 @@ public class CloseIgnoredEditorsAction extends CloseEditorsActionBase {
      * @return editor is allowed to be closed
      */
     @Override
-    protected boolean isFileToClose(final EditorComposite editor, final EditorWindow window) {
+    protected boolean isFileToClose(final FileEditorComposite editor, final FileEditorWindow window) {
         final FileStatusManager fileStatusManager = FileStatusManager.getInstance(window.getManager().getProject());
         return fileStatusManager != null &&
                 fileStatusManager.getStatus(editor.getFile()).equals(IgnoreFileStatusProvider.IGNORED);

@@ -24,23 +24,16 @@
 
 package mobi.hsz.idea.gitignore;
 
-import com.intellij.CommonBundle;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.util.containers.ContainerUtil;
+import consulo.application.CommonBundle;
+import consulo.util.collection.ContainerUtil;
+import consulo.virtualFileSystem.VirtualFile;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
 import mobi.hsz.idea.gitignore.lang.kind.*;
 import mobi.hsz.idea.gitignore.util.CachedConcurrentMap;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.PropertyKey;
+import org.jetbrains.annotations.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 /**
  * {@link ResourceBundle}/localization utils for the .ignore support plugin.
@@ -49,9 +42,6 @@ import java.util.ResourceBundle;
  * @since 0.4
  */
 public class IgnoreBundle {
-    /** Gitignore plugin ID. */
-    @NonNls
-    public static final String PLUGIN_ID = "mobi.hsz.idea.gitignore";
 
     /** The {@link ResourceBundle} path. */
     @NonNls
@@ -137,7 +127,7 @@ public class IgnoreBundle {
          * @return element presentation
          */
         public String getPresentation() {
-            return StringUtil.join(KEY, " ", toString());
+            return KEY + " " + toString();
         }
     }
 

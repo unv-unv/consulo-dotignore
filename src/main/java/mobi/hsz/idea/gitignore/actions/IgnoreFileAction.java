@@ -24,27 +24,27 @@
 
 package mobi.hsz.idea.gitignore.actions;
 
-import static mobi.hsz.idea.gitignore.IgnoreBundle.BUNDLE_NAME;
-
-import java.util.Set;
-
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.PropertyKey;
-import com.intellij.notification.NotificationType;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.CommonDataKeys;
-import com.intellij.openapi.project.DumbAwareAction;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiFile;
-import com.intellij.util.containers.ContainerUtil;
+import consulo.language.editor.CommonDataKeys;
+import consulo.language.psi.PsiFile;
+import consulo.project.Project;
+import consulo.project.ui.notification.NotificationType;
+import consulo.ui.ex.action.AnActionEvent;
+import consulo.ui.ex.action.DumbAwareAction;
+import consulo.util.lang.StringUtil;
+import consulo.virtualFileSystem.VirtualFile;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.command.AppendFileCommandAction;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.util.Notify;
 import mobi.hsz.idea.gitignore.util.Utils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.PropertyKey;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import static mobi.hsz.idea.gitignore.IgnoreBundle.BUNDLE_NAME;
 
 /**
  * Action that adds currently selected {@link VirtualFile} to the specified Ignore {@link VirtualFile}.
@@ -55,10 +55,14 @@ import mobi.hsz.idea.gitignore.util.Utils;
  */
 @SuppressWarnings("ComponentNotRegistered")
 public class IgnoreFileAction extends DumbAwareAction {
-    /** Ignore {@link VirtualFile} that will be used for current action. */
+    /**
+     * Ignore {@link VirtualFile} that will be used for current action.
+     */
     private final VirtualFile ignoreFile;
 
-    /** Current ignore file type. */
+    /**
+     * Current ignore file type.
+     */
     private final IgnoreFileType fileType;
 
     /**
@@ -99,9 +103,11 @@ public class IgnoreFileAction extends DumbAwareAction {
      * @param textKey        Action presentation's text key
      * @param descriptionKey Action presentation's description key
      */
-    public IgnoreFileAction(@Nullable IgnoreFileType fileType, @Nullable VirtualFile virtualFile,
-                            @PropertyKey(resourceBundle = BUNDLE_NAME) String textKey,
-                            @PropertyKey(resourceBundle = BUNDLE_NAME) String descriptionKey) {
+    public IgnoreFileAction(
+            @Nullable IgnoreFileType fileType, @Nullable VirtualFile virtualFile,
+            @PropertyKey(resourceBundle = BUNDLE_NAME) String textKey,
+            @PropertyKey(resourceBundle = BUNDLE_NAME) String descriptionKey)
+    {
         super(IgnoreBundle.message(textKey, fileType != null ? fileType.getIgnoreLanguage().getFilename() : null),
                 IgnoreBundle.message(
                         descriptionKey,
@@ -135,7 +141,7 @@ public class IgnoreFileAction extends DumbAwareAction {
         }
 
         if (ignore != null) {
-            Set<String> paths = ContainerUtil.newHashSet();
+            Set<String> paths = new HashSet<>();
             for (VirtualFile file : files) {
                 final String path = getPath(ignore.getVirtualFile().getParent(), file);
                 if (path.isEmpty()) {
@@ -175,7 +181,7 @@ public class IgnoreFileAction extends DumbAwareAction {
     @Override
     public void update(@NotNull AnActionEvent e) {
         final VirtualFile[] files = e.getData(CommonDataKeys.VIRTUAL_FILE_ARRAY);
-        final Project project = e.getProject();
+        final Project project = e.getData(Project.KEY);
 
         if (project == null || files == null || (files.length == 1 && files[0].equals(project.getBaseDir()))) {
             e.getPresentation().setVisible(false);

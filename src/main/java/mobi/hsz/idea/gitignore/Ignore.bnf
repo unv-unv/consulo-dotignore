@@ -1,6 +1,7 @@
 {
   parserClass               = "mobi.hsz.idea.gitignore.parser.IgnoreParser"
   extends                   = "mobi.hsz.idea.gitignore.psi.IgnoreElementImpl"
+  version                   = "3"
  
   psiClassPrefix            = "Ignore"
   psiImplClassSuffix        = "Impl"

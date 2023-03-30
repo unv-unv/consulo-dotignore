@@ -24,52 +24,37 @@
 
 package mobi.hsz.idea.gitignore;
 
-import static mobi.hsz.idea.gitignore.IgnoreManager.RefreshTrackedIgnoredListener.TRACKED_IGNORED_REFRESH;
-import static mobi.hsz.idea.gitignore.IgnoreManager.TrackedIgnoredListener.TRACKED_IGNORED;
-import static mobi.hsz.idea.gitignore.settings.IgnoreSettings.KEY;
-
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentMap;
-import java.util.regex.Pattern;
-
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import com.intellij.ProjectTopics;
-import com.intellij.ide.projectView.ProjectView;
-import com.intellij.ide.projectView.impl.AbstractProjectViewPane;
-import com.intellij.openapi.Disposable;
-import com.intellij.openapi.application.Application;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.application.ModalityState;
-import com.intellij.openapi.components.ProjectComponent;
-import com.intellij.openapi.extensions.Extensions;
-import com.intellij.openapi.fileTypes.ExactFileNameMatcher;
-import com.intellij.openapi.fileTypes.FileType;
-import com.intellij.openapi.fileTypes.FileTypeManager;
-import com.intellij.openapi.progress.ProgressManager;
-import com.intellij.openapi.project.DumbService;
-import com.intellij.openapi.project.NoAccessDuringPsiEvents;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Pair;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vcs.FileStatusManager;
-import com.intellij.openapi.vcs.ProjectLevelVcsManager;
-import com.intellij.openapi.vcs.VcsRoot;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.VirtualFileCopyEvent;
-import com.intellij.openapi.vfs.VirtualFileEvent;
-import com.intellij.openapi.vfs.VirtualFileListener;
-import com.intellij.openapi.vfs.VirtualFileManager;
-import com.intellij.openapi.vfs.VirtualFileMoveEvent;
-import com.intellij.util.Time;
-import com.intellij.util.containers.ContainerUtil;
-import com.intellij.util.messages.MessageBusConnection;
-import com.intellij.util.messages.Topic;
+import consulo.annotation.component.ComponentScope;
+import consulo.annotation.component.ServiceAPI;
+import consulo.annotation.component.ServiceImpl;
+import consulo.application.Application;
+import consulo.application.ApplicationManager;
+import consulo.application.progress.ProgressManager;
+import consulo.component.messagebus.MessageBusConnection;
+import consulo.disposer.Disposable;
+import consulo.language.file.FileTypeManager;
+import consulo.language.impl.util.NoAccessDuringPsiEvents;
+import consulo.module.content.layer.event.ModuleRootListener;
+import consulo.module.event.ModuleListener;
+import consulo.project.DumbService;
+import consulo.project.Project;
+import consulo.project.event.DumbModeListener;
+import consulo.project.ui.view.ProjectView;
+import consulo.project.ui.view.ProjectViewPane;
+import consulo.util.collection.ContainerUtil;
+import consulo.util.lang.Pair;
+import consulo.util.lang.StringUtil;
+import consulo.versionControlSystem.ProjectLevelVcsManager;
+import consulo.versionControlSystem.root.VcsRoot;
+import consulo.virtualFileSystem.VirtualFile;
+import consulo.virtualFileSystem.VirtualFileManager;
+import consulo.virtualFileSystem.event.*;
+import consulo.virtualFileSystem.fileType.FileNameMatcherFactory;
+import consulo.virtualFileSystem.fileType.FileType;
+import consulo.virtualFileSystem.status.FileStatusManager;
 import git4idea.GitVcs;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.file.type.kind.GitExcludeFileType;
 import mobi.hsz.idea.gitignore.file.type.kind.GitFileType;
@@ -78,14 +63,17 @@ import mobi.hsz.idea.gitignore.indexing.IgnoreEntryOccurrence;
 import mobi.hsz.idea.gitignore.indexing.IgnoreFilesIndex;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
 import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
-import mobi.hsz.idea.gitignore.util.CachedConcurrentMap;
-import mobi.hsz.idea.gitignore.util.Debounced;
-import mobi.hsz.idea.gitignore.util.ExpiringMap;
-import mobi.hsz.idea.gitignore.util.Glob;
-import mobi.hsz.idea.gitignore.util.InterruptibleScheduledFuture;
-import mobi.hsz.idea.gitignore.util.MatcherUtil;
-import mobi.hsz.idea.gitignore.util.Utils;
+import mobi.hsz.idea.gitignore.util.*;
 import mobi.hsz.idea.gitignore.util.exec.ExternalExec;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentMap;
+import java.util.regex.Pattern;
+
+import static mobi.hsz.idea.gitignore.RefreshTrackedIgnoredListener.TRACKED_IGNORED_REFRESH;
+import static mobi.hsz.idea.gitignore.settings.IgnoreSettings.KEY;
 
 /**
  * {@link IgnoreManager} handles ignore files indexing and status caching.
@@ -93,8 +81,10 @@ import mobi.hsz.idea.gitignore.util.exec.ExternalExec;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 1.0
  */
-public class IgnoreManager implements ProjectComponent, Disposable
-{
+@ServiceAPI(ComponentScope.PROJECT)
+@ServiceImpl
+@Singleton
+public class IgnoreManager implements Disposable {
     /** List of all available {@link IgnoreFileType}. */
     private static final List<IgnoreFileType> FILE_TYPES =
             ContainerUtil.map(IgnoreBundle.LANGUAGES, IgnoreLanguage::getFileType);
@@ -155,7 +145,7 @@ public class IgnoreManager implements ProjectComponent, Disposable
             CachedConcurrentMap.create(key -> key.getIgnoreLanguage().getOuterFiles(getProject()));
 
     @NotNull
-    private final ExpiringMap<VirtualFile, Boolean> expiringStatusCache = new ExpiringMap<>(Time.SECOND);
+    private final ExpiringMap<VirtualFile, Boolean> expiringStatusCache = new ExpiringMap<>(1000);
 
     /** {@link FileStatusManager#fileStatusesChanged()} method wrapped with {@link Debounced}. */
     private final Debounced debouncedStatusesChanged = new Debounced(1000) {
@@ -178,7 +168,7 @@ public class IgnoreManager implements ProjectComponent, Disposable
         }
     };
 
-    /** {@link DumbService.DumbModeListener#exitDumbMode()} method body wrapped with {@link Debounced}. */
+    /** {@link DumbModeListener#exitDumbMode()} method body wrapped with {@link Debounced}. */
     private final Debounced<Boolean> debouncedExitDumbMode = new Debounced<Boolean>(3000) {
         @Override
         protected void task(@Nullable Boolean refresh) {
@@ -301,10 +291,11 @@ public class IgnoreManager implements ProjectComponent, Disposable
      *
      * @param project current project
      */
-    public IgnoreManager(@NotNull final Project project) {
+    @Inject
+    public IgnoreManager(@NotNull final Project project, VirtualFileManager virtualFileManager) {
         myProject = project;
         this.matcher = new MatcherUtil();
-        this.virtualFileManager = VirtualFileManager.getInstance();
+        this.virtualFileManager = virtualFileManager;
         this.settings = IgnoreSettings.getInstance();
         this.statusManager = FileStatusManager.getInstance(project);
         this.refreshTrackedIgnoredRunnable = new RefreshTrackedIgnoredRunnable();
@@ -454,9 +445,9 @@ public class IgnoreManager implements ProjectComponent, Disposable
         if (application.isDispatchThread()) {
             final FileTypeManager fileTypeManager = FileTypeManager.getInstance();
             application.invokeLater(() -> application.runWriteAction(() -> {
-                fileTypeManager.associate(fileType, new ExactFileNameMatcher(fileName));
+                fileTypeManager.associate(fileType, FileNameMatcherFactory.getInstance().createExactFileNameMatcher(fileName));
                 FILE_TYPES_ASSOCIATION_QUEUE.remove(fileName);
-            }), ModalityState.NON_MODAL);
+            }), application.getNoneModalityState());
         } else if (!FILE_TYPES_ASSOCIATION_QUEUE.containsKey(fileName)) {
             FILE_TYPES_ASSOCIATION_QUEUE.put(fileName, fileType);
         }
@@ -478,23 +469,11 @@ public class IgnoreManager implements ProjectComponent, Disposable
      * created for even unopened projects and this method can be never invoked for a particular component instance (for
      * example for default project).
      */
-    @Override
     public void projectOpened() {
         ExternalIndexableSetContributor.invalidateDisposedProjects();
         if (isEnabled() && !working) {
             enable();
         }
-    }
-
-    /**
-     * Invoked when the project corresponding to this component instance is closed.<p> Note that components may be
-     * created for even unopened projects and this method can be never invoked for a particular component instance (for
-     * example for default project).
-     */
-    @Override
-    public void projectClosed() {
-        ExternalIndexableSetContributor.invalidateDisposedProjects();
-        disable();
     }
 
     /**
@@ -526,7 +505,7 @@ public class IgnoreManager implements ProjectComponent, Disposable
             vcsRoots.addAll(ContainerUtil.newArrayList(projectLevelVcsManager.getAllVcsRoots()));
         });
 
-        messageBus.subscribe(DumbService.DUMB_MODE, new DumbService.DumbModeListener() {
+        messageBus.subscribe(DumbModeListener.class, new DumbModeListener() {
             @Override
             public void enteredDumbMode() {
             }
@@ -537,9 +516,9 @@ public class IgnoreManager implements ProjectComponent, Disposable
             }
         });
 
-        messageBus.subscribe(ProjectTopics.PROJECT_ROOTS, commonRunnableListeners);
-        messageBus.subscribe(RefreshStatusesListener.REFRESH_STATUSES, commonRunnableListeners);
-        messageBus.subscribe(ProjectTopics.MODULES, commonRunnableListeners);
+        messageBus.subscribe(ModuleRootListener.class, commonRunnableListeners);
+        messageBus.subscribe(RefreshStatusesListener.class, commonRunnableListeners);
+        messageBus.subscribe(ModuleListener.class, commonRunnableListeners);
 
         working = true;
     }
@@ -561,6 +540,7 @@ public class IgnoreManager implements ProjectComponent, Disposable
     /** Dispose and disable component. */
     @Override
     public void dispose() {
+        ExternalIndexableSetContributor.invalidateDisposedProjects();
         disable();
     }
 
@@ -588,7 +568,7 @@ public class IgnoreManager implements ProjectComponent, Disposable
     }
 
     /** {@link Runnable} implementation to rebuild {@link #confirmedIgnoredFiles}. */
-    class RefreshTrackedIgnoredRunnable implements Runnable, IgnoreManager.RefreshTrackedIgnoredListener {
+    class RefreshTrackedIgnoredRunnable implements Runnable, RefreshTrackedIgnoredListener {
         /** Default {@link Runnable} run method that invokes rebuilding with bus event propagating. */
         @Override
         public void run() {
@@ -604,7 +584,7 @@ public class IgnoreManager implements ProjectComponent, Disposable
         /**
          * Rebuilds {@link #confirmedIgnoredFiles} map.
          *
-         * @param silent propagate {@link IgnoreManager.TrackedIgnoredListener#TRACKED_IGNORED} event
+         * @param silent propagate {@link TrackedIgnoredListener#TRACKED_IGNORED} event
          */
         public void run(boolean silent) {
             if (!settings.isInformTrackedIgnored()) {
@@ -626,60 +606,16 @@ public class IgnoreManager implements ProjectComponent, Disposable
             }
 
             if (!silent && !result.isEmpty()) {
-                myProject.getMessageBus().syncPublisher(TRACKED_IGNORED).handleFiles(result);
+                myProject.getMessageBus().syncPublisher(TrackedIgnoredListener.class).handleFiles(result);
             }
             confirmedIgnoredFiles.clear();
             confirmedIgnoredFiles.putAll(result);
             notConfirmedIgnoredFiles.clear();
             debouncedStatusesChanged.run();
 
-            for (AbstractProjectViewPane pane : Extensions.getExtensions(AbstractProjectViewPane.EP_NAME, myProject)) {
-                if (pane.getTreeBuilder() != null) {
-                    pane.getTreeBuilder().queueUpdate();
-                }
+            for (ProjectViewPane pane : myProject.getExtensionList(ProjectViewPane.class)) {
+                pane.queueUpdate();
             }
         }
-    }
-
-    /** Listener bounded with {@link TrackedIgnoredListener#TRACKED_IGNORED} topic to inform about new entries. */
-    public interface TrackedIgnoredListener {
-        /** Topic for detected tracked and indexed files. */
-        Topic<TrackedIgnoredListener> TRACKED_IGNORED =
-                Topic.create("New tracked and indexed files detected", TrackedIgnoredListener.class);
-
-        void handleFiles(@NotNull ConcurrentMap<VirtualFile, VcsRoot> files);
-    }
-
-    /**
-     * Listener bounded with {@link RefreshTrackedIgnoredListener#TRACKED_IGNORED_REFRESH} topic to trigger tracked and
-     * ignored files list.
-     */
-    public interface RefreshTrackedIgnoredListener {
-        /** Topic for refresh tracked and indexed files. */
-        Topic<RefreshTrackedIgnoredListener> TRACKED_IGNORED_REFRESH =
-                Topic.create("New tracked and indexed files detected", RefreshTrackedIgnoredListener.class);
-
-        void refresh();
-    }
-
-    public interface RefreshStatusesListener {
-        /** Topic to refresh files statuses using {@link MessageBusConnection}. */
-        Topic<RefreshStatusesListener> REFRESH_STATUSES =
-                new Topic<>("Refresh files statuses", RefreshStatusesListener.class);
-
-        void refresh();
-    }
-
-    /**
-     * Unique name of this component. If there is another component with the same name or name is null internal
-     * assertion will occur.
-     *
-     * @return the name of this component
-     */
-    @NonNls
-    @NotNull
-    @Override
-    public String getComponentName() {
-        return "IgnoreManager";
     }
 }

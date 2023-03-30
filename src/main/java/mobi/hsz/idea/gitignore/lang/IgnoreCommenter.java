@@ -24,9 +24,12 @@
 
 package mobi.hsz.idea.gitignore.lang;
 
-import com.intellij.lang.Commenter;
+import consulo.language.Commenter;
+import consulo.language.Language;
 import mobi.hsz.idea.gitignore.util.Constants;
 import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nonnull;
 
 /**
  * Defines the support for "Comment with Line Comment" and "Comment with Block Comment"
@@ -36,6 +39,18 @@ import org.jetbrains.annotations.Nullable;
  * @since 0.4
  */
 public class IgnoreCommenter implements Commenter {
+    private final Language ignoreLanguage;
+
+    public IgnoreCommenter(Language ignoreLanguage) {
+        this.ignoreLanguage = ignoreLanguage;
+    }
+
+    @Nonnull
+    @Override
+    public Language getLanguage() {
+        return ignoreLanguage;
+    }
+
     /**
      * Returns the string which prefixes a line comment in the language, or null if the language
      * does not support line comments.

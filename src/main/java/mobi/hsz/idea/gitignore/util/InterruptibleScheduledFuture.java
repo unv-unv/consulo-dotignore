@@ -24,8 +24,8 @@
 
 package mobi.hsz.idea.gitignore.util;
 
-import com.intellij.concurrency.JobScheduler;
-import com.intellij.openapi.project.DumbAwareRunnable;
+import consulo.application.dumb.DumbAwareRunnable;
+import consulo.application.util.concurrent.AppExecutorUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,7 +33,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Wrapper for {@link JobScheduler} that runs a scheduled operation {@link #maxAttempts} times every {@link #delay}
+ * Wrapper for {@link AppExecutorUtil} that runs a scheduled operation {@link #maxAttempts} times every {@link #delay}
  * milliseconds. It is possible to manually break scheduled task with calling {@link #cancel()}.
  *
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
@@ -69,8 +69,8 @@ public class InterruptibleScheduledFuture implements DumbAwareRunnable {
     /**
      * Constructor.
      *
-     * @param task runnable task
-     * @param delay time to wait before next task's run
+     * @param task        runnable task
+     * @param delay       time to wait before next task's run
      * @param maxAttempts max amount of task's invocations
      */
     public InterruptibleScheduledFuture(@NotNull Runnable task, int delay, int maxAttempts) {
@@ -88,7 +88,7 @@ public class InterruptibleScheduledFuture implements DumbAwareRunnable {
         if (leading) {
             task.run();
         }
-        future = JobScheduler.getScheduler().scheduleWithFixedDelay(() -> {
+        future = AppExecutorUtil.getAppScheduledExecutorService().scheduleWithFixedDelay(() -> {
             task.run();
             if (++attempt >= maxAttempts || trailingTask) {
                 trailing = false;

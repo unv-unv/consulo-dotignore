@@ -24,17 +24,13 @@
 
 package mobi.hsz.idea.gitignore.util;
 
+import consulo.project.Project;
+import consulo.project.ui.notification.*;
+import consulo.project.ui.notification.event.NotificationListener;
+import consulo.project.ui.wm.ToolWindowId;
+import mobi.hsz.idea.gitignore.IgnoreBundle;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import com.intellij.notification.Notification;
-import com.intellij.notification.NotificationDisplayType;
-import com.intellij.notification.NotificationGroup;
-import com.intellij.notification.NotificationListener;
-import com.intellij.notification.NotificationType;
-import com.intellij.notification.Notifications;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.wm.ToolWindowId;
-import mobi.hsz.idea.gitignore.IgnoreBundle;
 
 /**
  * Wrapper function for showing {@link Notification}.
@@ -53,27 +49,31 @@ public class Notify {
     /**
      * Shows {@link Notification} in ".ignore plugin" group.
      *
-     * @param project   current project
-     * @param title     notification title
-     * @param content   notification text
-     * @param type      notification type
+     * @param project current project
+     * @param title   notification title
+     * @param content notification text
+     * @param type    notification type
      */
-    public static void show(@NotNull Project project, @NotNull String title, @NotNull String content,
-                            @NotNull NotificationType type) {
+    public static void show(
+            @NotNull Project project, @NotNull String title, @NotNull String content,
+            @NotNull NotificationType type)
+    {
         show(project, title, content, NOTIFICATION_GROUP, type, null);
     }
 
     /**
      * Shows {@link Notification} in ".ignore plugin" group.
      *
-     * @param project   current project
-     * @param title     notification title
-     * @param content   notification text
-     * @param type      notification type
-     * @param listener  optional listener
+     * @param project  current project
+     * @param title    notification title
+     * @param content  notification text
+     * @param type     notification type
+     * @param listener optional listener
      */
-    public static void show(@NotNull Project project, @NotNull String title, @NotNull String content,
-                            @NotNull NotificationType type, @Nullable NotificationListener listener) {
+    public static void show(
+            @NotNull Project project, @NotNull String title, @NotNull String content,
+            @NotNull NotificationType type, @Nullable NotificationListener listener)
+    {
         show(project, title, content, NOTIFICATION_GROUP, type, listener);
     }
 
@@ -87,9 +87,11 @@ public class Notify {
      * @param type     notification type
      * @param listener optional listener
      */
-    public static void show(@NotNull Project project, @NotNull String title, @NotNull String content,
-                            @NotNull NotificationGroup group, @NotNull NotificationType type,
-                            @Nullable NotificationListener listener) {
+    public static void show(
+            @NotNull Project project, @NotNull String title, @NotNull String content,
+            @NotNull NotificationGroup group, @NotNull NotificationType type,
+            @Nullable NotificationListener listener)
+    {
         Notification notification = group.createNotification(title, content, type, listener);
         Notifications.Bus.notify(notification, project);
     }

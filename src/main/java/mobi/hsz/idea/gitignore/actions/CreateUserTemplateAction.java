@@ -24,16 +24,16 @@
 
 package mobi.hsz.idea.gitignore.actions;
 
+import consulo.document.Document;
+import consulo.project.Project;
+import consulo.ui.ex.action.AnAction;
 import org.jetbrains.annotations.NotNull;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.CommonDataKeys;
-import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.EditorFactory;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.psi.PsiFile;
+import consulo.ui.ex.action.AnActionEvent;
+import consulo.language.editor.CommonDataKeys;
+import consulo.codeEditor.Editor;
+import consulo.codeEditor.EditorFactory;
+import consulo.util.lang.StringUtil;
+import consulo.language.psi.PsiFile;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.psi.IgnoreFile;
 import mobi.hsz.idea.gitignore.ui.template.UserTemplateDialog;
@@ -45,7 +45,8 @@ import mobi.hsz.idea.gitignore.util.Icons;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 1.5
  */
-public class CreateUserTemplateAction extends AnAction {
+public class CreateUserTemplateAction extends AnAction
+{
     public CreateUserTemplateAction() {
         super(IgnoreBundle.message("action.createUserTemplate"),
                 IgnoreBundle.message("action.createUserTemplate.description"), Icons.IGNORE);

@@ -24,9 +24,9 @@
 
 package mobi.hsz.idea.gitignore.actions;
 
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
-import com.intellij.openapi.actionSystem.Presentation;
-import com.intellij.openapi.project.DumbAware;
+import consulo.ui.ex.action.DefaultActionGroup;
+import consulo.application.dumb.DumbAware;
+import consulo.ui.ex.action.Presentation;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;

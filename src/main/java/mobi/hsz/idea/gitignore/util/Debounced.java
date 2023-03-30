@@ -24,8 +24,8 @@
 
 package mobi.hsz.idea.gitignore.util;
 
-import com.intellij.concurrency.JobScheduler;
-import com.intellij.openapi.project.DumbAwareRunnable;
+import consulo.application.dumb.DumbAwareRunnable;
+import consulo.application.util.concurrent.AppExecutorUtil;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.ScheduledFuture;
@@ -66,7 +66,7 @@ public abstract class Debounced<T> implements DumbAwareRunnable {
             timer.cancel(false);
         }
 
-        timer = JobScheduler.getScheduler().schedule(
+        timer = AppExecutorUtil.getAppScheduledExecutorService().schedule(
                 (DumbAwareRunnable) () -> task(argument),
                 delay,
                 TimeUnit.MILLISECONDS

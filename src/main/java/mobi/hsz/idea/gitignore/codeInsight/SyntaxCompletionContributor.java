@@ -24,21 +24,21 @@
 
 package mobi.hsz.idea.gitignore.codeInsight;
 
-import java.util.List;
-
-import org.jetbrains.annotations.NotNull;
-import com.intellij.codeInsight.completion.CompletionContributor;
-import com.intellij.codeInsight.completion.CompletionParameters;
-import com.intellij.codeInsight.completion.CompletionResultSet;
-import com.intellij.codeInsight.completion.CompletionType;
-import com.intellij.codeInsight.lookup.LookupElementBuilder;
-import com.intellij.patterns.StandardPatterns;
-import com.intellij.psi.PsiElement;
-import com.intellij.util.ProcessingContext;
-import com.intellij.util.containers.ContainerUtil;
-import consulo.codeInsight.completion.CompletionProvider;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.language.Language;
+import consulo.language.editor.completion.*;
+import consulo.language.editor.completion.lookup.LookupElementBuilder;
+import consulo.language.pattern.StandardPatterns;
+import consulo.language.psi.PsiElement;
+import consulo.language.util.ProcessingContext;
+import consulo.util.collection.ContainerUtil;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
+import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
 import mobi.hsz.idea.gitignore.psi.IgnoreSyntax;
+import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
+import java.util.List;
 
 /**
  * Class provides completion feature for {@link mobi.hsz.idea.gitignore.psi.IgnoreTypes#SYNTAX} element.
@@ -46,6 +46,7 @@ import mobi.hsz.idea.gitignore.psi.IgnoreSyntax;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 1.0
  */
+@ExtensionImpl
 public class SyntaxCompletionContributor extends CompletionContributor {
     /** Allowed values for the completion. */
     @NotNull
@@ -79,5 +80,11 @@ public class SyntaxCompletionContributor extends CompletionContributor {
     @Override
     public boolean invokeAutoPopup(@NotNull PsiElement position, char typeChar) {
         return true;
+    }
+
+    @Nonnull
+    @Override
+    public Language getLanguage() {
+        return IgnoreLanguage.INSTANCE;
     }
 }

@@ -24,7 +24,7 @@
 
 package mobi.hsz.idea.gitignore.psi;
 
-import com.intellij.psi.PsiElement;
+import consulo.language.psi.PsiElement;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -35,7 +35,8 @@ import java.util.regex.Pattern;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 1.0
  */
-public interface IgnoreEntryBase extends PsiElement {
+public interface IgnoreEntryBase extends PsiElement
+{
     /**
      * Checks if current element is negated.
      *

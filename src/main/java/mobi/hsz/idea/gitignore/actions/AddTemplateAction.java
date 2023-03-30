@@ -24,12 +24,12 @@
 
 package mobi.hsz.idea.gitignore.actions;
 
+import consulo.project.Project;
+import consulo.ui.ex.action.AnAction;
 import org.jetbrains.annotations.NotNull;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.CommonDataKeys;
-import com.intellij.openapi.project.Project;
-import com.intellij.psi.PsiFile;
+import consulo.ui.ex.action.AnActionEvent;
+import consulo.language.editor.CommonDataKeys;
+import consulo.language.psi.PsiFile;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.psi.IgnoreFile;
 import mobi.hsz.idea.gitignore.ui.GeneratorDialog;
@@ -40,7 +40,8 @@ import mobi.hsz.idea.gitignore.ui.GeneratorDialog;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 0.5.3
  */
-public class AddTemplateAction extends AnAction {
+public class AddTemplateAction extends AnAction
+{
     /** Builds a new instance of {@link AddTemplateAction}. */
     public AddTemplateAction() {
         super(IgnoreBundle.message("action.addTemplate"), IgnoreBundle.message("action.addTemplate.description"), null);

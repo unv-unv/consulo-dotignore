@@ -24,16 +24,18 @@
 
 package mobi.hsz.idea.gitignore.vcs;
 
-import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.project.DumbAware;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.FileStatus;
-import com.intellij.openapi.vcs.FileStatusFactory;
-import com.intellij.openapi.vcs.impl.FileStatusProvider;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.util.ThreeState;
-import consulo.dotignire.localize.IgnoreLocalize;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.application.dumb.DumbAware;
+import consulo.document.Document;
+import consulo.dotignore.localize.IgnoreLocalize;
+import consulo.project.Project;
 import consulo.ui.style.StandardColors;
+import consulo.util.lang.ThreeState;
+import consulo.virtualFileSystem.VirtualFile;
+import consulo.virtualFileSystem.status.FileStatus;
+import consulo.virtualFileSystem.status.FileStatusFactory;
+import consulo.virtualFileSystem.status.FileStatusProvider;
+import jakarta.inject.Inject;
 import mobi.hsz.idea.gitignore.IgnoreManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -45,15 +47,16 @@ import org.jetbrains.annotations.Nullable;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 1.0
  */
+@ExtensionImpl
 public class IgnoreFileStatusProvider implements FileStatusProvider, DumbAware {
     /** Ignored status. */
-    public static final FileStatus IGNORED = FileStatusFactory.getInstance().createFileStatus(
-            "IGNORE.PROJECT_VIEW.IGNORED", IgnoreLocalize.projectViewIgnored(), StandardColors.GRAY);
+    public static final FileStatus IGNORED = FileStatusFactory.getInstance().createFileStatus("IGNORE.PROJECT_VIEW.IGNORED", IgnoreLocalize.projectviewIgnored(),
+            StandardColors.GRAY);
 
     /** Instance of {@link IgnoreManager}. */
     private final IgnoreManager ignoreManager;
 
-    /** Constructor. */
+    @Inject
     public IgnoreFileStatusProvider(@NotNull Project project) {
         this.ignoreManager = IgnoreManager.getInstance(project);
     }

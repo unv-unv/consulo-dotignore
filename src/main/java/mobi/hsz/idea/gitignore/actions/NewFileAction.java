@@ -24,26 +24,26 @@
 
 package mobi.hsz.idea.gitignore.actions;
 
-import org.jetbrains.annotations.NotNull;
-import com.intellij.ide.IdeView;
-import com.intellij.notification.Notification;
-import com.intellij.notification.NotificationType;
-import com.intellij.notification.Notifications;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.CommonDataKeys;
-import com.intellij.openapi.actionSystem.LangDataKeys;
-import com.intellij.openapi.project.DumbAware;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiDirectory;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiManager;
+import consulo.application.dumb.DumbAware;
+import consulo.dotignore.IgnoreNotificationGroup;
+import consulo.ide.IdeView;
+import consulo.language.editor.CommonDataKeys;
+import consulo.language.psi.PsiDirectory;
+import consulo.language.psi.PsiFile;
+import consulo.language.psi.PsiManager;
+import consulo.project.Project;
+import consulo.project.ui.notification.Notification;
+import consulo.project.ui.notification.NotificationType;
+import consulo.project.ui.notification.Notifications;
+import consulo.ui.ex.action.AnAction;
+import consulo.ui.ex.action.AnActionEvent;
+import consulo.virtualFileSystem.VirtualFile;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.command.CreateFileCommandAction;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.ui.GeneratorDialog;
 import mobi.hsz.idea.gitignore.util.Utils;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Creates new file or returns existing one.
@@ -54,10 +54,14 @@ import mobi.hsz.idea.gitignore.util.Utils;
  */
 @SuppressWarnings("ComponentNotRegistered")
 public class NewFileAction extends AnAction implements DumbAware {
-    /** Current file type. */
+    /**
+     * Current file type.
+     */
     private final IgnoreFileType fileType;
 
-    /** Builds a new instance of {@link NewFileAction}. */
+    /**
+     * Builds a new instance of {@link NewFileAction}.
+     */
     public NewFileAction(@NotNull IgnoreFileType fileType) {
         this.fileType = fileType;
     }
@@ -70,7 +74,7 @@ public class NewFileAction extends AnAction implements DumbAware {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
         final Project project = e.getRequiredData(CommonDataKeys.PROJECT);
-        final IdeView view = e.getRequiredData(LangDataKeys.IDE_VIEW);
+        final IdeView view = e.getRequiredData(IdeView.KEY);
 
         VirtualFile fixedDirectory = fileType.getIgnoreLanguage().getFixedDirectory(project);
         PsiDirectory directory;
@@ -95,7 +99,7 @@ public class NewFileAction extends AnAction implements DumbAware {
             dialog = new GeneratorDialog(project, action);
         } else {
             Notifications.Bus.notify(new Notification(
-                    fileType.getLanguageName(),
+                    IgnoreNotificationGroup.GROUP,
                     IgnoreBundle.message("action.newFile.exists", fileType.getLanguageName()),
                     IgnoreBundle.message("action.newFile.exists.in", virtualFile.getPath()),
                     NotificationType.INFORMATION
@@ -124,7 +128,7 @@ public class NewFileAction extends AnAction implements DumbAware {
     @Override
     public void update(@NotNull AnActionEvent e) {
         final Project project = e.getData(CommonDataKeys.PROJECT);
-        final IdeView view = e.getData(LangDataKeys.IDE_VIEW);
+        final IdeView view = e.getData(IdeView.KEY);
 
         final PsiDirectory[] directory = view != null ? view.getDirectories() : null;
         if (directory == null || directory.length == 0 || project == null ||

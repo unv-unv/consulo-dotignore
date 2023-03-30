@@ -24,16 +24,17 @@
 
 package mobi.hsz.idea.gitignore.ui.template;
 
-import com.intellij.notification.Notification;
-import com.intellij.notification.NotificationType;
-import com.intellij.notification.Notifications;
-import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.EditorFactory;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.ui.components.JBTextField;
-import com.intellij.util.ui.JBUI;
+import consulo.codeEditor.Editor;
+import consulo.document.Document;
+import consulo.dotignore.IgnoreNotificationGroup;
+import consulo.project.ui.notification.Notification;
+import consulo.project.ui.notification.NotificationType;
+import consulo.project.ui.notification.Notifications;
+import consulo.codeEditor.EditorFactory;
+import consulo.project.Project;
+import consulo.ui.ex.awt.DialogWrapper;
+import consulo.ui.ex.awt.JBTextField;
+import consulo.ui.ex.awt.JBUI;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
 import mobi.hsz.idea.gitignore.util.Utils;
@@ -166,7 +167,7 @@ public class UserTemplateDialog extends DialogWrapper {
         settings.getUserTemplates().add(template);
 
         Notifications.Bus.notify(new Notification(
-                IgnoreBundle.PLUGIN_ID,
+                IgnoreNotificationGroup.GROUP,
                 IgnoreBundle.message("dialog.userTemplate.added"),
                 IgnoreBundle.message("dialog.userTemplate.added.description", template.getName()),
                 NotificationType.INFORMATION

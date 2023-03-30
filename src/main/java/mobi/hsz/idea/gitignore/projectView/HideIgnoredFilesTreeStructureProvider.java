@@ -24,19 +24,18 @@
 
 package mobi.hsz.idea.gitignore.projectView;
 
-import java.util.Collection;
-
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import com.intellij.ide.projectView.TreeStructureProvider;
-import com.intellij.ide.projectView.ViewSettings;
-import com.intellij.ide.projectView.impl.nodes.BasePsiNode;
-import com.intellij.ide.util.treeView.AbstractTreeNode;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.util.containers.ContainerUtil;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.project.ui.view.tree.*;
+import consulo.util.collection.ContainerUtil;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.inject.Inject;
+import jakarta.inject.Provider;
 import mobi.hsz.idea.gitignore.IgnoreManager;
 import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Collection;
 
 /**
  * Extension for the {@link TreeStructureProvider} that provides the ability to hide ignored files
@@ -45,20 +44,22 @@ import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
  * @author Maximiliano Najle <maximilianonajle@gmail.com>
  * @since 1.7
  */
+@ExtensionImpl
 public class HideIgnoredFilesTreeStructureProvider implements TreeStructureProvider {
     /** {@link IgnoreSettings} instance. */
     @NotNull
-    private final IgnoreSettings ignoreSettings;
+    private final Provider<IgnoreSettings> ignoreSettings;
 
     /** {@link IgnoreManager} instance. */
     @NotNull
-    private final IgnoreManager ignoreManager;
+    private final Provider<IgnoreManager> ignoreManager;
 
-    /** Builds a new instance of {@link HideIgnoredFilesTreeStructureProvider}. */
-    public HideIgnoredFilesTreeStructureProvider(@NotNull Project project) {
-        this.ignoreSettings = IgnoreSettings.getInstance();
-        this.ignoreManager = IgnoreManager.getInstance(project);
+    @Inject
+    public HideIgnoredFilesTreeStructureProvider(Provider<IgnoreSettings> ignoreSettings, Provider<IgnoreManager> ignoreManager) {
+        this.ignoreSettings = ignoreSettings;
+        this.ignoreManager = ignoreManager;
     }
+
 
     /**
      * If {@link IgnoreSettings#hideIgnoredFiles} is set to <code>true</code>, checks if specific
@@ -71,13 +72,17 @@ public class HideIgnoredFilesTreeStructureProvider implements TreeStructureProvi
      */
     @NotNull
     @Override
-    public Collection<AbstractTreeNode> modify(@NotNull AbstractTreeNode parent,
-                                               @NotNull Collection<AbstractTreeNode> children,
-                                               @Nullable ViewSettings settings) {
+    public Collection<AbstractTreeNode> modify(
+            @NotNull AbstractTreeNode parent,
+            @NotNull Collection<AbstractTreeNode> children,
+            @Nullable ViewSettings settings)
+    {
+        IgnoreSettings ignoreSettings = this.ignoreSettings.get();
         if (!ignoreSettings.isHideIgnoredFiles() || children.isEmpty()) {
             return children;
         }
 
+        IgnoreManager ignoreManager = this.ignoreManager.get();
         return ContainerUtil.filter(children, node -> {
             if (node instanceof BasePsiNode) {
                 final VirtualFile file = ((BasePsiNode) node).getVirtualFile();

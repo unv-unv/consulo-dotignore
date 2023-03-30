@@ -24,26 +24,17 @@
 
 package mobi.hsz.idea.gitignore.indexing;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import org.jetbrains.annotations.NotNull;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Pair;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.util.containers.ContainerUtil;
-import com.intellij.util.indexing.FileBasedIndex;
-import com.intellij.util.indexing.FileContent;
-import com.intellij.util.indexing.ID;
-import com.intellij.util.io.DataExternalizer;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.application.ApplicationManager;
+import consulo.index.io.ID;
+import consulo.index.io.data.DataExternalizer;
+import consulo.language.psi.scope.GlobalSearchScope;
+import consulo.language.psi.stub.FileBasedIndex;
+import consulo.language.psi.stub.FileContent;
+import consulo.project.Project;
+import consulo.util.collection.ContainerUtil;
+import consulo.util.lang.Pair;
+import consulo.virtualFileSystem.VirtualFile;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.IgnoreManager;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
@@ -52,6 +43,12 @@ import mobi.hsz.idea.gitignore.psi.IgnoreEntry;
 import mobi.hsz.idea.gitignore.psi.IgnoreFile;
 import mobi.hsz.idea.gitignore.psi.IgnoreVisitor;
 import mobi.hsz.idea.gitignore.util.Glob;
+import org.jetbrains.annotations.NotNull;
+
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * Implementation of {@link AbstractIgnoreFilesIndex} that allows to index all ignore files content using native
@@ -60,6 +57,7 @@ import mobi.hsz.idea.gitignore.util.Glob;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 2.0
  */
+@ExtensionImpl
 public class IgnoreFilesIndex extends AbstractIgnoreFilesIndex<IgnoreFileTypeKey, IgnoreEntryOccurrence> {
     /** Indexer ID. */
     public static final ID<IgnoreFileTypeKey, IgnoreEntryOccurrence> KEY = ID.create("IgnoreFilesIndex");
@@ -227,7 +225,7 @@ public class IgnoreFilesIndex extends AbstractIgnoreFilesIndex<IgnoreFileTypeKey
             }
         } catch (RuntimeException ignored) {
         }
-        return ContainerUtil.emptyList();
+        return List.of();
     }
 
     /**

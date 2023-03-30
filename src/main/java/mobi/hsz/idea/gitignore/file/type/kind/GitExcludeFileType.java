@@ -24,8 +24,8 @@
 
 package mobi.hsz.idea.gitignore.file.type.kind;
 
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
+import consulo.virtualFileSystem.VirtualFile;
+import consulo.project.Project;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.lang.kind.GitExcludeLanguage;
 import mobi.hsz.idea.gitignore.util.Utils;

@@ -24,19 +24,16 @@
 
 package mobi.hsz.idea.gitignore.daemon;
 
-import com.intellij.openapi.fileEditor.FileEditor;
-import com.intellij.openapi.fileEditor.FileEditorManager;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiDirectory;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiManager;
-import com.intellij.ui.EditorNotificationPanel;
-import com.intellij.ui.EditorNotifications;
-import consulo.awt.TargetAWT;
-import consulo.editor.notifications.EditorNotificationProvider;
-import consulo.ui.image.Image;
-import mobi.hsz.idea.gitignore.IgnoreBundle;
+import consulo.annotation.access.RequiredReadAction;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.dotignore.localize.IgnoreLocalize;
+import consulo.fileEditor.*;
+import consulo.language.psi.PsiDirectory;
+import consulo.language.psi.PsiFile;
+import consulo.language.psi.PsiManager;
+import consulo.project.Project;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.inject.Inject;
 import mobi.hsz.idea.gitignore.command.CreateFileCommandAction;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.file.type.kind.GitFileType;
@@ -47,6 +44,9 @@ import mobi.hsz.idea.gitignore.util.Properties;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
+import java.util.function.Supplier;
+
 /**
  * Editor notification provider that checks if there is {@link GitLanguage#getFilename()}
  * in root directory and suggest to create one.
@@ -54,7 +54,8 @@ import org.jetbrains.annotations.Nullable;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 0.3.3
  */
-public class MissingGitignoreNotificationProvider implements EditorNotificationProvider<EditorNotificationPanel> {
+@ExtensionImpl
+public class MissingGitignoreNotificationProvider implements EditorNotificationProvider {
     /** Current project. */
     @NotNull
     private final Project project;
@@ -73,22 +74,25 @@ public class MissingGitignoreNotificationProvider implements EditorNotificationP
      * @param project       current project
      * @param notifications notifications component
      */
+    @Inject
     public MissingGitignoreNotificationProvider(@NotNull Project project, @NotNull EditorNotifications notifications) {
         this.project = project;
         this.notifications = notifications;
         this.settings = IgnoreSettings.getInstance();
     }
 
-    /**
-     * Creates notification panel for given file and checks if is allowed to show the notification.
-     *
-     * @param file       current file
-     * @param fileEditor current file editor
-     * @return created notification panel
-     */
+    @Nonnull
+    @Override
+    public String getId() {
+        return ".ignore-missing-gitignore";
+    }
+
+    @RequiredReadAction
     @Nullable
     @Override
-    public EditorNotificationPanel createNotificationPanel(@NotNull VirtualFile file, @NotNull FileEditor fileEditor) {
+    public EditorNotificationBuilder buildNotification(
+            @Nonnull VirtualFile virtualFile, @Nonnull FileEditor fileEditor, @Nonnull Supplier<EditorNotificationBuilder> factory)
+    {
         // Break if feature is disabled in the Settings
         if (!settings.isMissingGitignore()) {
             return null;
@@ -118,20 +122,20 @@ public class MissingGitignoreNotificationProvider implements EditorNotificationP
             return null;
         }
 
-        return createPanel(project);
+        return createPanel(project, factory.get());
     }
 
     /**
      * Creates notification panel.
      *
      * @param project current project
+     * @param builder
      * @return notification panel
      */
-    private EditorNotificationPanel createPanel(@NotNull final Project project) {
-        final EditorNotificationPanel panel = new EditorNotificationPanel();
+    private EditorNotificationBuilder createPanel(@NotNull final Project project, EditorNotificationBuilder builder) {
         final IgnoreFileType fileType = GitFileType.INSTANCE;
-        panel.setText(IgnoreBundle.message("daemon.missingGitignore"));
-        panel.createActionLabel(IgnoreBundle.message("daemon.missingGitignore.create"), () -> {
+        builder.withText(IgnoreLocalize.daemonMissinggitignore());
+        builder.withAction(IgnoreLocalize.daemonAddunversionedfilesCreate(), (e) -> {
             PsiDirectory directory = PsiManager.getInstance(project).findDirectory(project.getBaseDir());
             if (directory != null) {
                 try {
@@ -143,19 +147,13 @@ public class MissingGitignoreNotificationProvider implements EditorNotificationP
                 }
             }
         });
-        panel.createActionLabel(IgnoreBundle.message("daemon.cancel"), () -> {
+        builder.withAction(IgnoreLocalize.daemonCancel(), (e) -> {
             Properties.setIgnoreMissingGitignore(project);
             notifications.updateAllNotifications();
         });
 
-        try { // ignore if older SDK does not support panel icon
-            Image icon = fileType.getIcon();
-            if (icon != null) {
-                panel.icon(TargetAWT.to(icon));
-            }
-        } catch (NoSuchMethodError ignored) {
-        }
+        builder.withIcon(fileType.getIcon());
 
-        return panel;
+        return builder;
     }
 }

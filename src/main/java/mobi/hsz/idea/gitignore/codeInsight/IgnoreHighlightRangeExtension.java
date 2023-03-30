@@ -24,8 +24,9 @@
 
 package mobi.hsz.idea.gitignore.codeInsight;
 
-import com.intellij.codeInsight.daemon.impl.HighlightRangeExtension;
-import com.intellij.psi.PsiFile;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.language.editor.HighlightRangeExtension;
+import consulo.language.psi.PsiFile;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
 import org.jetbrains.annotations.NotNull;
 
@@ -35,6 +36,7 @@ import org.jetbrains.annotations.NotNull;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 1.4
  */
+@ExtensionImpl
 public class IgnoreHighlightRangeExtension implements HighlightRangeExtension {
     /**
      * Checks if current {@link PsiFile} is allowed to enable range highlighting.
