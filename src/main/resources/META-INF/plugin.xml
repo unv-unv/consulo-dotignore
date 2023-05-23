@@ -7,6 +7,10 @@
          <tag>vcs</tag>
          <tag>editor.extension</tag>
     </tags>
+
+    <permissions>
+        <permission type="PROCESS_CREATE"/>
+    </permissions>
     <description><![CDATA[
       <h1>.ignore</h1>
       <b>.ignore</b> is a plugin for

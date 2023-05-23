@@ -35,6 +35,7 @@ import consulo.project.Project;
 import consulo.util.collection.ContainerUtil;
 import consulo.util.collection.Lists;
 import consulo.util.dataholder.Key;
+import consulo.util.lang.ObjectUtil;
 import consulo.util.lang.StringUtil;
 import consulo.versionControlSystem.root.VcsRoot;
 import consulo.virtualFileSystem.VirtualFile;
@@ -225,12 +226,12 @@ public class ExternalExec {
         }
 
         try {
-            final String cmd = bin + " " + command;
             final File workingDirectory = directory != null ? new File(directory.getPath()) : null;
-            final Process process = Runtime.getRuntime().exec(cmd, null, workingDirectory);
 
             GeneralCommandLine commandLine = new GeneralCommandLine(bin, command);
-            commandLine.withWorkDirectory(workingDirectory);
+            if (workingDirectory != null) {
+                commandLine.withWorkDirectory(workingDirectory);
+            }
 
             ProcessHandler handler = ProcessHandlerBuilder.create(commandLine).build();
             handler.addProcessListener(new ProcessListener() {
@@ -246,13 +247,13 @@ public class ExternalExec {
                 return null;
             }
             if (parser != null) {
-                parser.notifyFinished(process.exitValue());
+                parser.notifyFinished(ObjectUtil.notNull(handler.getExitCode(), 0));
                 if (parser.isErrorsReported()) {
                     return null;
                 }
                 return parser.getOutput();
             }
-        } catch (IOException | ExecutionException e) {
+        } catch (ExecutionException e) {
             LOG.warn(e);
         }
 
