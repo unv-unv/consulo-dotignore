@@ -24,20 +24,19 @@
 
 package mobi.hsz.idea.gitignore.codeInspection;
 
+import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.dotignore.codeInspection.IgnoreInspection;
-import consulo.language.editor.inspection.ProblemDescriptor;
+import consulo.language.editor.inspection.LocalInspectionToolSession;
 import consulo.language.editor.inspection.ProblemsHolder;
-import consulo.language.editor.inspection.scheme.InspectionManager;
 import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
+import consulo.language.psi.PsiElementVisitor;
 import consulo.language.psi.PsiFile;
 import consulo.util.collection.MultiMap;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.psi.IgnoreEntry;
 import mobi.hsz.idea.gitignore.psi.IgnoreFile;
 import mobi.hsz.idea.gitignore.psi.IgnoreVisitor;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
@@ -64,31 +63,33 @@ public class IgnoreDuplicateEntryInspection extends IgnoreInspection {
         return IgnoreBundle.message("codeInspection.duplicateEntry");
     }
 
-    /**
-     * Reports problems at file level. Checks if entries are duplicated by other entries.
-     *
-     * @param file       current working file yo check
-     * @param manager    {@link InspectionManager} to ask for {@link ProblemDescriptor}'s from
-     * @param isOnTheFly true if called during on the fly editor highlighting. Called from Inspect Code action
-     *                   otherwise
-     * @return <code>null</code> if no problems found or not applicable at file level
-     */
-    @Nullable
+    @Nonnull
     @Override
-    public ProblemDescriptor[] checkFile(
-            @NotNull PsiFile file, @NotNull InspectionManager manager,
-            boolean isOnTheFly)
-    {
+    public PsiElementVisitor buildVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly, @Nonnull LocalInspectionToolSession session, @Nonnull Object state) {
+        PsiFile file = holder.getFile();
         if (!(file instanceof IgnoreFile)) {
-            return null;
+            return PsiElementVisitor.EMPTY_VISITOR;
         }
 
-        final ProblemsHolder problemsHolder = new ProblemsHolder(manager, file, isOnTheFly);
+        return new PsiElementVisitor() {
+            @Override
+            @RequiredReadAction
+            public void visitFile(PsiFile file) {
+                if (file instanceof IgnoreFile ignoreFile) {
+                    checkFile(holder, ignoreFile);
+                }
+            }
+        };
+    }
+
+    @RequiredReadAction
+    private void checkFile(@Nonnull ProblemsHolder problemsHolder, @Nonnull IgnoreFile file) {
         final consulo.util.collection.MultiMap<String, IgnoreEntry> entries = MultiMap.create();
 
         file.acceptChildren(new IgnoreVisitor() {
             @Override
-            public void visitEntry(@NotNull IgnoreEntry entry) {
+            @RequiredReadAction
+            public void visitEntry(@Nonnull IgnoreEntry entry) {
                 entries.putValue(entry.getText(), entry);
                 super.visitEntry(entry);
             }
@@ -103,8 +104,6 @@ public class IgnoreDuplicateEntryInspection extends IgnoreInspection {
                         new IgnoreRemoveEntryFix(entry));
             }
         }
-
-        return problemsHolder.getResultsArray();
     }
 
     /**

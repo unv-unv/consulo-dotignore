@@ -24,15 +24,16 @@
 
 package mobi.hsz.idea.gitignore.codeInspection;
 
+import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.application.progress.ProgressManager;
 import consulo.document.Document;
 import consulo.document.FileDocumentManager;
 import consulo.dotignore.codeInspection.IgnoreInspection;
-import consulo.language.editor.inspection.ProblemDescriptor;
+import consulo.language.editor.inspection.LocalInspectionToolSession;
 import consulo.language.editor.inspection.ProblemsHolder;
-import consulo.language.editor.inspection.scheme.InspectionManager;
 import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
+import consulo.language.psi.PsiElementVisitor;
 import consulo.language.psi.PsiFile;
 import consulo.project.Project;
 import consulo.util.collection.ContainerUtil;
@@ -44,9 +45,11 @@ import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.IgnoreManager;
 import mobi.hsz.idea.gitignore.psi.IgnoreEntry;
 import mobi.hsz.idea.gitignore.psi.IgnoreFile;
-import mobi.hsz.idea.gitignore.util.*;
+import mobi.hsz.idea.gitignore.util.Constants;
+import mobi.hsz.idea.gitignore.util.Glob;
+import mobi.hsz.idea.gitignore.util.MatcherUtil;
+import mobi.hsz.idea.gitignore.util.Utils;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -129,37 +132,48 @@ public class IgnoreCoverEntryInspection extends IgnoreInspection {
         cacheMap.clear();
     }
 
-    /**
-     * Reports problems at file level. Checks if entries are covered by other entries.
-     *
-     * @param file       current working file to check
-     * @param manager    {@link InspectionManager} to ask for {@link ProblemDescriptor}'s from
-     * @param isOnTheFly true if called during on the fly editor highlighting. Called from Inspect Code action otherwise
-     * @return <code>null</code> if no problems found or not applicable at file level
-     */
-    @Nullable
+    @Nonnull
     @Override
-    public ProblemDescriptor[] checkFile(@NotNull PsiFile file, @NotNull InspectionManager manager,
-                                         boolean isOnTheFly) {
+    public PsiElementVisitor buildVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly, @Nonnull LocalInspectionToolSession session, @Nonnull Object state) {
+        PsiFile file = holder.getFile();
         final VirtualFile virtualFile = file.getVirtualFile();
         if (!(file instanceof IgnoreFile) || !Utils.isInProject(virtualFile, file.getProject())) {
-            return null;
+            return PsiElementVisitor.EMPTY_VISITOR;
+        }
+
+        return new PsiElementVisitor() {
+            @Override
+            @RequiredReadAction
+            public void visitFile(PsiFile file) {
+                if (file instanceof IgnoreFile ignoreFile) {
+                    checkFile(holder, ignoreFile, isOnTheFly);
+                }
+            }
+        };
+    }
+
+    /**
+     * Reports problems at file level. Checks if entries are covered by other entries.
+     */
+    @RequiredReadAction
+    private void checkFile(@Nonnull ProblemsHolder problemsHolder, @Nonnull IgnoreFile file, boolean isOnTheFly) {
+        final VirtualFile virtualFile = file.getVirtualFile();
+        if (!(file instanceof IgnoreFile) || !Utils.isInProject(virtualFile, file.getProject())) {
+            return;
         }
 
         final VirtualFile contextDirectory = virtualFile.getParent();
         if (contextDirectory == null) {
-            return null;
+            return;
         }
 
         final Set<String> ignored = new HashSet<>();
         final Set<String> unignored = new HashSet<>();
 
-        final ProblemsHolder problemsHolder = new ProblemsHolder(manager, file, isOnTheFly);
         final List<Pair<IgnoreEntry, IgnoreEntry>> result = new ArrayList<>();
         final Map<IgnoreEntry, Set<String>> map = new HashMap<>();
 
-        final ArrayList<IgnoreEntry> entries = ContainerUtil.newArrayList(Arrays.asList(
-                ((IgnoreFile) file).findChildrenByClass(IgnoreEntry.class)
+        final ArrayList<IgnoreEntry> entries = ContainerUtil.newArrayList(Arrays.asList(file.findChildrenByClass(IgnoreEntry.class)
         ));
         final MatcherUtil matcher = IgnoreManager.getInstance(file.getProject()).getMatcher();
         final Map<IgnoreEntry, Set<String>> matchedMap = getPathsSet(contextDirectory, entries, matcher);
@@ -211,8 +225,6 @@ public class IgnoreCoverEntryInspection extends IgnoreInspection {
             problemsHolder.registerProblem(pair.second, message(pair.first, virtualFile, isOnTheFly),
                     new IgnoreRemoveEntryFix(pair.second));
         }
-
-        return problemsHolder.getResultsArray();
     }
 
     /**
