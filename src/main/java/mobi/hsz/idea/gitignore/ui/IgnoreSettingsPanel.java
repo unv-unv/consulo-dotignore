@@ -35,6 +35,7 @@ import consulo.document.event.DocumentListener;
 import consulo.fileChooser.*;
 import consulo.language.editor.LangDataKeys;
 import consulo.platform.Platform;
+import consulo.platform.base.icon.PlatformIconGroup;
 import consulo.ui.ex.InputValidatorEx;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
@@ -427,7 +428,7 @@ public class IgnoreSettingsPanel implements Disposable {
             group.add(new AnAction(
                     IgnoreBundle.message("action.exportTemplates"),
                     IgnoreBundle.message("action.exportTemplates.description"),
-                    AllIcons.ToolbarDecorator.Export
+                    PlatformIconGroup.actionsExport()
             ) {
                 @Override
                 public void actionPerformed(@NotNull AnActionEvent event) {
