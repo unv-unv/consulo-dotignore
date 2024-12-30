@@ -35,7 +35,7 @@ import mobi.hsz.idea.gitignore.psi.IgnoreSyntax;
 import mobi.hsz.idea.gitignore.psi.IgnoreVisitor;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 /**
  * Inspection tool that checks if syntax entry has correct value.

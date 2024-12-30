@@ -7,7 +7,7 @@ import consulo.project.startup.PostStartupActivity;
 import consulo.ui.UIAccess;
 import mobi.hsz.idea.gitignore.IgnoreManager;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 /**
  * @author VISTALL

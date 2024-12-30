@@ -3,7 +3,7 @@ package consulo.dotignore.codeInspection;
 import consulo.language.editor.inspection.LocalInspectionTool;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 /**
  * @author VISTALL

@@ -29,7 +29,7 @@ import consulo.language.Language;
 import mobi.hsz.idea.gitignore.util.Constants;
 import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 /**
  * Defines the support for "Comment with Line Comment" and "Comment with Block Comment"

@@ -30,7 +30,7 @@ import consulo.language.PairedBraceMatcher;
 import mobi.hsz.idea.gitignore.psi.IgnoreTypes;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 /**
  * Definition of {@link PairedBraceMatcher} class.
