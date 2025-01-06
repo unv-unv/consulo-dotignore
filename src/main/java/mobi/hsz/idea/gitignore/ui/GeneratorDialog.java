@@ -32,6 +32,7 @@ import consulo.codeEditor.markup.HighlighterTargetArea;
 import consulo.colorScheme.TextAttributes;
 import consulo.document.Document;
 import consulo.language.psi.PsiFile;
+import consulo.platform.base.icon.PlatformIconGroup;
 import consulo.project.Project;
 import consulo.ui.ex.TreeExpander;
 import consulo.ui.ex.action.*;
@@ -81,9 +82,6 @@ public class GeneratorDialog extends DialogWrapper {
     /** {@link FilterComponent} search history key. */
     @NonNls
     private static final String TEMPLATES_FILTER_HISTORY = "TEMPLATES_FILTER_HISTORY";
-
-    /** Star icon for the favorites action. */
-    private static final Image STAR = AllIcons.Ide.Rating;
 
     /**
      * Cache set to store checked templates for the current action.
@@ -389,15 +387,15 @@ public class GeneratorDialog extends DialogWrapper {
                 filterTree(profileFilter.getTextEditor().getText());
             }
         });
-        actions.add(new AnAction(IgnoreBundle.message("dialog.generator.star"), null, STAR) {
+        actions.add(new AnAction(IgnoreBundle.message("dialog.generator.star"), null, PlatformIconGroup.nodesStar()) {
             @Override
             public void update(@NotNull AnActionEvent e) {
                 final TemplateTreeNode node = getCurrentNode();
                 boolean disabled = node == null || USER.equals(node.getContainer()) || !node.isLeaf();
                 boolean unstar = node != null && STARRED.equals(node.getContainer());
 
-                final Image icon = disabled ? ImageEffects.grayed(STAR) :
-                        (unstar ? ImageEffects.transparent(STAR) : STAR);
+                final Image icon = disabled ? ImageEffects.grayed(PlatformIconGroup.nodesStar()) :
+                        (unstar ? PlatformIconGroup.nodesStarempty() : PlatformIconGroup.nodesStar());
                 final String text = IgnoreBundle.message(unstar ? "dialog.generator.unstar" : "dialog.generator.star");
 
                 final Presentation presentation = e.getPresentation();
