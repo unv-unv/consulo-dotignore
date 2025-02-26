@@ -145,24 +145,6 @@ public class IgnoreSettingsPanel implements Disposable {
         languagesPanel = ScrollPaneFactory.createScrollPane(languagesTable);
     }
 
-    /**
-     * Creates {@link ActionLink} component with URL open action.
-     *
-     * @param title title of link
-     * @param url   url to open
-     * @return {@link ActionLink} component
-     */
-    private ActionLink createLink(@NotNull String title, @NotNull final String url) {
-        final ActionLink action = new ActionLink(title, new AnAction() {
-            @Override
-            public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
-                Platform.current().openInBrowser(url);
-            }
-        });
-        action.setBorder(JBUI.Borders.empty(0, 5));
-        return action;
-    }
-
     /** Disposes current preview {@link #editorPanel}. */
     @Override
     public void dispose() {
