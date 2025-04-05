@@ -24,25 +24,26 @@
 
 package mobi.hsz.idea.gitignore.command;
 
+import consulo.annotation.access.RequiredReadAction;
 import consulo.codeEditor.Editor;
-import consulo.language.psi.PsiDocumentManager;
-import consulo.document.Document;
 import consulo.codeEditor.EditorFactory;
 import consulo.codeEditor.VisualPosition;
+import consulo.document.Document;
+import consulo.dotignore.localize.IgnoreLocalize;
+import consulo.language.psi.PsiDocumentManager;
+import consulo.language.psi.PsiFile;
 import consulo.project.Project;
 import consulo.project.ui.notification.NotificationType;
-import consulo.util.lang.StringUtil;
-import consulo.language.psi.PsiFile;
 import consulo.util.collection.ContainerUtil;
+import consulo.util.lang.StringUtil;
 import consulo.virtualFileSystem.VirtualFile;
-import mobi.hsz.idea.gitignore.IgnoreBundle;
+import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.psi.IgnoreEntry;
 import mobi.hsz.idea.gitignore.psi.IgnoreVisitor;
 import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
 import mobi.hsz.idea.gitignore.util.Constants;
 import mobi.hsz.idea.gitignore.util.Notify;
 import mobi.hsz.idea.gitignore.util.Utils;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -84,8 +85,13 @@ public class AppendFileCommandAction extends CommandAction<PsiFile> {
      * @param ignoreDuplicates ignore duplicated entries
      * @param ignoreComments   ignore comments and empty lines
      */
-    public AppendFileCommandAction(@NotNull Project project, @NotNull PsiFile file, @NotNull Set<String> content,
-								   boolean ignoreDuplicates, boolean ignoreComments) {
+    public AppendFileCommandAction(
+        @Nonnull Project project,
+        @Nonnull PsiFile file,
+        @Nonnull Set<String> content,
+        boolean ignoreDuplicates,
+        boolean ignoreComments
+    ) {
         super(project);
         this.project = project;
         this.file = file;
@@ -106,8 +112,13 @@ public class AppendFileCommandAction extends CommandAction<PsiFile> {
      * @param ignoreDuplicates ignore duplicated entries
      * @param ignoreComments   ignore comments and empty lines
      */
-    public AppendFileCommandAction(@NotNull Project project, @NotNull PsiFile file, @NotNull final String content,
-                                   boolean ignoreDuplicates, boolean ignoreComments) {
+    public AppendFileCommandAction(
+        @Nonnull Project project,
+        @Nonnull PsiFile file, 
+        @Nonnull String content,
+        boolean ignoreDuplicates, 
+        boolean ignoreComments
+    ) {
         this(project, file, Set.of(content), ignoreDuplicates, ignoreComments);
     }
 
@@ -119,21 +130,19 @@ public class AppendFileCommandAction extends CommandAction<PsiFile> {
     @Override
     protected PsiFile compute() {
         if (!content.isEmpty()) {
-            final Document document = manager.getDocument(file);
+            Document document = manager.getDocument(file);
             if (document != null) {
                 file.acceptChildren(new IgnoreVisitor() {
                     @Override
-                    public void visitEntry(@NotNull IgnoreEntry entry) {
-                        final VirtualFile baseDir = project.getBaseDir();
+                    @RequiredReadAction
+                    public void visitEntry(@Nonnull IgnoreEntry entry) {
+                        VirtualFile baseDir = project.getBaseDir();
                         if (content.contains(entry.getText()) && baseDir != null) {
                             Notify.show(
-                                    project,
-                                    IgnoreBundle.message("action.appendFile.entryExists", entry.getText()),
-                                    IgnoreBundle.message(
-                                            "action.appendFile.entryExists.in",
-                                            Utils.getRelativePath(baseDir, file.getVirtualFile())
-                                    ),
-                                    NotificationType.WARNING
+                                project,
+                                IgnoreLocalize.actionAppendfileEntryexists(entry.getText()).get(),
+                                IgnoreLocalize.actionAppendfileEntryexistsIn(Utils.getRelativePath(baseDir, file.getVirtualFile())).get(),
+                                NotificationType.WARNING
                             );
                             content.remove(entry.getText());
                         }
@@ -155,8 +164,8 @@ public class AppendFileCommandAction extends CommandAction<PsiFile> {
                 for (String entry : content) {
                     if (ignoreDuplicates) {
                         List<String> currentLines = ContainerUtil.filter(
-                                document.getText().split(Constants.NEWLINE),
-                                s -> !s.isEmpty() && !s.startsWith(Constants.HASH)
+                            document.getText().split(Constants.NEWLINE),
+                            s -> !s.isEmpty() && !s.startsWith(Constants.HASH)
                         );
 
                         List<String> entryLines = new ArrayList<>(Arrays.asList(entry.split(Constants.NEWLINE)));
@@ -169,7 +178,8 @@ public class AppendFileCommandAction extends CommandAction<PsiFile> {
 
                             if (currentLines.contains(line)) {
                                 iterator.remove();
-                            } else {
+                            }
+                            else {
                                 currentLines.add(line);
                             }
                         }
@@ -195,7 +205,7 @@ public class AppendFileCommandAction extends CommandAction<PsiFile> {
                         entry += Constants.NEWLINE;
                     }
                     if (!insertAtCursor && !document.getText().endsWith(Constants.NEWLINE)
-                            && !StringUtil.isEmpty(entry)) {
+                        && !StringUtil.isEmpty(entry)) {
                         entry = Constants.NEWLINE + entry;
                     }
 

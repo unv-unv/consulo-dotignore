@@ -26,8 +26,8 @@ package mobi.hsz.idea.gitignore.actions;
 
 import consulo.application.dumb.DumbAware;
 import consulo.dotignore.IgnoreNotificationGroup;
+import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.ide.IdeView;
-import consulo.language.editor.CommonDataKeys;
 import consulo.language.psi.PsiDirectory;
 import consulo.language.psi.PsiFile;
 import consulo.language.psi.PsiManager;
@@ -35,15 +35,15 @@ import consulo.project.Project;
 import consulo.project.ui.notification.Notification;
 import consulo.project.ui.notification.NotificationType;
 import consulo.project.ui.notification.Notifications;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
 import consulo.virtualFileSystem.VirtualFile;
-import mobi.hsz.idea.gitignore.IgnoreBundle;
+import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.command.CreateFileCommandAction;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.ui.GeneratorDialog;
 import mobi.hsz.idea.gitignore.util.Utils;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Creates new file or returns existing one.
@@ -62,7 +62,7 @@ public class NewFileAction extends AnAction implements DumbAware {
     /**
      * Builds a new instance of {@link NewFileAction}.
      */
-    public NewFileAction(@NotNull IgnoreFileType fileType) {
+    public NewFileAction(@Nonnull IgnoreFileType fileType) {
         this.fileType = fileType;
     }
 
@@ -72,16 +72,18 @@ public class NewFileAction extends AnAction implements DumbAware {
      * @param e action event
      */
     @Override
-    public void actionPerformed(@NotNull AnActionEvent e) {
-        final Project project = e.getRequiredData(CommonDataKeys.PROJECT);
-        final IdeView view = e.getRequiredData(IdeView.KEY);
+    @RequiredUIAccess
+    public void actionPerformed(@Nonnull AnActionEvent e) {
+        Project project = e.getRequiredData(Project.KEY);
+        IdeView view = e.getRequiredData(IdeView.KEY);
 
         VirtualFile fixedDirectory = fileType.getIgnoreLanguage().getFixedDirectory(project);
         PsiDirectory directory;
 
         if (fixedDirectory != null) {
             directory = PsiManager.getInstance(project).findDirectory(fixedDirectory);
-        } else {
+        }
+        else {
             directory = view.getOrChooseDirectory();
         }
 
@@ -97,13 +99,17 @@ public class NewFileAction extends AnAction implements DumbAware {
         if (file == null && virtualFile == null) {
             CreateFileCommandAction action = new CreateFileCommandAction(project, directory, fileType);
             dialog = new GeneratorDialog(project, action);
-        } else {
-            Notifications.Bus.notify(new Notification(
+        }
+        else {
+            Notifications.Bus.notify(
+                new Notification(
                     IgnoreNotificationGroup.GROUP,
-                    IgnoreBundle.message("action.newFile.exists", fileType.getLanguageName()),
-                    IgnoreBundle.message("action.newFile.exists.in", virtualFile.getPath()),
+                    IgnoreLocalize.actionNewfileExists(fileType.getLanguageName()).get(),
+                    IgnoreLocalize.actionNewfileExistsIn(virtualFile.getPath()).get(),
                     NotificationType.INFORMATION
-            ), project);
+                ),
+                project
+            );
 
             if (file == null) {
                 file = Utils.getPsiFile(project, virtualFile);
@@ -126,13 +132,14 @@ public class NewFileAction extends AnAction implements DumbAware {
      * @param e action event
      */
     @Override
-    public void update(@NotNull AnActionEvent e) {
-        final Project project = e.getData(CommonDataKeys.PROJECT);
-        final IdeView view = e.getData(IdeView.KEY);
+    @RequiredUIAccess
+    public void update(@Nonnull AnActionEvent e) {
+        Project project = e.getData(Project.KEY);
+        IdeView view = e.getData(IdeView.KEY);
 
-        final PsiDirectory[] directory = view != null ? view.getDirectories() : null;
+        PsiDirectory[] directory = view != null ? view.getDirectories() : null;
         if (directory == null || directory.length == 0 || project == null ||
-                !this.fileType.getIgnoreLanguage().isNewAllowed()) {
+            !this.fileType.getIgnoreLanguage().isNewAllowed()) {
             e.getPresentation().setVisible(false);
         }
     }

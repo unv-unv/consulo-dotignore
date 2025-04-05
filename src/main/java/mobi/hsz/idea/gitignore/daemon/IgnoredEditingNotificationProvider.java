@@ -27,18 +27,20 @@ package mobi.hsz.idea.gitignore.daemon;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.dotignore.localize.IgnoreLocalize;
-import consulo.fileEditor.*;
+import consulo.fileEditor.EditorNotificationBuilder;
+import consulo.fileEditor.EditorNotificationProvider;
+import consulo.fileEditor.EditorNotifications;
+import consulo.fileEditor.FileEditor;
 import consulo.project.Project;
 import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import jakarta.inject.Inject;
 import mobi.hsz.idea.gitignore.IgnoreManager;
 import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
 import mobi.hsz.idea.gitignore.util.Icons;
 import mobi.hsz.idea.gitignore.util.Properties;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import jakarta.annotation.Nonnull;
 import java.util.function.Supplier;
 
 /**
@@ -50,19 +52,19 @@ import java.util.function.Supplier;
 @ExtensionImpl
 public class IgnoredEditingNotificationProvider implements EditorNotificationProvider {
     /** Current project. */
-    @NotNull
+    @Nonnull
     private final Project project;
 
     /** Notifications component. */
-    @NotNull
+    @Nonnull
     private final EditorNotifications notifications;
 
     /** Plugin settings holder. */
-    @NotNull
+    @Nonnull
     private final IgnoreSettings settings;
 
     /** {@link IgnoreManager} instance. */
-    @NotNull
+    @Nonnull
     private final IgnoreManager manager;
 
     /**
@@ -72,7 +74,7 @@ public class IgnoredEditingNotificationProvider implements EditorNotificationPro
      * @param notifications notifications component
      */
     @Inject
-    public IgnoredEditingNotificationProvider(@NotNull Project project, @NotNull EditorNotifications notifications) {
+    public IgnoredEditingNotificationProvider(@Nonnull Project project, @Nonnull EditorNotifications notifications) {
         this.project = project;
         this.notifications = notifications;
         this.settings = IgnoreSettings.getInstance();
@@ -89,20 +91,25 @@ public class IgnoredEditingNotificationProvider implements EditorNotificationPro
     @Nullable
     @Override
     public EditorNotificationBuilder buildNotification(
-            @Nonnull VirtualFile file, @Nonnull FileEditor fileEditor, @Nonnull Supplier<EditorNotificationBuilder> supplier)
-    {
+        @Nonnull VirtualFile file,
+        @Nonnull FileEditor fileEditor,
+        @Nonnull Supplier<EditorNotificationBuilder> supplier
+    ) {
         if (!settings.isNotifyIgnoredEditing() || !manager.isFileIgnored(file) ||
-                Properties.isDismissedIgnoredEditingNotification(project, file)) {
+            Properties.isDismissedIgnoredEditingNotification(project, file)) {
             return null;
         }
 
         EditorNotificationBuilder builder = supplier.get();
 
         builder.withText(IgnoreLocalize.daemonIgnoredediting());
-        builder.withAction(IgnoreLocalize.daemonOk(), (e) -> {
-            Properties.setDismissedIgnoredEditingNotification(project, file);
-            notifications.updateAllNotifications();
-        });
+        builder.withAction(
+            IgnoreLocalize.daemonOk(),
+            (e) -> {
+                Properties.setDismissedIgnoredEditingNotification(project, file);
+                notifications.updateAllNotifications();
+            }
+        );
 
         builder.withIcon(Icons.IGNORE);
         return builder;

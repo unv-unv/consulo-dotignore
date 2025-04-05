@@ -24,27 +24,26 @@
 
 package mobi.hsz.idea.gitignore.actions;
 
-import consulo.language.editor.CommonDataKeys;
+import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.language.psi.PsiFile;
+import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import consulo.project.ui.notification.NotificationType;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnActionEvent;
 import consulo.ui.ex.action.DumbAwareAction;
 import consulo.util.lang.StringUtil;
 import consulo.virtualFileSystem.VirtualFile;
-import mobi.hsz.idea.gitignore.IgnoreBundle;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import mobi.hsz.idea.gitignore.command.AppendFileCommandAction;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.util.Notify;
 import mobi.hsz.idea.gitignore.util.Utils;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.PropertyKey;
 
 import java.util.HashSet;
 import java.util.Set;
-
-import static mobi.hsz.idea.gitignore.IgnoreBundle.BUNDLE_NAME;
+import java.util.function.Function;
 
 /**
  * Action that adds currently selected {@link VirtualFile} to the specified Ignore {@link VirtualFile}.
@@ -91,7 +90,7 @@ public class IgnoreFileAction extends DumbAwareAction {
      * @param virtualFile Gitignore file
      */
     public IgnoreFileAction(@Nullable IgnoreFileType fileType, @Nullable VirtualFile virtualFile) {
-        this(fileType, virtualFile, "action.addToIgnore", "action.addToIgnore.description");
+        this(fileType, virtualFile, IgnoreLocalize::actionAddtoignore, IgnoreLocalize::actionAddtoignoreDescription);
     }
 
     /**
@@ -104,16 +103,16 @@ public class IgnoreFileAction extends DumbAwareAction {
      * @param descriptionKey Action presentation's description key
      */
     public IgnoreFileAction(
-            @Nullable IgnoreFileType fileType, @Nullable VirtualFile virtualFile,
-            @PropertyKey(resourceBundle = BUNDLE_NAME) String textKey,
-            @PropertyKey(resourceBundle = BUNDLE_NAME) String descriptionKey)
-    {
-        super(IgnoreBundle.message(textKey, fileType != null ? fileType.getIgnoreLanguage().getFilename() : null),
-                IgnoreBundle.message(
-                        descriptionKey,
-                        fileType != null ? fileType.getIgnoreLanguage().getFilename() : null
-                ),
-                fileType != null ? fileType.getIcon() : null);
+        @Nullable IgnoreFileType fileType,
+        @Nullable VirtualFile virtualFile,
+        @Nonnull Function<String, LocalizeValue> textKey,
+        @Nonnull Function<String, LocalizeValue> descriptionKey
+    ) {
+        super(
+            textKey.apply(fileType != null ? fileType.getIgnoreLanguage().getFilename() : null),
+            descriptionKey.apply(fileType != null ? fileType.getIgnoreLanguage().getFilename() : null),
+            fileType != null ? fileType.getIcon() : null
+        );
         this.ignoreFile = virtualFile;
         this.fileType = fileType;
     }
@@ -128,9 +127,10 @@ public class IgnoreFileAction extends DumbAwareAction {
      * @param e action event
      */
     @Override
-    public void actionPerformed(@NotNull AnActionEvent e) {
-        final VirtualFile[] files = e.getRequiredData(CommonDataKeys.VIRTUAL_FILE_ARRAY);
-        final Project project = e.getRequiredData(CommonDataKeys.PROJECT);
+    @RequiredUIAccess
+    public void actionPerformed(@Nonnull AnActionEvent e) {
+        VirtualFile[] files = e.getRequiredData(VirtualFile.KEY_OF_ARRAY);
+        Project project = e.getRequiredData(Project.KEY);
 
         PsiFile ignore = null;
         if (ignoreFile != null) {
@@ -143,31 +143,27 @@ public class IgnoreFileAction extends DumbAwareAction {
         if (ignore != null) {
             Set<String> paths = new HashSet<>();
             for (VirtualFile file : files) {
-                final String path = getPath(ignore.getVirtualFile().getParent(), file);
+                String path = getPath(ignore.getVirtualFile().getParent(), file);
                 if (path.isEmpty()) {
-                    final VirtualFile baseDir = project.getBaseDir();
+                    VirtualFile baseDir = project.getBaseDir();
                     if (baseDir != null) {
                         Notify.show(
-                                project,
-                                IgnoreBundle.message(
-                                        "action.ignoreFile.addError",
-                                        Utils.getRelativePath(baseDir, file)
-                                ),
-                                IgnoreBundle.message(
-                                        "action.ignoreFile.addError.to",
-                                        Utils.getRelativePath(baseDir, ignore.getVirtualFile())
-                                ),
-                                NotificationType.ERROR
+                            project,
+                            IgnoreLocalize.actionIgnorefileAdderror(Utils.getRelativePath(baseDir, file)).get(),
+                            IgnoreLocalize.actionIgnorefileAdderrorTo(Utils.getRelativePath(baseDir, ignore.getVirtualFile())).get(),
+                            NotificationType.ERROR
                         );
                     }
-                } else {
+                }
+                else {
                     paths.add(path);
                 }
             }
             Utils.openFile(project, ignore);
             try {
                 new AppendFileCommandAction(project, ignore, paths, false, false).execute();
-            } catch (Throwable throwable) {
+            }
+            catch (Throwable throwable) {
                 throwable.printStackTrace();
             }
         }
@@ -179,9 +175,10 @@ public class IgnoreFileAction extends DumbAwareAction {
      * @param e action event
      */
     @Override
-    public void update(@NotNull AnActionEvent e) {
-        final VirtualFile[] files = e.getData(CommonDataKeys.VIRTUAL_FILE_ARRAY);
-        final Project project = e.getData(Project.KEY);
+    @RequiredUIAccess
+    public void update(@Nonnull AnActionEvent e) {
+        VirtualFile[] files = e.getData(VirtualFile.KEY_OF_ARRAY);
+        Project project = e.getData(Project.KEY);
 
         if (project == null || files == null || (files.length == 1 && files[0].equals(project.getBaseDir()))) {
             e.getPresentation().setVisible(false);
@@ -195,8 +192,8 @@ public class IgnoreFileAction extends DumbAwareAction {
      * @param file file used for generating output path
      * @return relative path
      */
-    @NotNull
-    protected String getPath(@NotNull VirtualFile root, @NotNull VirtualFile file) {
+    @Nonnull
+    protected String getPath(@Nonnull VirtualFile root, @Nonnull VirtualFile file) {
         String path = StringUtil.notNullize(Utils.getRelativePath(root, file));
         path = StringUtil.escapeChar(path, '[');
         path = StringUtil.escapeChar(path, ']');

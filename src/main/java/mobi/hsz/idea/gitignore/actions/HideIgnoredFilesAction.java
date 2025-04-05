@@ -24,13 +24,15 @@
 
 package mobi.hsz.idea.gitignore.actions;
 
+import consulo.dotignore.localize.IgnoreLocalize;
+import consulo.localize.LocalizeValue;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
 import consulo.ui.ex.action.Presentation;
-import mobi.hsz.idea.gitignore.IgnoreBundle;
+import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
 import mobi.hsz.idea.gitignore.util.Icons;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Action that hides or show ignored files in the project tree view.
@@ -44,7 +46,7 @@ public class HideIgnoredFilesAction extends AnAction {
 
     /** Builds a new instance of {@link HideIgnoredFilesAction}. */
     public HideIgnoredFilesAction() {
-        super(getText(), "", Icons.IGNORE);
+        super(getText(), LocalizeValue.empty(), Icons.IGNORE);
     }
 
     /**
@@ -52,9 +54,10 @@ public class HideIgnoredFilesAction extends AnAction {
      *
      * @return presentation text
      */
-    private static String getText() {
-        final boolean hideIgnoredFiles = SETTINGS.isHideIgnoredFiles();
-        return IgnoreBundle.message(hideIgnoredFiles ? "action.showIgnoredVisibility" : "action.hideIgnoredVisibility");
+    @Nonnull
+    private static LocalizeValue getText() {
+        boolean hideIgnoredFiles = SETTINGS.isHideIgnoredFiles();
+        return hideIgnoredFiles ? IgnoreLocalize.actionShowignoredvisibility() : IgnoreLocalize.actionHideignoredvisibility();
     }
 
     /**
@@ -63,10 +66,11 @@ public class HideIgnoredFilesAction extends AnAction {
      * @param e action event
      */
     @Override
-    public void actionPerformed(@NotNull AnActionEvent e) {
+    @RequiredUIAccess
+    public void actionPerformed(@Nonnull AnActionEvent e) {
         SETTINGS.setHideIgnoredFiles(!SETTINGS.isHideIgnoredFiles());
 
-        final Presentation presentation = this.getTemplatePresentation();
-        presentation.setText(getText());
+        Presentation presentation = this.getTemplatePresentation();
+        presentation.setTextValue(getText());
     }
 }

@@ -24,9 +24,9 @@
 
 package mobi.hsz.idea.gitignore.actions;
 
+import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.ui.ex.action.Presentation;
 import mobi.hsz.idea.gitignore.Common;
-import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import org.junit.Assert;
 
@@ -40,8 +40,8 @@ public class AddTemplateActionTest extends Common<AddTemplateAction> {
         Presentation presentation;
 
         presentation = myFixture.testAction(action);
-        Assert.assertEquals(IgnoreBundle.message("action.addTemplate"), presentation.getText());
-        Assert.assertEquals(IgnoreBundle.message("action.addTemplate.description"), presentation.getDescription());
+        Assert.assertEquals(IgnoreLocalize.actionAddtemplate().get(), presentation.getText());
+        Assert.assertEquals(IgnoreLocalize.actionAddtemplateDescription().get(), presentation.getDescription());
         Assert.assertFalse("Action is not visible if there is no Ignore file context", presentation.isEnabledAndVisible());
 
         myFixture.configureByText(IgnoreFileType.INSTANCE, "foo");

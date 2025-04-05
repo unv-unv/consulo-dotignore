@@ -25,9 +25,9 @@
 package mobi.hsz.idea.gitignore.psi;
 
 import consulo.language.psi.PsiElement;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.regex.Pattern;
 
@@ -49,7 +49,7 @@ public interface IgnoreEntryBase extends PsiElement
      *
      * @return current syntax
      */
-    @NotNull
+    @Nonnull
     IgnoreBundle.Syntax getSyntax();
 
     /**
@@ -57,7 +57,7 @@ public interface IgnoreEntryBase extends PsiElement
      *
      * @return value
      */
-    @NotNull
+    @Nonnull
     String getValue();
 
     /**

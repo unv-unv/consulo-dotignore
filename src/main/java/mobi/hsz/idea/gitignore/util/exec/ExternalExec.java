@@ -40,16 +40,17 @@ import consulo.util.lang.StringUtil;
 import consulo.versionControlSystem.root.VcsRoot;
 import consulo.virtualFileSystem.VirtualFile;
 import git4idea.config.GitExecutableManager;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
 import mobi.hsz.idea.gitignore.lang.kind.GitLanguage;
 import mobi.hsz.idea.gitignore.util.Utils;
-import mobi.hsz.idea.gitignore.util.exec.parser.*;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import mobi.hsz.idea.gitignore.util.exec.parser.ExecutionOutputParser;
+import mobi.hsz.idea.gitignore.util.exec.parser.GitExcludesOutputParser;
+import mobi.hsz.idea.gitignore.util.exec.parser.GitUnignoredFilesOutputParser;
+import mobi.hsz.idea.gitignore.util.exec.parser.SimpleOutputParser;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,19 +73,15 @@ public class ExternalExec {
     private static final boolean GIT_ENABLED = Utils.isGitPluginEnabled();
 
     /** Git command to get user's excludesfile path. */
-    @NonNls
     private static final String GIT_CONFIG_EXCLUDES_FILE = "config --global core.excludesfile";
 
     /** Git command to list unversioned files. */
-    @NonNls
     private static final String GIT_UNIGNORED_FILES = "clean -dn";
 
     /** Git command to list ignored but tracked files. */
-    @NonNls
     private static final String GIT_IGNORED_FILES = "ls-files -i --exclude-standard";
 
     /** Git command to remove file from tracking. */
-    @NonNls
     private static final String GIT_REMOVE_FILE_FROM_TRACKING = "rm --cached --force";
 
     /**
@@ -105,20 +102,21 @@ public class ExternalExec {
      * @param file     current file
      * @return unignored files list
      */
-    @NotNull
+    @Nonnull
     public static List<String> getUnignoredFiles(
-            @NotNull IgnoreLanguage language, @NotNull Project project,
-            @NotNull VirtualFile file)
-    {
+        @Nonnull IgnoreLanguage language,
+        @Nonnull Project project,
+        @Nonnull VirtualFile file
+    ) {
         if (!Utils.isInProject(file, project)) {
-            return ContainerUtil.newArrayList();
+            return new ArrayList<>();
         }
 
         ArrayList<String> result = run(
-                language,
-                GIT_UNIGNORED_FILES,
-                file.getParent(),
-                new GitUnignoredFilesOutputParser()
+            language,
+            GIT_UNIGNORED_FILES,
+            file.getParent(),
+            new GitUnignoredFilesOutputParser()
         );
         return Lists.notNullize(result);
     }
@@ -129,13 +127,13 @@ public class ExternalExec {
      * @param vcsRoot repository to check
      * @return unignored files list
      */
-    @NotNull
-    public static List<String> getIgnoredFiles(@NotNull VcsRoot vcsRoot) {
+    @Nonnull
+    public static List<String> getIgnoredFiles(@Nonnull VcsRoot vcsRoot) {
         ArrayList<String> result = run(
-                GitLanguage.INSTANCE,
-                GIT_IGNORED_FILES,
-                vcsRoot.getPath(),
-                new SimpleOutputParser()
+            GitLanguage.INSTANCE,
+            GIT_IGNORED_FILES,
+            vcsRoot.getPath(),
+            new SimpleOutputParser()
         );
         return Lists.notNullize(result);
     }
@@ -146,10 +144,10 @@ public class ExternalExec {
      * @param file    to untrack
      * @param vcsRoot file's repository
      */
-    public static void removeFileFromTracking(@NotNull VirtualFile file, @NotNull VcsRoot vcsRoot) {
-        final VirtualFile root = vcsRoot.getPath();
+    public static void removeFileFromTracking(@Nonnull VirtualFile file, @Nonnull VcsRoot vcsRoot) {
+        VirtualFile root = vcsRoot.getPath();
         if (root != null) {
-            final String command = GIT_REMOVE_FILE_FROM_TRACKING + " " + Utils.getRelativePath(root, file);
+            String command = GIT_REMOVE_FILE_FROM_TRACKING + " " + Utils.getRelativePath(root, file);
             run(GitLanguage.INSTANCE, command, root);
         }
     }
@@ -162,9 +160,9 @@ public class ExternalExec {
      * @return path to binary
      */
     @Nullable
-    private static String bin(@NotNull IgnoreLanguage language) {
+    private static String bin(@Nonnull IgnoreLanguage language) {
         if (GitLanguage.INSTANCE.equals(language) && GIT_ENABLED) {
-            final String bin = GitExecutableManager.getInstance().getPathToGit();
+            String bin = GitExecutableManager.getInstance().getPathToGit();
             return StringUtil.nullize(bin);
         }
         return null;
@@ -182,9 +180,11 @@ public class ExternalExec {
      */
     @Nullable
     private static <T> T runForSingle(
-            @NotNull IgnoreLanguage language, @NotNull String command,
-            @Nullable VirtualFile directory, @NotNull final ExecutionOutputParser<T> parser)
-    {
+        @Nonnull IgnoreLanguage language,
+        @Nonnull String command,
+        @Nullable VirtualFile directory,
+        @Nonnull ExecutionOutputParser<T> parser
+    ) {
         return ContainerUtil.getFirstItem(run(language, command, directory, parser));
     }
 
@@ -196,10 +196,10 @@ public class ExternalExec {
      * @param directory current working directory
      */
     private static void run(
-            @NotNull IgnoreLanguage language,
-            @NotNull String command,
-            @Nullable VirtualFile directory)
-    {
+        @Nonnull IgnoreLanguage language,
+        @Nonnull String command,
+        @Nullable VirtualFile directory
+    ) {
         run(language, command, directory, null);
     }
 
@@ -215,18 +215,18 @@ public class ExternalExec {
      */
     @Nullable
     private static <T> ArrayList<T> run(
-            @NotNull IgnoreLanguage language,
-            @NotNull String command,
-            @Nullable VirtualFile directory,
-            @Nullable final ExecutionOutputParser<T> parser)
-    {
-        final String bin = bin(language);
+        @Nonnull IgnoreLanguage language,
+        @Nonnull String command,
+        @Nullable VirtualFile directory,
+        @Nullable ExecutionOutputParser<T> parser
+    ) {
+        String bin = bin(language);
         if (bin == null) {
             return null;
         }
 
         try {
-            final File workingDirectory = directory != null ? new File(directory.getPath()) : null;
+            File workingDirectory = directory != null ? new File(directory.getPath()) : null;
 
             GeneralCommandLine commandLine = new GeneralCommandLine(bin, command);
             if (workingDirectory != null) {
@@ -253,7 +253,8 @@ public class ExternalExec {
                 }
                 return parser.getOutput();
             }
-        } catch (ExecutionException e) {
+        }
+        catch (ExecutionException e) {
             LOG.warn(e);
         }
 

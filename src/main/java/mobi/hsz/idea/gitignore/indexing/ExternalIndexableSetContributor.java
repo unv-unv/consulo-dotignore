@@ -25,15 +25,15 @@
 package mobi.hsz.idea.gitignore.indexing;
 
 import consulo.annotation.component.ExtensionImpl;
-import consulo.util.collection.ContainerUtil;
-import consulo.virtualFileSystem.VirtualFile;
 import consulo.language.psi.stub.IndexableSetContributor;
 import consulo.project.Project;
+import consulo.util.collection.ContainerUtil;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.IgnoreManager;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -60,15 +60,15 @@ public class ExternalIndexableSetContributor extends IndexableSetContributor {
      * @param project current project
      * @return additional files
      */
-    @NotNull
-    public static HashSet<VirtualFile> getAdditionalFiles(@NotNull Project project) {
-        final HashSet<VirtualFile> files = new HashSet<>();
+    @Nonnull
+    public static HashSet<VirtualFile> getAdditionalFiles(@Nonnull Project project) {
+        HashSet<VirtualFile> files = new HashSet<>();
 
         if (CACHE.containsKey(project)) {
             files.addAll(ContainerUtil.filter(CACHE.get(project), VirtualFile::isValid));
         } else {
             for (IgnoreLanguage language : IgnoreBundle.LANGUAGES) {
-                final IgnoreFileType fileType = language.getFileType();
+                IgnoreFileType fileType = language.getFileType();
                 if (language.isOuterFileSupported()) {
                     for (VirtualFile file : language.getOuterFiles(project, true)) {
                         if (file == null || !file.isValid()) {
@@ -93,9 +93,9 @@ public class ExternalIndexableSetContributor extends IndexableSetContributor {
      * @return an additional project-dependent set of {@link VirtualFile} instances to index, the returned set should
      * not contain nulls or invalid files
      */
-    @NotNull
+    @Nonnull
     @Override
-    public Set<VirtualFile> getAdditionalProjectRootsToIndex(@NotNull Project project) {
+    public Set<VirtualFile> getAdditionalProjectRootsToIndex(@Nonnull Project project) {
         return getAdditionalFiles(project);
     }
 
@@ -104,7 +104,7 @@ public class ExternalIndexableSetContributor extends IndexableSetContributor {
      *
      * @return {@link #EMPTY_SET}
      */
-    @NotNull
+    @Nonnull
     @Override
     public Set<VirtualFile> getAdditionalRootsToIndex() {
         return EMPTY_SET;
@@ -124,7 +124,7 @@ public class ExternalIndexableSetContributor extends IndexableSetContributor {
      *
      * @param project current project
      */
-    public static void invalidateCache(@NotNull Project project) {
+    public static void invalidateCache(@Nonnull Project project) {
         CACHE.remove(project);
     }
 }

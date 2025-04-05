@@ -24,16 +24,24 @@
 
 package mobi.hsz.idea.gitignore;
 
+import consulo.annotation.DeprecationInfo;
+import consulo.annotation.internal.MigratedExtensionsTo;
 import consulo.application.CommonBundle;
+import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.util.collection.ContainerUtil;
 import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
 import mobi.hsz.idea.gitignore.lang.kind.*;
 import mobi.hsz.idea.gitignore.util.CachedConcurrentMap;
-import org.jetbrains.annotations.*;
+import org.jetbrains.annotations.PropertyKey;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.ResourceBundle;
 
 /**
  * {@link ResourceBundle}/localization utils for the .ignore support plugin.
@@ -41,14 +49,16 @@ import java.util.*;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 0.4
  */
+@Deprecated
+@DeprecationInfo("Use IgnoreLocalize")
+@MigratedExtensionsTo(IgnoreLocalize.class)
 public class IgnoreBundle {
 
     /** The {@link ResourceBundle} path. */
-    @NonNls
     public static final String BUNDLE_NAME = "messages.IgnoreBundle";
 
     /** The {@link ResourceBundle} instance. */
-    @NotNull
+    @Nonnull
     private static final ResourceBundle BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
 
     /** {@link IgnoreBundle} is a non-instantiable static class. */
@@ -57,51 +67,51 @@ public class IgnoreBundle {
 
     /** Available IgnoreFileType instances. */
     public static final IgnoreLanguages LANGUAGES = new IgnoreLanguages(Arrays.asList(
-            BazaarLanguage.INSTANCE,
-            CloudFoundryLanguage.INSTANCE,
-            ChefLanguage.INSTANCE,
-            CvsLanguage.INSTANCE,
-            DarcsLanguage.INSTANCE,
-            DockerLanguage.INSTANCE,
-            ElasticBeanstalkLanguage.INSTANCE,
-            ESLintLanguage.INSTANCE,
-            FloobitsLanguage.INSTANCE,
-            FossilLanguage.INSTANCE,
-            GitLanguage.INSTANCE,
-            GitExcludeLanguage.INSTANCE,
-            GoogleCloudLanguage.INSTANCE,
-            HelmLanguage.INSTANCE,
-            JetpackLanguage.INSTANCE,
-            JSHintLanguage.INSTANCE,
-            MercurialLanguage.INSTANCE,
-            MonotoneLanguage.INSTANCE,
-            NodemonLanguage.INSTANCE,
-            NpmLanguage.INSTANCE,
-            NuxtJSLanguage.INSTANCE,
-            PerforceLanguage.INSTANCE,
-            PrettierLanguage.INSTANCE,
-            StyleLintLanguage.INSTANCE,
-            StylintLanguage.INSTANCE,
-            SwaggerCodegenLanguage.INSTANCE,
-            TFLanguage.INSTANCE,
-            UpLanguage.INSTANCE
+        BazaarLanguage.INSTANCE,
+        CloudFoundryLanguage.INSTANCE,
+        ChefLanguage.INSTANCE,
+        CvsLanguage.INSTANCE,
+        DarcsLanguage.INSTANCE,
+        DockerLanguage.INSTANCE,
+        ElasticBeanstalkLanguage.INSTANCE,
+        ESLintLanguage.INSTANCE,
+        FloobitsLanguage.INSTANCE,
+        FossilLanguage.INSTANCE,
+        GitLanguage.INSTANCE,
+        GitExcludeLanguage.INSTANCE,
+        GoogleCloudLanguage.INSTANCE,
+        HelmLanguage.INSTANCE,
+        JetpackLanguage.INSTANCE,
+        JSHintLanguage.INSTANCE,
+        MercurialLanguage.INSTANCE,
+        MonotoneLanguage.INSTANCE,
+        NodemonLanguage.INSTANCE,
+        NpmLanguage.INSTANCE,
+        NuxtJSLanguage.INSTANCE,
+        PerforceLanguage.INSTANCE,
+        PrettierLanguage.INSTANCE,
+        StyleLintLanguage.INSTANCE,
+        StylintLanguage.INSTANCE,
+        SwaggerCodegenLanguage.INSTANCE,
+        TFLanguage.INSTANCE,
+        UpLanguage.INSTANCE
     ));
 
     /** Available IgnoreFileType instances filtered with {@link IgnoreLanguage#isVCS()} condition. */
     public static final IgnoreLanguages VCS_LANGUAGES = new IgnoreLanguages(
-            ContainerUtil.filter(LANGUAGES, IgnoreLanguage::isVCS)
+        ContainerUtil.filter(LANGUAGES, IgnoreLanguage::isVCS)
     );
 
     /** Contains information about enabled/disabled languages. */
     public static final CachedConcurrentMap<IgnoreFileType, Boolean> ENABLED_LANGUAGES = CachedConcurrentMap.create(
-            key -> key.getIgnoreLanguage().isEnabled()
+        key -> key.getIgnoreLanguage().isEnabled()
     );
 
     /** Available syntax list. */
     public enum Syntax {
-        GLOB, REGEXP;
+        GLOB,
+        REGEXP;
 
-        @NonNls
         private static final String KEY = "syntax:";
 
         @Nullable
@@ -111,7 +121,8 @@ public class IgnoreBundle {
             }
             try {
                 return Syntax.valueOf(name.toUpperCase());
-            } catch (IllegalArgumentException iae) {
+            }
+            catch (IllegalArgumentException iae) {
                 return null;
             }
         }
@@ -150,8 +161,10 @@ public class IgnoreBundle {
      * @param params       the optional parameters for the specific resource
      * @return the {@link String} value or {@code null} if no resource found for the key
      */
-    public static String messageOrDefault(@PropertyKey(resourceBundle = BUNDLE_NAME) String key, String defaultValue,
-                                          Object... params) {
+    public static String messageOrDefault(
+        @PropertyKey(resourceBundle = BUNDLE_NAME) String key, String defaultValue,
+        Object... params
+    ) {
         return CommonBundle.messageOrDefault(BUNDLE, key, defaultValue, params);
     }
 
@@ -162,8 +175,8 @@ public class IgnoreBundle {
      * @return matching language
      */
     @Nullable
-    public static IgnoreLanguage obtainLanguage(@NotNull VirtualFile file) {
-        final String filename = file.getName();
+    public static IgnoreLanguage obtainLanguage(@Nonnull VirtualFile file) {
+        String filename = file.getName();
         for (IgnoreLanguage language : LANGUAGES) {
             if (language.getFilename().equals(filename)) {
                 return language;
@@ -181,7 +194,7 @@ public class IgnoreBundle {
         }
 
         @Nullable
-        public IgnoreLanguage get(@NotNull final String id) {
+        public IgnoreLanguage get(@Nonnull String id) {
             for (IgnoreLanguage language : this) {
                 if (id.equals(language.getID())) {
                     return language;

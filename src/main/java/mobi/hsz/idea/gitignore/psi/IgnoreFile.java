@@ -24,19 +24,20 @@
 
 package mobi.hsz.idea.gitignore.psi;
 
+import consulo.annotation.access.RequiredReadAction;
 import consulo.language.Language;
 import consulo.language.ast.IFileElementType;
 import consulo.language.file.FileViewProvider;
 import consulo.language.impl.psi.PsiFileImpl;
 import consulo.language.parser.ParserDefinition;
 import consulo.language.psi.PsiElementVisitor;
-import consulo.util.collection.ContainerUtil;
 import consulo.virtualFileSystem.VirtualFile;
 import consulo.virtualFileSystem.fileType.FileType;
+import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
-import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 /**
@@ -47,25 +48,25 @@ import java.util.Set;
  */
 public class IgnoreFile extends PsiFileImpl {
     /** Current language. */
-    @NotNull
+    @Nonnull
     private final Language language;
 
     /** Current parser definition. */
-    @NotNull
+    @Nonnull
     private final ParserDefinition parserDefinition;
 
     /** Current file type. */
-    @NotNull
+    @Nonnull
     private final IgnoreFileType fileType;
 
     /** Builds a new instance of {@link IgnoreFile}. */
-    public IgnoreFile(@NotNull FileViewProvider viewProvider, @NotNull IgnoreFileType fileType) {
+    public IgnoreFile(@Nonnull FileViewProvider viewProvider, @Nonnull IgnoreFileType fileType) {
         super(viewProvider);
 
         this.fileType = fileType;
         this.language = findLanguage(fileType.getLanguage(), viewProvider);
 
-        final ParserDefinition parserDefinition = ParserDefinition.forLanguage(this.language);
+        ParserDefinition parserDefinition = ParserDefinition.forLanguage(this.language);
         if (parserDefinition == null) {
             throw new RuntimeException(
                     "PsiFileBase: language.getParserDefinition() returned null for: " + this.language
@@ -73,7 +74,7 @@ public class IgnoreFile extends PsiFileImpl {
         }
         this.parserDefinition = parserDefinition;
 
-        final IFileElementType nodeType = parserDefinition.getFileNodeType();
+        IFileElementType nodeType = parserDefinition.getFileNodeType();
         init(nodeType, nodeType);
     }
 
@@ -85,22 +86,24 @@ public class IgnoreFile extends PsiFileImpl {
      * @return matched {@link Language}
      */
     private static Language findLanguage(Language baseLanguage, FileViewProvider viewProvider) {
-        final Set<Language> languages = viewProvider.getLanguages();
+        Set<Language> languages = viewProvider.getLanguages();
 
-        for (final Language actualLanguage : languages) {
+        for (Language actualLanguage : languages) {
             if (actualLanguage.isKindOf(baseLanguage)) {
                 return actualLanguage;
             }
         }
 
-        for (final Language actualLanguage : languages) {
+        for (Language actualLanguage : languages) {
             if (actualLanguage instanceof IgnoreLanguage) {
                 return actualLanguage;
             }
         }
 
-        throw new AssertionError("Language " + baseLanguage + " doesn't participate in view provider " +
-                viewProvider + ": " + ContainerUtil.newArrayList(languages));
+        throw new AssertionError(
+            "Language " + baseLanguage + " doesn't participate in view provider " +
+                viewProvider + ": " + new ArrayList<>(languages)
+        );
     }
 
     /**
@@ -109,7 +112,7 @@ public class IgnoreFile extends PsiFileImpl {
      * @param visitor the visitor to pass the element to.
      */
     @Override
-    public void accept(@NotNull PsiElementVisitor visitor) {
+    public void accept(@Nonnull PsiElementVisitor visitor) {
         visitor.visitFile(this);
     }
 
@@ -118,8 +121,9 @@ public class IgnoreFile extends PsiFileImpl {
      *
      * @return current {@link Language}
      */
+    @Nonnull
     @Override
-    @NotNull
+    @RequiredReadAction
     public final Language getLanguage() {
         return language;
     }
@@ -129,7 +133,7 @@ public class IgnoreFile extends PsiFileImpl {
      *
      * @return current {@link ParserDefinition}
      */
-    @NotNull
+    @Nonnull
     public ParserDefinition getParserDefinition() {
         return parserDefinition;
     }
@@ -139,7 +143,7 @@ public class IgnoreFile extends PsiFileImpl {
      *
      * @return the file type instance.
      */
-    @NotNull
+    @Nonnull
     @Override
     public FileType getFileType() {
         return fileType;
@@ -151,7 +155,7 @@ public class IgnoreFile extends PsiFileImpl {
      * @return is outer file
      */
     public boolean isOuter() {
-        final Set<VirtualFile> outerFiles = fileType.getIgnoreLanguage().getOuterFiles(getProject());
+        Set<VirtualFile> outerFiles = fileType.getIgnoreLanguage().getOuterFiles(getProject());
         return outerFiles.contains(getOriginalFile().getVirtualFile());
     }
 

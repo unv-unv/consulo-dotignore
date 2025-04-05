@@ -26,7 +26,7 @@ package mobi.hsz.idea.gitignore.util;
 
 import consulo.application.dumb.DumbAwareRunnable;
 import consulo.application.util.concurrent.AppExecutorUtil;
-import org.jetbrains.annotations.Nullable;
+import jakarta.annotation.Nullable;
 
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -61,15 +61,15 @@ public abstract class Debounced<T> implements DumbAwareRunnable {
     }
 
     /** Wrapper run() method to invoke {@link #timer} properly. */
-    public final void run(@Nullable final T argument) {
+    public final void run(@Nullable T argument) {
         if (timer != null) {
             timer.cancel(false);
         }
 
         timer = AppExecutorUtil.getAppScheduledExecutorService().schedule(
-                (DumbAwareRunnable) () -> task(argument),
-                delay,
-                TimeUnit.MILLISECONDS
+            (DumbAwareRunnable)() -> task(argument),
+            delay,
+            TimeUnit.MILLISECONDS
         );
     }
 

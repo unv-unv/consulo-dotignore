@@ -24,9 +24,9 @@
 
 package mobi.hsz.idea.gitignore.indexing;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Decorator for {@link IgnoreFileType} to provide less unique hashcode when used with {@link IgnoreFilesIndex}.
@@ -36,7 +36,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class IgnoreFileTypeKey {
     /** Current file type. */
-    @NotNull
+    @Nonnull
     private final IgnoreFileType type;
 
     /**
@@ -44,7 +44,7 @@ public class IgnoreFileTypeKey {
      *
      * @param type current file type
      */
-    public IgnoreFileTypeKey(@NotNull IgnoreFileType type) {
+    public IgnoreFileTypeKey(@Nonnull IgnoreFileType type) {
         this.type = type;
     }
 
@@ -53,7 +53,7 @@ public class IgnoreFileTypeKey {
      *
      * @return file type
      */
-    @NotNull
+    @Nonnull
     public IgnoreFileType getType() {
         return type;
     }
@@ -66,8 +66,8 @@ public class IgnoreFileTypeKey {
      */
     @Override
     public boolean equals(@Nullable Object o) {
-        return o instanceof IgnoreFileTypeKey &&
-                ((IgnoreFileTypeKey) o).getType().getLanguageName().equals(this.type.getLanguageName());
+        return o instanceof IgnoreFileTypeKey ignoreFileTypeKey 
+            && ignoreFileTypeKey.getType().getLanguageName().equals(this.type.getLanguageName());
     }
 
     /**

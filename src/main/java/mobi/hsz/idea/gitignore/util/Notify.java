@@ -24,13 +24,13 @@
 
 package mobi.hsz.idea.gitignore.util;
 
+import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.project.Project;
 import consulo.project.ui.notification.*;
 import consulo.project.ui.notification.event.NotificationListener;
 import consulo.project.ui.wm.ToolWindowId;
-import mobi.hsz.idea.gitignore.IgnoreBundle;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Wrapper function for showing {@link Notification}.
@@ -40,10 +40,11 @@ import org.jetbrains.annotations.Nullable;
  */
 public class Notify {
     private static final NotificationGroup NOTIFICATION_GROUP = new NotificationGroup(
-            IgnoreBundle.message("notification.group"),
-            NotificationDisplayType.BALLOON,
-            true,
-            ToolWindowId.PROJECT_VIEW
+        "ignore.localize.notification.group",
+        IgnoreLocalize.notificationGroup(),
+        NotificationDisplayType.BALLOON,
+        true,
+        ToolWindowId.PROJECT_VIEW
     );
 
     /**
@@ -55,9 +56,11 @@ public class Notify {
      * @param type    notification type
      */
     public static void show(
-            @NotNull Project project, @NotNull String title, @NotNull String content,
-            @NotNull NotificationType type)
-    {
+        @Nonnull Project project,
+        @Nonnull String title,
+        @Nonnull String content,
+        @Nonnull NotificationType type
+    ) {
         show(project, title, content, NOTIFICATION_GROUP, type, null);
     }
 
@@ -71,9 +74,12 @@ public class Notify {
      * @param listener optional listener
      */
     public static void show(
-            @NotNull Project project, @NotNull String title, @NotNull String content,
-            @NotNull NotificationType type, @Nullable NotificationListener listener)
-    {
+        @Nonnull Project project,
+        @Nonnull String title,
+        @Nonnull String content,
+        @Nonnull NotificationType type,
+        @Nullable NotificationListener listener
+    ) {
         show(project, title, content, NOTIFICATION_GROUP, type, listener);
     }
 
@@ -88,10 +94,10 @@ public class Notify {
      * @param listener optional listener
      */
     public static void show(
-            @NotNull Project project, @NotNull String title, @NotNull String content,
-            @NotNull NotificationGroup group, @NotNull NotificationType type,
-            @Nullable NotificationListener listener)
-    {
+        @Nonnull Project project, @Nonnull String title, @Nonnull String content,
+        @Nonnull NotificationGroup group, @Nonnull NotificationType type,
+        @Nullable NotificationListener listener
+    ) {
         Notification notification = group.createNotification(title, content, type, listener);
         Notifications.Bus.notify(notification, project);
     }

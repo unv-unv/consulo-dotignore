@@ -27,17 +27,16 @@ package mobi.hsz.idea.gitignore.codeInspection;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.dotignore.codeInspection.IgnoreInspection;
+import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.language.editor.inspection.LocalInspectionToolSession;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.language.psi.PsiFile;
-import mobi.hsz.idea.gitignore.IgnoreBundle;
+import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.psi.IgnoreEntry;
 import mobi.hsz.idea.gitignore.psi.IgnoreFile;
 import mobi.hsz.idea.gitignore.psi.IgnoreVisitor;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Inspection tool that checks if entry is relative.
@@ -56,7 +55,7 @@ public class IgnoreRelativeEntryInspection extends IgnoreInspection {
     @Nonnull
     @Override
     public String getDisplayName() {
-        return IgnoreBundle.message("codeInspection.relativeEntry");
+        return IgnoreLocalize.codeinspectionRelativeentry().get();
     }
 
     /**
@@ -77,8 +76,10 @@ public class IgnoreRelativeEntryInspection extends IgnoreInspection {
             public void visitEntry(@Nonnull IgnoreEntry entry) {
                 String path = entry.getText().replaceAll("\\\\(.)", "$1");
                 if (path.contains("./")) {
-                    holder.registerProblem(entry, IgnoreBundle.message("codeInspection.relativeEntry.message"),
-                        new IgnoreRelativeEntryFix(entry));
+                    holder.newProblem(IgnoreLocalize.codeinspectionRelativeentryMessage())
+                        .range(entry)
+                        .withFixes(new IgnoreRelativeEntryFix(entry))
+                        .create();
                 }
             }
         };

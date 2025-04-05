@@ -30,18 +30,20 @@ import consulo.application.progress.ProgressManager;
 import consulo.document.Document;
 import consulo.document.FileDocumentManager;
 import consulo.dotignore.codeInspection.IgnoreInspection;
+import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.language.editor.inspection.LocalInspectionToolSession;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.language.psi.PsiFile;
+import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import consulo.util.collection.ContainerUtil;
-import consulo.util.lang.Pair;
+import consulo.util.lang.Couple;
 import consulo.virtualFileSystem.VirtualFile;
 import consulo.virtualFileSystem.VirtualFileManager;
 import consulo.virtualFileSystem.event.*;
-import mobi.hsz.idea.gitignore.IgnoreBundle;
+import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.IgnoreManager;
 import mobi.hsz.idea.gitignore.psi.IgnoreEntry;
 import mobi.hsz.idea.gitignore.psi.IgnoreFile;
@@ -49,9 +51,7 @@ import mobi.hsz.idea.gitignore.util.Constants;
 import mobi.hsz.idea.gitignore.util.Glob;
 import mobi.hsz.idea.gitignore.util.MatcherUtil;
 import mobi.hsz.idea.gitignore.util.Utils;
-import org.jetbrains.annotations.NotNull;
 
-import jakarta.annotation.Nonnull;
 import java.util.*;
 import java.util.concurrent.ConcurrentMap;
 
@@ -72,29 +72,29 @@ public class IgnoreCoverEntryInspection extends IgnoreInspection {
     /** Watches for the changes in the files tree and triggers the cache clear. */
     private final VirtualFileListener virtualFileListener = new VirtualFileListener() {
         @Override
-        public void propertyChanged(@NotNull VirtualFilePropertyEvent event) {
+        public void propertyChanged(@Nonnull VirtualFilePropertyEvent event) {
             if (event.getPropertyName().equals("name")) {
                 cacheMap.clear();
             }
         }
 
         @Override
-        public void fileCreated(@NotNull VirtualFileEvent event) {
+        public void fileCreated(@Nonnull VirtualFileEvent event) {
             cacheMap.clear();
         }
 
         @Override
-        public void fileDeleted(@NotNull VirtualFileEvent event) {
+        public void fileDeleted(@Nonnull VirtualFileEvent event) {
             cacheMap.clear();
         }
 
         @Override
-        public void fileMoved(@NotNull VirtualFileMoveEvent event) {
+        public void fileMoved(@Nonnull VirtualFileMoveEvent event) {
             cacheMap.clear();
         }
 
         @Override
-        public void fileCopied(@NotNull VirtualFileCopyEvent event) {
+        public void fileCopied(@Nonnull VirtualFileCopyEvent event) {
             cacheMap.clear();
         }
     };
@@ -102,7 +102,7 @@ public class IgnoreCoverEntryInspection extends IgnoreInspection {
     @Nonnull
     @Override
     public String getDisplayName() {
-        return IgnoreBundle.message("codeInspection.coverEntry");
+        return IgnoreLocalize.codeinspectionCoverentry().get();
     }
 
     @Nonnull
@@ -127,16 +127,21 @@ public class IgnoreCoverEntryInspection extends IgnoreInspection {
      * @param project current project
      */
     @Override
-    public void cleanup(@NotNull Project project) {
+    public void cleanup(@Nonnull Project project) {
         virtualFileManager.removeVirtualFileListener(virtualFileListener);
         cacheMap.clear();
     }
 
     @Nonnull
     @Override
-    public PsiElementVisitor buildVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly, @Nonnull LocalInspectionToolSession session, @Nonnull Object state) {
+    public PsiElementVisitor buildVisitor(
+        @Nonnull ProblemsHolder holder,
+        boolean isOnTheFly,
+        @Nonnull LocalInspectionToolSession session,
+        @Nonnull Object state
+    ) {
         PsiFile file = holder.getFile();
-        final VirtualFile virtualFile = file.getVirtualFile();
+        VirtualFile virtualFile = file.getVirtualFile();
         if (!(file instanceof IgnoreFile) || !Utils.isInProject(virtualFile, file.getProject())) {
             return PsiElementVisitor.EMPTY_VISITOR;
         }
@@ -157,26 +162,25 @@ public class IgnoreCoverEntryInspection extends IgnoreInspection {
      */
     @RequiredReadAction
     private void checkFile(@Nonnull ProblemsHolder problemsHolder, @Nonnull IgnoreFile file, boolean isOnTheFly) {
-        final VirtualFile virtualFile = file.getVirtualFile();
+        VirtualFile virtualFile = file.getVirtualFile();
         if (!(file instanceof IgnoreFile) || !Utils.isInProject(virtualFile, file.getProject())) {
             return;
         }
 
-        final VirtualFile contextDirectory = virtualFile.getParent();
+        VirtualFile contextDirectory = virtualFile.getParent();
         if (contextDirectory == null) {
             return;
         }
 
-        final Set<String> ignored = new HashSet<>();
-        final Set<String> unignored = new HashSet<>();
+        Set<String> ignored = new HashSet<>();
+        Set<String> unignored = new HashSet<>();
 
-        final List<Pair<IgnoreEntry, IgnoreEntry>> result = new ArrayList<>();
-        final Map<IgnoreEntry, Set<String>> map = new HashMap<>();
+        List<Couple<IgnoreEntry>> result = new ArrayList<>();
+        Map<IgnoreEntry, Set<String>> map = new HashMap<>();
 
-        final ArrayList<IgnoreEntry> entries = ContainerUtil.newArrayList(Arrays.asList(file.findChildrenByClass(IgnoreEntry.class)
-        ));
-        final MatcherUtil matcher = IgnoreManager.getInstance(file.getProject()).getMatcher();
-        final Map<IgnoreEntry, Set<String>> matchedMap = getPathsSet(contextDirectory, entries, matcher);
+        ArrayList<IgnoreEntry> entries = new ArrayList<>(Arrays.asList(file.findChildrenByClass(IgnoreEntry.class)));
+        MatcherUtil matcher = IgnoreManager.getInstance(file.getProject()).getMatcher();
+        Map<IgnoreEntry, Set<String>> matchedMap = getPathsSet(contextDirectory, entries, matcher);
 
         for (IgnoreEntry entry : entries) {
             ProgressManager.checkCanceled();
@@ -188,7 +192,8 @@ public class IgnoreCoverEntryInspection extends IgnoreInspection {
                 ignored.addAll(matched);
                 intersection = ContainerUtil.intersection(unignored, matched);
                 modified = unignored.removeAll(intersection);
-            } else {
+            }
+            else {
                 unignored.addAll(matched);
                 intersection = ContainerUtil.intersection(ignored, matched);
                 modified = ignored.removeAll(intersection);
@@ -207,13 +212,15 @@ public class IgnoreCoverEntryInspection extends IgnoreInspection {
 
                 if (entry.isNegated() == recent.isNegated()) {
                     if (recentValues.containsAll(matched)) {
-                        result.add(Pair.create(recent, entry));
-                    } else if (matched.containsAll(recentValues)) {
-                        result.add(Pair.create(entry, recent));
+                        result.add(Couple.of(recent, entry));
                     }
-                } else {
+                    else if (matched.containsAll(recentValues)) {
+                        result.add(Couple.of(entry, recent));
+                    }
+                }
+                else {
                     if (intersection.containsAll(recentValues)) {
-                        result.add(Pair.create(entry, recent));
+                        result.add(Couple.of(entry, recent));
                     }
                 }
             }
@@ -221,9 +228,11 @@ public class IgnoreCoverEntryInspection extends IgnoreInspection {
             map.put(entry, matched);
         }
 
-        for (Pair<IgnoreEntry, IgnoreEntry> pair : result) {
-            problemsHolder.registerProblem(pair.second, message(pair.first, virtualFile, isOnTheFly),
-                    new IgnoreRemoveEntryFix(pair.second));
+        for (Couple<IgnoreEntry> pair : result) {
+            problemsHolder.newProblem(message(pair.first, virtualFile, isOnTheFly))
+                .range(pair.second)
+                .withFixes(new IgnoreRemoveEntryFix(pair.second))
+                .create();
         }
     }
 
@@ -235,26 +244,29 @@ public class IgnoreCoverEntryInspection extends IgnoreInspection {
      * @param entries          to check
      * @return paths list
      */
-    @NotNull
-    private Map<IgnoreEntry, Set<String>> getPathsSet(@NotNull VirtualFile contextDirectory,
-                                                      @NotNull ArrayList<IgnoreEntry> entries,
-                                                      @NotNull MatcherUtil matcher) {
-        final Map<IgnoreEntry, Set<String>> result = new HashMap<>();
-        final ArrayList<IgnoreEntry> notCached = new ArrayList<>();
+    @Nonnull
+    @RequiredReadAction
+    private Map<IgnoreEntry, Set<String>> getPathsSet(
+        @Nonnull VirtualFile contextDirectory,
+        @Nonnull ArrayList<IgnoreEntry> entries,
+        @Nonnull MatcherUtil matcher
+    ) {
+        Map<IgnoreEntry, Set<String>> result = new HashMap<>();
+        ArrayList<IgnoreEntry> notCached = new ArrayList<>();
 
         for (IgnoreEntry entry : entries) {
             ProgressManager.checkCanceled();
-            final String key = contextDirectory.getPath() + Constants.DOLLAR + entry.getText();
+            String key = contextDirectory.getPath() + Constants.DOLLAR + entry.getText();
             if (!cacheMap.containsKey(key)) {
                 notCached.add(entry);
             }
             result.put(entry, cacheMap.get(key));
         }
 
-        final Map<IgnoreEntry, Set<String>> found = Glob.findAsPaths(contextDirectory, notCached, matcher, true);
+        Map<IgnoreEntry, Set<String>> found = Glob.findAsPaths(contextDirectory, notCached, matcher, true);
         for (Map.Entry<IgnoreEntry, Set<String>> item : found.entrySet()) {
             ProgressManager.checkCanceled();
-            final String key = contextDirectory.getPath() + Constants.DOLLAR + item.getKey().getText();
+            String key = contextDirectory.getPath() + Constants.DOLLAR + item.getKey().getText();
             cacheMap.put(key, item.getValue());
             result.put(item.getKey(), item.getValue());
         }
@@ -271,23 +283,22 @@ public class IgnoreCoverEntryInspection extends IgnoreInspection {
      *                      otherwise
      * @return generated message {@link String}
      */
-    @NotNull
-    private static String message(@NotNull IgnoreEntry coveringEntry,
-                                  @NotNull VirtualFile virtualFile,
-                                  boolean onTheFly) {
+    @Nonnull
+    @RequiredReadAction
+    private static LocalizeValue message(
+        @Nonnull IgnoreEntry coveringEntry,
+        @Nonnull VirtualFile virtualFile,
+        boolean onTheFly
+    ) {
         Document document = FileDocumentManager.getInstance().getDocument(virtualFile);
         if (onTheFly || document == null) {
-            return IgnoreBundle.message(
-                    "codeInspection.coverEntry.message",
-                    "\'" + coveringEntry.getText() + "\'"
-            );
+            return IgnoreLocalize.codeinspectionCoverentryMessage("\'" + coveringEntry.getText() + "\'");
         }
 
         int startOffset = coveringEntry.getTextRange().getStartOffset();
-        return IgnoreBundle.message(
-                "codeInspection.coverEntry.message",
-                "<a href=\"" + virtualFile.getUrl() + Constants.HASH + startOffset + "\">" +
-                        coveringEntry.getText() + "</a>"
+        return IgnoreLocalize.codeinspectionCoverentryMessage(
+            "<a href=\"" + virtualFile.getUrl() + Constants.HASH + startOffset + "\">" +
+                coveringEntry.getText() + "</a>"
         );
     }
 

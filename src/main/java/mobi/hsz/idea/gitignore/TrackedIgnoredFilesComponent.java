@@ -26,17 +26,17 @@ package mobi.hsz.idea.gitignore;
 
 import consulo.annotation.component.ComponentScope;
 import consulo.annotation.component.TopicImpl;
+import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.project.Project;
 import consulo.project.ui.notification.Notification;
 import consulo.project.ui.notification.NotificationType;
 import consulo.versionControlSystem.root.VcsRoot;
 import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
 import jakarta.inject.Inject;
 import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
 import mobi.hsz.idea.gitignore.ui.untrackFiles.UntrackFilesDialog;
 import mobi.hsz.idea.gitignore.util.Notify;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ConcurrentMap;
 
@@ -50,7 +50,6 @@ import java.util.concurrent.ConcurrentMap;
 @TopicImpl(ComponentScope.PROJECT)
 public class TrackedIgnoredFilesComponent implements TrackedIgnoredListener {
     /** Disable action event. */
-    @NonNls
     private static final String DISABLE_ACTION = "#disable";
 
     /** {@link IgnoreSettings} instance. */
@@ -67,7 +66,7 @@ public class TrackedIgnoredFilesComponent implements TrackedIgnoredListener {
      * @param project current project
      */
     @Inject
-    public TrackedIgnoredFilesComponent(@NotNull Project project, IgnoreSettings settings) {
+    public TrackedIgnoredFilesComponent(@Nonnull Project project, IgnoreSettings settings) {
         myProject = project;
         this.settings = settings;
     }
@@ -78,25 +77,25 @@ public class TrackedIgnoredFilesComponent implements TrackedIgnoredListener {
      * @param files tracked and ignored files list
      */
     @Override
-    public void handleFiles(@NotNull final ConcurrentMap<VirtualFile, VcsRoot> files) {
+    public void handleFiles(@Nonnull ConcurrentMap<VirtualFile, VcsRoot> files) {
         if (!settings.isInformTrackedIgnored() || notificationShown || myProject.getBaseDir() == null) {
             return;
         }
 
         notificationShown = true;
         Notify.show(
-                myProject,
-                IgnoreBundle.message("notification.untrack.title"),
-                IgnoreBundle.message("notification.untrack.content"),
-                NotificationType.INFORMATION,
-                (notification, event) -> {
-                    if (DISABLE_ACTION.equals(event.getDescription())) {
-                        settings.setInformTrackedIgnored(false);
-                    } else if (!myProject.isDisposed()) {
-                        new UntrackFilesDialog(myProject, files).show();
-                    }
-                    notification.expire();
+            myProject,
+            IgnoreLocalize.notificationUntrackTitle().get(),
+            IgnoreLocalize.notificationUntrackContent().get(),
+            NotificationType.INFORMATION,
+            (notification, event) -> {
+                if (DISABLE_ACTION.equals(event.getDescription())) {
+                    settings.setInformTrackedIgnored(false);
+                } else if (!myProject.isDisposed()) {
+                    new UntrackFilesDialog(myProject, files).show();
                 }
+                notification.expire();
+            }
         );
     }
 }

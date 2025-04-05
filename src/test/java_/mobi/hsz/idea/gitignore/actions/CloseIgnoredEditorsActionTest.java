@@ -33,7 +33,7 @@ import mobi.hsz.idea.gitignore.Common;
  */
 public class CloseIgnoredEditorsActionTest extends Common {
     public void testCloseIgnoredEditorsActionInvocation() {
-        final CloseIgnoredEditorsAction action = new CloseIgnoredEditorsAction();
+        CloseIgnoredEditorsAction action = new CloseIgnoredEditorsAction();
         Presentation presentation;
 
         presentation = myFixture.testAction(action);

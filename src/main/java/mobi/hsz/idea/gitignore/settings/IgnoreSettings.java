@@ -27,27 +27,25 @@ package mobi.hsz.idea.gitignore.settings;
 import consulo.annotation.component.ComponentScope;
 import consulo.annotation.component.ServiceAPI;
 import consulo.annotation.component.ServiceImpl;
-import consulo.component.persist.Storage;
-import consulo.util.collection.ConcurrentList;
-import consulo.util.collection.Lists;
-import consulo.util.lang.StringUtil;
-import consulo.util.collection.ContainerUtil;
 import consulo.component.persist.PersistentStateComponent;
 import consulo.component.persist.State;
+import consulo.component.persist.Storage;
+import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.ide.ServiceManager;
+import consulo.util.collection.ConcurrentList;
+import consulo.util.collection.ContainerUtil;
+import consulo.util.collection.Lists;
+import consulo.util.lang.StringUtil;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import jakarta.inject.Singleton;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
 import mobi.hsz.idea.gitignore.util.Constants;
 import mobi.hsz.idea.gitignore.util.Listenable;
 import org.jdom.Element;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * Persistent global settings object for the Ignore plugin.
@@ -62,18 +60,28 @@ import java.util.TreeMap;
 public class IgnoreSettings implements PersistentStateComponent<Element>, Listenable<IgnoreSettings.Listener> {
     /** Settings keys. */
     public enum KEY {
-        ROOT("IgnoreSettings"), MISSING_GITIGNORE("missingGitignore"), USER_TEMPLATES("userTemplates"),
-        USER_TEMPLATES_TEMPLATE("template"), USER_TEMPLATES_NAME("name"), LANGUAGES("languages"),
-        LANGUAGES_LANGUAGE("language"), LANGUAGES_ID("id"), IGNORED_FILE_STATUS("ignoredFileStatus"),
-        OUTER_IGNORE_RULES("outerIgnoreRules"), OUTER_IGNORE_WRAPPER_HEIGHT("outerIgnoreWrapperHeight"),
-        INSERT_AT_CURSOR("insertAtCursor"), ADD_UNVERSIONED_FILES("addUnversionedFiles"),
-        STARRED_TEMPLATES("starredTemplates"), UNIGNORE_ACTIONS("unignoreActions"),
-        HIDE_IGNORED_FILES("hideIgnoredFiles"), INFORM_TRACKED_IGNORED("informTrackedIgnored"),
+        ROOT("IgnoreSettings"),
+        MISSING_GITIGNORE("missingGitignore"),
+        USER_TEMPLATES("userTemplates"),
+        USER_TEMPLATES_TEMPLATE("template"),
+        USER_TEMPLATES_NAME("name"),
+        LANGUAGES("languages"),
+        LANGUAGES_LANGUAGE("language"),
+        LANGUAGES_ID("id"),
+        IGNORED_FILE_STATUS("ignoredFileStatus"),
+        OUTER_IGNORE_RULES("outerIgnoreRules"),
+        OUTER_IGNORE_WRAPPER_HEIGHT("outerIgnoreWrapperHeight"),
+        INSERT_AT_CURSOR("insertAtCursor"),
+        ADD_UNVERSIONED_FILES("addUnversionedFiles"),
+        STARRED_TEMPLATES("starredTemplates"),
+        UNIGNORE_ACTIONS("unignoreActions"),
+        HIDE_IGNORED_FILES("hideIgnoredFiles"),
+        INFORM_TRACKED_IGNORED("informTrackedIgnored"),
         NOTIFY_IGNORED_EDITING("notifyIgnoredEditing");
 
         private final String key;
 
-        KEY(@NotNull String key) {
+        KEY(@Nonnull String key) {
             this.key = key;
         }
 
@@ -84,10 +92,10 @@ public class IgnoreSettings implements PersistentStateComponent<Element>, Listen
     }
 
     /** Default user template. */
-    @NotNull
+    @Nonnull
     private static final UserTemplate DEFAULT_TEMPLATE = new UserTemplate(
-            IgnoreBundle.message("settings.userTemplates.default.name"),
-            IgnoreBundle.message("settings.userTemplates.default.content")
+        IgnoreLocalize.settingsUsertemplatesDefaultName().get(),
+        IgnoreLocalize.settingsUsertemplatesDefaultContent().get()
     );
 
     /** Notify about missing Gitignore file in the project. */
@@ -121,15 +129,15 @@ public class IgnoreSettings implements PersistentStateComponent<Element>, Listen
     private boolean notifyIgnoredEditing = true;
 
     /** Starred templates. */
-    @NotNull
-    private final List<String> starredTemplates = ContainerUtil.newArrayList();
+    @Nonnull
+    private final List<String> starredTemplates = new ArrayList<>();
 
     /** Settings related to the {@link IgnoreLanguage}. */
-    @NotNull
+    @Nonnull
     @SuppressWarnings("checkstyle:whitespacearound")
     private final IgnoreLanguagesSettings languagesSettings = new IgnoreLanguagesSettings() {{
-        for (final IgnoreLanguage language : IgnoreBundle.LANGUAGES) {
-            put(language, new TreeMap<KEY, Object>() {{
+        for (IgnoreLanguage language : IgnoreBundle.LANGUAGES) {
+            put(language, new TreeMap<>() {{
                 put(KEY.NEW_FILE, true);
                 put(KEY.ENABLE, language.isVCS());
             }});
@@ -159,7 +167,7 @@ public class IgnoreSettings implements PersistentStateComponent<Element>, Listen
     @Nullable
     @Override
     public Element getState() {
-        final Element element = new Element(KEY.ROOT.toString());
+        Element element = new Element(KEY.ROOT.toString());
         element.setAttribute(KEY.MISSING_GITIGNORE.toString(), Boolean.toString(missingGitignore));
         element.setAttribute(KEY.IGNORED_FILE_STATUS.toString(), Boolean.toString(ignoredFileStatus));
         element.setAttribute(KEY.OUTER_IGNORE_RULES.toString(), Boolean.toString(outerIgnoreRules));
@@ -172,7 +180,7 @@ public class IgnoreSettings implements PersistentStateComponent<Element>, Listen
 
         Element languagesElement = new Element(KEY.LANGUAGES.toString());
         for (Map.Entry<IgnoreLanguage, TreeMap<IgnoreLanguagesSettings.KEY, Object>> entry :
-                languagesSettings.entrySet()) {
+            languagesSettings.entrySet()) {
             if (entry.getKey() == null) {
                 continue;
             }
@@ -195,7 +203,7 @@ public class IgnoreSettings implements PersistentStateComponent<Element>, Listen
      * @param userTemplates templates
      * @return {@link Element} instance with user templates
      */
-    public static Element createTemplatesElement(@NotNull List<UserTemplate> userTemplates) {
+    public static Element createTemplatesElement(@Nonnull List<UserTemplate> userTemplates) {
         Element templates = new Element(KEY.USER_TEMPLATES.toString());
         for (UserTemplate userTemplate : userTemplates) {
             Element templateElement = new Element(KEY.USER_TEMPLATES_TEMPLATE.toString());
@@ -212,7 +220,7 @@ public class IgnoreSettings implements PersistentStateComponent<Element>, Listen
      * @param element the {@link Element} to load values from.
      */
     @Override
-    public void loadState(@NotNull Element element) {
+    public void loadState(@Nonnull Element element) {
         String value = element.getAttributeValue(KEY.MISSING_GITIGNORE.toString());
         if (value != null) {
             missingGitignore = Boolean.parseBoolean(value);
@@ -287,17 +295,17 @@ public class IgnoreSettings implements PersistentStateComponent<Element>, Listen
      * @param element source
      * @return {@link UserTemplate} list
      */
-    @NotNull
-    public static List<UserTemplate> loadTemplates(@NotNull Element element) {
-        final String key = KEY.USER_TEMPLATES.toString();
-        final List<UserTemplate> list = ContainerUtil.newArrayList();
+    @Nonnull
+    public static List<UserTemplate> loadTemplates(@Nonnull Element element) {
+        String key = KEY.USER_TEMPLATES.toString();
+        List<UserTemplate> list = new ArrayList<>();
         if (!key.equals(element.getName())) {
             element = element.getChild(key);
         }
         for (Element template : element.getChildren()) {
             list.add(new UserTemplate(
-                    template.getAttributeValue(KEY.USER_TEMPLATES_NAME.toString()),
-                    template.getText()
+                template.getAttributeValue(KEY.USER_TEMPLATES_NAME.toString()),
+                template.getText()
             ));
         }
         return list;
@@ -479,7 +487,7 @@ public class IgnoreSettings implements PersistentStateComponent<Element>, Listen
      *
      * @return starred templates
      */
-    @NotNull
+    @Nonnull
     public List<String> getStarredTemplates() {
         return starredTemplates;
     }
@@ -489,7 +497,7 @@ public class IgnoreSettings implements PersistentStateComponent<Element>, Listen
      *
      * @param starredTemplates new templates list
      */
-    public void setStarredTemplates(@NotNull List<String> starredTemplates) {
+    public void setStarredTemplates(@Nonnull List<String> starredTemplates) {
         this.starredTemplates.clear();
         this.starredTemplates.addAll(starredTemplates);
     }
@@ -499,7 +507,7 @@ public class IgnoreSettings implements PersistentStateComponent<Element>, Listen
      *
      * @return fileType settings
      */
-    @NotNull
+    @Nonnull
     public IgnoreLanguagesSettings getLanguagesSettings() {
         return languagesSettings;
     }
@@ -509,7 +517,7 @@ public class IgnoreSettings implements PersistentStateComponent<Element>, Listen
      *
      * @param languagesSettings languagesSettings
      */
-    public void setLanguagesSettings(@NotNull IgnoreLanguagesSettings languagesSettings) {
+    public void setLanguagesSettings(@Nonnull IgnoreLanguagesSettings languagesSettings) {
         this.notifyOnChange(KEY.LANGUAGES, this.languagesSettings, languagesSettings);
         this.languagesSettings.clear();
         this.languagesSettings.putAll(languagesSettings);
@@ -529,7 +537,7 @@ public class IgnoreSettings implements PersistentStateComponent<Element>, Listen
      *
      * @param userTemplates user templates
      */
-    public void setUserTemplates(@NotNull List<UserTemplate> userTemplates) {
+    public void setUserTemplates(@Nonnull List<UserTemplate> userTemplates) {
         this.notifyOnChange(KEY.USER_TEMPLATES, this.userTemplates, userTemplates);
         this.userTemplates.clear();
         this.userTemplates.addAll(userTemplates);
@@ -560,7 +568,7 @@ public class IgnoreSettings implements PersistentStateComponent<Element>, Listen
      * @param listener listener to add
      */
     @Override
-    public void addListener(@NotNull Listener listener) {
+    public void addListener(@Nonnull Listener listener) {
         listeners.add(listener);
     }
 
@@ -570,7 +578,7 @@ public class IgnoreSettings implements PersistentStateComponent<Element>, Listen
      * @param listener listener to remove
      */
     @Override
-    public void removeListener(@NotNull Listener listener) {
+    public void removeListener(@Nonnull Listener listener) {
         listeners.remove(listener);
     }
 
@@ -591,7 +599,7 @@ public class IgnoreSettings implements PersistentStateComponent<Element>, Listen
 
     /** Listener interface for onChange event. */
     public interface Listener {
-        void onChange(@NotNull KEY key, Object value);
+        void onChange(@Nonnull KEY key, Object value);
     }
 
     /** User defined template model. */
@@ -607,7 +615,7 @@ public class IgnoreSettings implements PersistentStateComponent<Element>, Listen
         }
 
         /** Constructor. */
-        public UserTemplate(@NotNull String name, @NotNull String content) {
+        public UserTemplate(@Nonnull String name, @Nonnull String content) {
             this.name = name;
             this.content = content;
         }
@@ -617,7 +625,7 @@ public class IgnoreSettings implements PersistentStateComponent<Element>, Listen
          *
          * @param name template name
          */
-        public void setName(@NotNull String name) {
+        public void setName(@Nonnull String name) {
             this.name = name;
         }
 
@@ -635,7 +643,7 @@ public class IgnoreSettings implements PersistentStateComponent<Element>, Listen
          *
          * @param content template content
          */
-        public void setContent(@NotNull String content) {
+        public void setContent(@Nonnull String content) {
             this.content = content;
         }
 
@@ -675,27 +683,20 @@ public class IgnoreSettings implements PersistentStateComponent<Element>, Listen
          */
         @Override
         public boolean equals(Object obj) {
-            if (!(obj instanceof UserTemplate)) {
-                return false;
-            }
-            if (obj == this) {
-                return true;
-            }
-
-            UserTemplate t = (UserTemplate) obj;
-            return (getName() != null && getName().equals(t.getName()) || (getName() == null && t.getName() == null))
-                    && (getContent() != null && getContent().equals(t.getContent()) ||
-                    (getContent() == null && t.getContent() == null));
+            return obj == this
+                || obj instanceof UserTemplate t
+                && Objects.equals(getName(), t.getName())
+                && Objects.equals(getContent(), t.getContent());
         }
     }
 
     /** Helper class for the {@link IgnoreLanguage} settings. */
     public static class IgnoreLanguagesSettings
-            extends LinkedHashMap<IgnoreLanguage, TreeMap<IgnoreLanguagesSettings.KEY, Object>>
-    {
+        extends LinkedHashMap<IgnoreLanguage, TreeMap<IgnoreLanguagesSettings.KEY, Object>> {
         /** Settings keys. */
         public enum KEY {
-            NEW_FILE, ENABLE
+            NEW_FILE,
+            ENABLE
         }
 
         /**
@@ -715,10 +716,10 @@ public class IgnoreSettings implements PersistentStateComponent<Element>, Listen
          */
         @Override
         public IgnoreLanguagesSettings clone() {
-            IgnoreLanguagesSettings copy = (IgnoreLanguagesSettings) super.clone();
+            IgnoreLanguagesSettings copy = (IgnoreLanguagesSettings)super.clone();
             for (Map.Entry<IgnoreLanguage, TreeMap<IgnoreLanguagesSettings.KEY, Object>> entry : copy.entrySet()) {
                 @SuppressWarnings("unchecked")
-                TreeMap<IgnoreLanguagesSettings.KEY, Object> data = (TreeMap<KEY, Object>) entry.getValue().clone();
+                TreeMap<IgnoreLanguagesSettings.KEY, Object> data = (TreeMap<KEY, Object>)entry.getValue().clone();
 
                 copy.put(entry.getKey(), data);
             }

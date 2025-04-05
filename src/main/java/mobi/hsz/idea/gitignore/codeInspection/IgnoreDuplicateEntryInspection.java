@@ -27,18 +27,18 @@ package mobi.hsz.idea.gitignore.codeInspection;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.dotignore.codeInspection.IgnoreInspection;
+import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.language.editor.inspection.LocalInspectionToolSession;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.language.psi.PsiFile;
 import consulo.util.collection.MultiMap;
-import mobi.hsz.idea.gitignore.IgnoreBundle;
+import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.psi.IgnoreEntry;
 import mobi.hsz.idea.gitignore.psi.IgnoreFile;
 import mobi.hsz.idea.gitignore.psi.IgnoreVisitor;
 
-import jakarta.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
@@ -60,7 +60,7 @@ public class IgnoreDuplicateEntryInspection extends IgnoreInspection {
     @Nonnull
     @Override
     public String getDisplayName() {
-        return IgnoreBundle.message("codeInspection.duplicateEntry");
+        return IgnoreLocalize.codeinspectionDuplicateentry().get();
     }
 
     @Nonnull
@@ -84,7 +84,7 @@ public class IgnoreDuplicateEntryInspection extends IgnoreInspection {
 
     @RequiredReadAction
     private void checkFile(@Nonnull ProblemsHolder problemsHolder, @Nonnull IgnoreFile file) {
-        final consulo.util.collection.MultiMap<String, IgnoreEntry> entries = MultiMap.create();
+        MultiMap<String, IgnoreEntry> entries = MultiMap.create();
 
         file.acceptChildren(new IgnoreVisitor() {
             @Override
@@ -100,8 +100,10 @@ public class IgnoreDuplicateEntryInspection extends IgnoreInspection {
             iterator.next();
             while (iterator.hasNext()) {
                 IgnoreEntry entry = iterator.next();
-                problemsHolder.registerProblem(entry, IgnoreBundle.message("codeInspection.duplicateEntry.message"),
-                        new IgnoreRemoveEntryFix(entry));
+                problemsHolder.newProblem(IgnoreLocalize.codeinspectionDuplicateentryMessage())
+                    .range(entry)
+                    .withFixes(new IgnoreRemoveEntryFix(entry))
+                    .create();
             }
         }
     }

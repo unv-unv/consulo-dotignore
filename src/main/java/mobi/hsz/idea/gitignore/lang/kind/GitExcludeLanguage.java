@@ -25,19 +25,19 @@
 package mobi.hsz.idea.gitignore.lang.kind;
 
 import consulo.project.Project;
+import consulo.util.collection.ContainerUtil;
 import consulo.virtualFileSystem.VirtualFile;
 import consulo.virtualFileSystem.util.VirtualFileUtil;
 import consulo.virtualFileSystem.util.VirtualFileVisitor;
-import consulo.util.collection.ContainerUtil;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.file.type.kind.GitExcludeFileType;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
 import mobi.hsz.idea.gitignore.outer.OuterFileFetcher;
 import mobi.hsz.idea.gitignore.util.Icons;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -54,56 +54,57 @@ public class GitExcludeLanguage extends IgnoreLanguage {
     private GitExcludeLanguage() {
         super("Git exclude", "exclude", ".git", Icons.GIT, new OuterFileFetcher[]{
 
-                // `exclude` files located in .git directory
-                new OuterFileFetcher() {
-                    /** Relative path to the exclude file. */
-                    @NonNls
-                    private static final String EXCLUDE = "info/exclude";
+            // `exclude` files located in .git directory
+            new OuterFileFetcher() {
+                /** Relative path to the exclude file. */
+                private static final String EXCLUDE = "info/exclude";
 
-                    @NotNull
-                    @Override
-                    public Collection<VirtualFile> fetch(@NotNull Project project) {
-                        final Collection<VirtualFile> files = ContainerUtil.newArrayList();
-                        final VirtualFile baseDir = project.getBaseDir();
-                        if (baseDir == null) {
-                            return files;
-                        }
-
-                        final VirtualFile root = baseDir.findChild(".git");
-                        return processExcludes(root, files);
-                    }
-
-                    /**
-                     * Recursively finds exclude files in given root directory.
-                     *
-                     * @param root  current root
-                     * @param files collection of {@link VirtualFile}
-                     * @return exclude files collection
-                     */
-                    @NotNull
-                    private Collection<VirtualFile> processExcludes(@Nullable final VirtualFile root,
-                                                                    @NotNull final Collection<VirtualFile> files) {
-                        if (root != null) {
-                            ContainerUtil.addIfNotNull(files, root.findFileByRelativePath(EXCLUDE));
-
-                            final VirtualFile modules = root.findChild("modules");
-                            if (modules != null) {
-                                VirtualFileUtil.visitChildrenRecursively(modules, new VirtualFileVisitor() {
-                                    @Override
-                                    public boolean visitFile(@NotNull VirtualFile dir) {
-                                        if (dir.findChild("index") != null) {
-                                            processExcludes(dir, files);
-                                            return false;
-                                        }
-                                        return dir.isDirectory();
-                                    }
-                                });
-                            }
-                        }
-
+                @Nonnull
+                @Override
+                public Collection<VirtualFile> fetch(@Nonnull Project project) {
+                    Collection<VirtualFile> files = new ArrayList<>();
+                    VirtualFile baseDir = project.getBaseDir();
+                    if (baseDir == null) {
                         return files;
                     }
+
+                    VirtualFile root = baseDir.findChild(".git");
+                    return processExcludes(root, files);
                 }
+
+                /**
+                 * Recursively finds exclude files in given root directory.
+                 *
+                 * @param root  current root
+                 * @param files collection of {@link VirtualFile}
+                 * @return exclude files collection
+                 */
+                @Nonnull
+                private Collection<VirtualFile> processExcludes(
+                    @Nullable VirtualFile root,
+                    @Nonnull Collection<VirtualFile> files
+                ) {
+                    if (root != null) {
+                        ContainerUtil.addIfNotNull(files, root.findFileByRelativePath(EXCLUDE));
+
+                        VirtualFile modules = root.findChild("modules");
+                        if (modules != null) {
+                            VirtualFileUtil.visitChildrenRecursively(modules, new VirtualFileVisitor() {
+                                @Override
+                                public boolean visitFile(@Nonnull VirtualFile dir) {
+                                    if (dir.findChild("index") != null) {
+                                        processExcludes(dir, files);
+                                        return false;
+                                    }
+                                    return dir.isDirectory();
+                                }
+                            });
+                        }
+                    }
+
+                    return files;
+                }
+            }
 
         });
     }
@@ -113,7 +114,7 @@ public class GitExcludeLanguage extends IgnoreLanguage {
      *
      * @return {@link GitExcludeFileType} instance
      */
-    @NotNull
+    @Nonnull
     @Override
     public IgnoreFileType getFileType() {
         return GitExcludeFileType.INSTANCE;
@@ -124,7 +125,7 @@ public class GitExcludeLanguage extends IgnoreLanguage {
      *
      * @return filename
      */
-    @NotNull
+    @Nonnull
     @Override
     public String getFilename() {
         return super.getExtension();
@@ -148,7 +149,7 @@ public class GitExcludeLanguage extends IgnoreLanguage {
      */
     @Nullable
     @Override
-    public VirtualFile getFixedDirectory(@NotNull Project project) {
+    public VirtualFile getFixedDirectory(@Nonnull Project project) {
         return project.getBaseDir().findFileByRelativePath(getVcsDirectory() + "/info");
     }
 }

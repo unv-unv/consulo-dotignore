@@ -24,21 +24,20 @@
 
 package mobi.hsz.idea.gitignore.indexing;
 
+import consulo.util.lang.Pair;
+import consulo.util.lang.StringUtil;
+import consulo.virtualFileSystem.VirtualFile;
+import consulo.virtualFileSystem.VirtualFileManager;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import consulo.util.collection.ContainerUtil;
-import consulo.virtualFileSystem.VirtualFileManager;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import consulo.util.lang.Pair;
-import consulo.util.lang.StringUtil;
-import consulo.virtualFileSystem.VirtualFile;
 
 /**
  * Entry containing information about the {@link VirtualFile} instance of the ignore file mapped with the collection
@@ -49,11 +48,11 @@ import consulo.virtualFileSystem.VirtualFile;
  */
 public class IgnoreEntryOccurrence implements Serializable {
     /** Current ignore file path. */
-    @NotNull
+    @Nonnull
     private final String url;
 
     /** Collection of ignore entries. */
-    @NotNull
+    @Nonnull
     private final List<Pair<String, Boolean>> items;
 
     /** Current ignore file. */
@@ -66,7 +65,7 @@ public class IgnoreEntryOccurrence implements Serializable {
      * @param url   entry URL
      * @param items parsed entry items
      */
-    public IgnoreEntryOccurrence(@NotNull String url, @NotNull ArrayList<Pair<String, Boolean>> items) {
+    public IgnoreEntryOccurrence(@Nonnull String url, @Nonnull ArrayList<Pair<String, Boolean>> items) {
         this.url = url;
         this.items = List.copyOf(items);
     }
@@ -99,7 +98,7 @@ public class IgnoreEntryOccurrence implements Serializable {
             return false;
         }
 
-        final IgnoreEntryOccurrence entry = (IgnoreEntryOccurrence) obj;
+        IgnoreEntryOccurrence entry = (IgnoreEntryOccurrence) obj;
         if (!url.equals(entry.url) || items.size() != entry.items.size()) {
             return false;
         }
@@ -131,7 +130,7 @@ public class IgnoreEntryOccurrence implements Serializable {
      *
      * @return entries
      */
-    @NotNull
+    @Nonnull
     public List<Pair<String, Boolean>> getItems() {
         return items;
     }
@@ -143,7 +142,7 @@ public class IgnoreEntryOccurrence implements Serializable {
      * @param entry entry to write
      * @throws IOException I/O exception
      */
-    public static synchronized void serialize(@NotNull DataOutput out, @NotNull IgnoreEntryOccurrence entry)
+    public static synchronized void serialize(@Nonnull DataOutput out, @Nonnull IgnoreEntryOccurrence entry)
             throws IOException {
         out.writeUTF(entry.url);
         out.writeInt(entry.items.size());
@@ -159,13 +158,13 @@ public class IgnoreEntryOccurrence implements Serializable {
      * @param in input stream
      * @return read {@link IgnoreEntryOccurrence}
      */
-    @NotNull
-    public static synchronized IgnoreEntryOccurrence deserialize(@NotNull DataInput in) throws IOException {
-        final String url = in.readUTF();
-        final ArrayList<Pair<String, Boolean>> items = ContainerUtil.newArrayList();
+    @Nonnull
+    public static synchronized IgnoreEntryOccurrence deserialize(@Nonnull DataInput in) throws IOException {
+        String url = in.readUTF();
+        ArrayList<Pair<String, Boolean>> items = new ArrayList<>();
 
         if (!StringUtil.isEmpty(url)) {
-            final int size = in.readInt();
+            int size = in.readInt();
             for (int i = 0; i < size; i++) {
                 String pattern = in.readUTF();
                 Boolean isNegated = in.readBoolean();

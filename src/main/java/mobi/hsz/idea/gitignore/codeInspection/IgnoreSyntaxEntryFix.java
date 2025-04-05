@@ -25,16 +25,17 @@
 package mobi.hsz.idea.gitignore.codeInspection;
 
 import consulo.codeEditor.Editor;
+import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.language.editor.AutoPopupController;
 import consulo.language.editor.completion.CompletionType;
 import consulo.language.editor.inspection.LocalQuickFixAndIntentionActionOnPsiElement;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiFile;
 import consulo.project.Project;
-import mobi.hsz.idea.gitignore.IgnoreBundle;
+import consulo.ui.annotation.RequiredUIAccess;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import mobi.hsz.idea.gitignore.psi.IgnoreSyntax;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * QuickFix action that invokes {@link mobi.hsz.idea.gitignore.codeInsight.SyntaxCompletionContributor}
@@ -49,7 +50,7 @@ public class IgnoreSyntaxEntryFix extends LocalQuickFixAndIntentionActionOnPsiEl
      *
      * @param syntax an element that will be handled with QuickFix
      */
-    public IgnoreSyntaxEntryFix(@NotNull IgnoreSyntax syntax) {
+    public IgnoreSyntaxEntryFix(@Nonnull IgnoreSyntax syntax) {
         super(syntax);
     }
 
@@ -58,10 +59,10 @@ public class IgnoreSyntaxEntryFix extends LocalQuickFixAndIntentionActionOnPsiEl
      *
      * @return QuickFix action name
      */
-    @NotNull
+    @Nonnull
     @Override
     public String getText() {
-        return IgnoreBundle.message("quick.fix.syntax.entry");
+        return IgnoreLocalize.quickFixSyntaxEntry().get();
     }
 
     /**
@@ -69,19 +70,25 @@ public class IgnoreSyntaxEntryFix extends LocalQuickFixAndIntentionActionOnPsiEl
      *
      * @param project      the {@link Project} containing the working file
      * @param file         the {@link PsiFile} containing handled entry
+     * @param editor       is null when called from inspection
      * @param startElement the {@link IgnoreSyntax} that will be selected and replaced
      * @param endElement   the {@link PsiElement} which is ignored in invoked action
      */
     @Override
-    public void invoke(@NotNull Project project, @NotNull PsiFile file,
-					   @Nullable("is null when called from inspection") Editor editor,
-					   @NotNull PsiElement startElement, @NotNull PsiElement endElement) {
-        if (startElement instanceof IgnoreSyntax) {
-            PsiElement value = ((IgnoreSyntax) startElement).getValue();
+    @RequiredUIAccess
+    public void invoke(
+        @Nonnull Project project,
+        @Nonnull PsiFile file,
+        @Nullable Editor editor,
+        @Nonnull PsiElement startElement,
+        @Nonnull PsiElement endElement
+    ) {
+        if (startElement instanceof IgnoreSyntax ignoreSyntax) {
+            PsiElement value = ignoreSyntax.getValue();
             if (editor != null) {
                 editor.getSelectionModel().setSelection(
-                        value.getTextOffset(),
-                        value.getTextOffset() + value.getTextLength()
+                    value.getTextOffset(),
+                    value.getTextOffset() + value.getTextLength()
                 );
             }
             AutoPopupController.getInstance(project).scheduleAutoPopup(editor, CompletionType.BASIC, null);
@@ -103,9 +110,9 @@ public class IgnoreSyntaxEntryFix extends LocalQuickFixAndIntentionActionOnPsiEl
      *
      * @return QuickFix family name
      */
-    @NotNull
+    @Nonnull
     @Override
     public String getFamilyName() {
-        return IgnoreBundle.message("codeInspection.group");
+        return IgnoreLocalize.codeinspectionGroup().get();
     }
 }

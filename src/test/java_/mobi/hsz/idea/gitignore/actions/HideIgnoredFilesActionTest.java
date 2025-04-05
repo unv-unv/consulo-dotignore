@@ -24,9 +24,9 @@
 
 package mobi.hsz.idea.gitignore.actions;
 
+import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.ui.ex.action.Presentation;
 import mobi.hsz.idea.gitignore.Common;
-import mobi.hsz.idea.gitignore.IgnoreBundle;
 import org.junit.Assert;
 
 /**
@@ -35,10 +35,10 @@ import org.junit.Assert;
  */
 public class HideIgnoredFilesActionTest extends Common<AddTemplateAction> {
     public void testHideIgnoredFilesActionInvocation() {
-        final HideIgnoredFilesAction action = new HideIgnoredFilesAction();
+        HideIgnoredFilesAction action = new HideIgnoredFilesAction();
         Presentation presentation;
 
         presentation = myFixture.testAction(action);
-        Assert.assertEquals(IgnoreBundle.message("action.hideIgnoredVisibility"), presentation.getText());
+        Assert.assertEquals(IgnoreLocalize.actionHideignoredvisibility().get(), presentation.getText());
     }
 }

@@ -34,8 +34,8 @@ public class MatcherUtilTest extends Common<MatcherUtil> {
 
     @Test
     public void testMatch() {
-        final Pattern pattern = Pattern.compile("foo");
-        final MatcherUtil util = new MatcherUtil();
+        Pattern pattern = Pattern.compile("foo");
+        MatcherUtil util = new MatcherUtil();
 
         assertFalse(util.match(null, null));
         assertFalse(util.match(null, "foo"));
@@ -47,8 +47,8 @@ public class MatcherUtilTest extends Common<MatcherUtil> {
 
     @Test
     public void testMatchAllParts() {
-        final String[] partsA = new String[]{"foo"};
-        final String[] partsB = new String[]{"foo", "bar"};
+        String[] partsA = new String[]{"foo"};
+        String[] partsB = new String[]{"foo", "bar"};
 
         assertFalse(MatcherUtil.matchAllParts(null, null));
         assertFalse(MatcherUtil.matchAllParts(null, "foo"));
@@ -62,8 +62,8 @@ public class MatcherUtilTest extends Common<MatcherUtil> {
 
     @Test
     public void testMatchAnyPart() {
-        final String[] partsA = new String[]{"foo"};
-        final String[] partsB = new String[]{"foo", "bar"};
+        String[] partsA = new String[]{"foo"};
+        String[] partsB = new String[]{"foo", "bar"};
 
         assertFalse(MatcherUtil.matchAnyPart(null, null));
         assertFalse(MatcherUtil.matchAnyPart(null, "foo"));

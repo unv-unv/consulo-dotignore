@@ -24,13 +24,13 @@
 
 package mobi.hsz.idea.gitignore.indexing;
 
-import consulo.project.Project;
-import consulo.language.psi.scope.GlobalSearchScope;
 import consulo.content.scope.SearchScope;
+import consulo.language.psi.scope.GlobalSearchScope;
 import consulo.module.Module;
+import consulo.project.Project;
 import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 
@@ -42,7 +42,7 @@ import java.util.HashSet;
  */
 public class IgnoreSearchScope extends GlobalSearchScope
 {
-    private IgnoreSearchScope(@NotNull Project project) {
+    private IgnoreSearchScope(@Nonnull Project project) {
         super(project);
     }
 
@@ -52,20 +52,20 @@ public class IgnoreSearchScope extends GlobalSearchScope
      * @param project current project
      * @return extended instance of {@link GlobalSearchScope}
      */
-    @NotNull
-    public static GlobalSearchScope get(@NotNull Project project) {
-        final IgnoreSearchScope scope = new IgnoreSearchScope(project);
-        final HashSet<VirtualFile> files = ExternalIndexableSetContributor.getAdditionalFiles(project);
+    @Nonnull
+    public static GlobalSearchScope get(@Nonnull Project project) {
+        IgnoreSearchScope scope = new IgnoreSearchScope(project);
+        HashSet<VirtualFile> files = ExternalIndexableSetContributor.getAdditionalFiles(project);
         return scope.uniteWith(GlobalSearchScope.filesScope(project, files));
     }
 
     @Override
-    public int compare(@NotNull final VirtualFile file1, @NotNull final VirtualFile file2) {
+    public int compare(@Nonnull VirtualFile file1, @Nonnull VirtualFile file2) {
         return 0;
     }
 
     @Override
-    public boolean contains(@NotNull final VirtualFile file) {
+    public boolean contains(@Nonnull VirtualFile file) {
         return file.getFileType() instanceof IgnoreFileType;
     }
 
@@ -80,7 +80,7 @@ public class IgnoreSearchScope extends GlobalSearchScope
     }
 
     @Override
-    public boolean isSearchInModuleContent(@NotNull final Module aModule) {
+    public boolean isSearchInModuleContent(@Nonnull Module aModule) {
         return true;
     }
 
@@ -89,15 +89,15 @@ public class IgnoreSearchScope extends GlobalSearchScope
         return true;
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public GlobalSearchScope union(@NotNull SearchScope scope) {
+    public GlobalSearchScope union(@Nonnull SearchScope scope) {
         return this;
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public SearchScope intersectWith(@NotNull SearchScope scope2) {
+    public SearchScope intersectWith(@Nonnull SearchScope scope2) {
         return scope2;
     }
 }

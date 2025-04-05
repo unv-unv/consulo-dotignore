@@ -29,10 +29,10 @@ import consulo.util.lang.StringUtil;
 import consulo.virtualFileSystem.VirtualFile;
 import consulo.virtualFileSystem.util.VirtualFileUtil;
 import consulo.virtualFileSystem.util.VirtualFileVisitor;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.psi.IgnoreEntry;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentMap;
@@ -70,9 +70,12 @@ public class Glob {
      * @return search result
      */
     @Nullable
-    public static VirtualFile findOne(@NotNull final VirtualFile root, @NotNull IgnoreEntry entry,
-                                      @NotNull MatcherUtil matcher) {
-        final List<VirtualFile> files = find(root, ContainerUtil.newArrayList(entry), matcher, false).get(entry);
+    public static VirtualFile findOne(
+        @Nonnull VirtualFile root,
+        @Nonnull IgnoreEntry entry,
+        @Nonnull MatcherUtil matcher
+    ) {
+        List<VirtualFile> files = find(root, ContainerUtil.newArrayList(entry), matcher, false).get(entry);
         return ContainerUtil.getFirstItem(files);
     }
 
@@ -84,53 +87,55 @@ public class Glob {
      * @param includeNested attach children to the search result
      * @return search result
      */
-    @NotNull
-    public static Map<IgnoreEntry, List<VirtualFile>> find(@NotNull final VirtualFile root,
-                                                           @NotNull List<IgnoreEntry> entries,
-                                                           @NotNull final MatcherUtil matcher,
-                                                           final boolean includeNested) {
-        final ConcurrentMap<IgnoreEntry, List<VirtualFile>> result = ContainerUtil.newConcurrentMap();
-        final HashMap<IgnoreEntry, Pattern> map = new HashMap<>();
+    @Nonnull
+    public static Map<IgnoreEntry, List<VirtualFile>> find(
+        @Nonnull VirtualFile root,
+        @Nonnull List<IgnoreEntry> entries,
+        @Nonnull MatcherUtil matcher,
+        boolean includeNested
+    ) {
+        ConcurrentMap<IgnoreEntry, List<VirtualFile>> result = ContainerUtil.newConcurrentMap();
+        HashMap<IgnoreEntry, Pattern> map = new HashMap<>();
 
         for (IgnoreEntry entry : entries) {
             result.put(entry, ContainerUtil.newArrayList());
 
-            final Pattern pattern = createPattern(entry);
+            Pattern pattern = createPattern(entry);
             if (pattern != null) {
                 map.put(entry, pattern);
             }
         }
 
         VirtualFileVisitor<HashMap<IgnoreEntry, Pattern>> visitor =
-                new VirtualFileVisitor<HashMap<IgnoreEntry, Pattern>>(VirtualFileVisitor.NO_FOLLOW_SYMLINKS) {
-                    @Override
-                    public boolean visitFile(@NotNull VirtualFile file) {
-                        final HashMap<IgnoreEntry, Pattern> current = new HashMap<>(getCurrentValue());
-                        if (current.isEmpty()) {
-                            return false;
-                        }
-
-                        final String path = Utils.getRelativePath(root, file);
-                        if (path == null || Utils.isVcsDirectory(file)) {
-                            return false;
-                        }
-
-                        for (Map.Entry<IgnoreEntry, Pattern> item : current.entrySet()) {
-                            final Pattern value = item.getValue();
-                            boolean matches = false;
-                            if (value == null || matcher.match(value, path)) {
-                                matches = true;
-                                result.get(item.getKey()).add(file);
-                            }
-                            if (includeNested && matches) {
-                                current.put(item.getKey(), null);
-                            }
-                        }
-
-                        setValueForChildren(current);
-                        return true;
+            new VirtualFileVisitor<HashMap<IgnoreEntry, Pattern>>(VirtualFileVisitor.NO_FOLLOW_SYMLINKS) {
+                @Override
+                public boolean visitFile(@Nonnull VirtualFile file) {
+                    HashMap<IgnoreEntry, Pattern> current = new HashMap<>(getCurrentValue());
+                    if (current.isEmpty()) {
+                        return false;
                     }
-                };
+
+                    String path = Utils.getRelativePath(root, file);
+                    if (path == null || Utils.isVcsDirectory(file)) {
+                        return false;
+                    }
+
+                    for (Map.Entry<IgnoreEntry, Pattern> item : current.entrySet()) {
+                        Pattern value = item.getValue();
+                        boolean matches = false;
+                        if (value == null || matcher.match(value, path)) {
+                            matches = true;
+                            result.get(item.getKey()).add(file);
+                        }
+                        if (includeNested && matches) {
+                            current.put(item.getKey(), null);
+                        }
+                    }
+
+                    setValueForChildren(current);
+                    return true;
+                }
+            };
         visitor.setValueForChildren(map);
         VirtualFileUtil.visitChildrenRecursively(root, visitor);
 
@@ -145,16 +150,18 @@ public class Glob {
      * @param includeNested attach children to the search result
      * @return search result
      */
-    @NotNull
-    public static Map<IgnoreEntry, Set<String>> findAsPaths(@NotNull VirtualFile root,
-                                                            @NotNull List<IgnoreEntry> entries,
-                                                            @NotNull MatcherUtil matcher,
-                                                            boolean includeNested) {
-        final Map<IgnoreEntry, Set<String>> result = new HashMap<>();
+    @Nonnull
+    public static Map<IgnoreEntry, Set<String>> findAsPaths(
+        @Nonnull VirtualFile root,
+        @Nonnull List<IgnoreEntry> entries,
+        @Nonnull MatcherUtil matcher,
+        boolean includeNested
+    ) {
+        Map<IgnoreEntry, Set<String>> result = new HashMap<>();
 
-        final Map<IgnoreEntry, List<VirtualFile>> files = find(root, entries, matcher, includeNested);
+        Map<IgnoreEntry, List<VirtualFile>> files = find(root, entries, matcher, includeNested);
         for (Map.Entry<IgnoreEntry, List<VirtualFile>> item : files.entrySet()) {
-            final Set<String> set = new HashSet<>();
+            Set<String> set = new HashSet<>();
             for (VirtualFile file : item.getValue()) {
                 set.add(Utils.getRelativePath(root, file));
             }
@@ -172,7 +179,7 @@ public class Glob {
      * @return regex {@link Pattern}
      */
     @Nullable
-    public static Pattern createPattern(@NotNull String rule, @NotNull IgnoreBundle.Syntax syntax) {
+    public static Pattern createPattern(@Nonnull String rule, @Nonnull IgnoreBundle.Syntax syntax) {
         return createPattern(rule, syntax, false);
     }
 
@@ -183,7 +190,7 @@ public class Glob {
      * @return regex {@link Pattern}
      */
     @Nullable
-    public static Pattern createPattern(@NotNull IgnoreEntry entry) {
+    public static Pattern createPattern(@Nonnull IgnoreEntry entry) {
         return createPattern(entry, false);
     }
 
@@ -195,7 +202,7 @@ public class Glob {
      * @return regex {@link Pattern}
      */
     @Nullable
-    public static Pattern createPattern(@NotNull IgnoreEntry entry, boolean acceptChildren) {
+    public static Pattern createPattern(@Nonnull IgnoreEntry entry, boolean acceptChildren) {
         return createPattern(entry.getValue(), entry.getSyntax(), acceptChildren);
     }
 
@@ -208,9 +215,12 @@ public class Glob {
      * @return regex {@link Pattern}
      */
     @Nullable
-    public static Pattern createPattern(@NotNull String rule, @NotNull IgnoreBundle.Syntax syntax,
-                                        boolean acceptChildren) {
-        final String regex = getRegex(rule, syntax, acceptChildren);
+    public static Pattern createPattern(
+        @Nonnull String rule,
+        @Nonnull IgnoreBundle.Syntax syntax,
+        boolean acceptChildren
+    ) {
+        String regex = getRegex(rule, syntax, acceptChildren);
         return getPattern(regex);
     }
 
@@ -222,8 +232,8 @@ public class Glob {
      * @param acceptChildren Matches directory children
      * @return regex string
      */
-    @NotNull
-    public static String getRegex(@NotNull String rule, @NotNull IgnoreBundle.Syntax syntax, boolean acceptChildren) {
+    @Nonnull
+    public static String getRegex(@Nonnull String rule, @Nonnull IgnoreBundle.Syntax syntax, boolean acceptChildren) {
         return syntax.equals(IgnoreBundle.Syntax.GLOB) ? createRegex(rule, acceptChildren) : rule;
     }
 
@@ -234,7 +244,7 @@ public class Glob {
      * @return {@link Pattern} instance or null if invalid
      */
     @Nullable
-    public static Pattern getPattern(@NotNull String regex) {
+    public static Pattern getPattern(@Nonnull String regex) {
         try {
             if (!PATTERNS_CACHE.containsKey(regex)) {
                 PATTERNS_CACHE.put(regex, Pattern.compile(regex));
@@ -253,8 +263,8 @@ public class Glob {
      * @param acceptChildren Matches directory children
      * @return regex {@link String}
      */
-    @NotNull
-    public static String createRegex(@NotNull String glob, boolean acceptChildren) {
+    @Nonnull
+    public static String createRegex(@Nonnull String glob, boolean acceptChildren) {
         glob = glob.trim();
         String cached = GLOBS_CACHE.get(glob);
         if (cached != null) {

@@ -24,15 +24,16 @@
 
 package mobi.hsz.idea.gitignore.psi.impl;
 
+import consulo.annotation.access.RequiredReadAction;
 import consulo.language.ast.ASTNode;
 import consulo.language.psi.PsiElement;
 import consulo.util.lang.StringUtil;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
 import mobi.hsz.idea.gitignore.psi.*;
 import mobi.hsz.idea.gitignore.util.Glob;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.regex.Pattern;
 
@@ -53,6 +54,8 @@ public abstract class IgnoreEntryExtImpl extends IgnoreElementImpl implements Ig
      *
      * @return first child is negated
      */
+    @Override
+    @RequiredReadAction
     public boolean isNegated() {
         return getFirstChild() instanceof IgnoreNegation;
     }
@@ -80,7 +83,9 @@ public abstract class IgnoreEntryExtImpl extends IgnoreElementImpl implements Ig
      *
      * @return syntax
      */
-    @NotNull
+    @Nonnull
+    @Override
+    @RequiredReadAction
     public IgnoreBundle.Syntax getSyntax() {
         PsiElement previous = getPrevSibling();
         while (previous != null) {
@@ -101,7 +106,9 @@ public abstract class IgnoreEntryExtImpl extends IgnoreElementImpl implements Ig
      *
      * @return entry value without `!` negation sign
      */
-    @NotNull
+    @Nonnull
+    @Override
+    @RequiredReadAction
     public String getValue() {
         String value = getText();
         if (isNegated()) {

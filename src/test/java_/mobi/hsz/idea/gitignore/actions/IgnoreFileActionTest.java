@@ -24,9 +24,9 @@
 
 package mobi.hsz.idea.gitignore.actions;
 
+import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.ui.ex.action.Presentation;
 import mobi.hsz.idea.gitignore.Common;
-import mobi.hsz.idea.gitignore.IgnoreBundle;
 import org.junit.Assert;
 
 /**
@@ -39,8 +39,8 @@ public class IgnoreFileActionTest extends Common<IgnoreFileAction> {
         Presentation presentation;
 
         presentation = myFixture.testAction(action);
-        Assert.assertEquals(IgnoreBundle.message("action.addToIgnore", "null"), presentation.getText());
-        Assert.assertEquals(IgnoreBundle.message("action.addToIgnore.description", "null"), presentation.getDescription());
+        Assert.assertEquals(IgnoreLocalize.actionAddtoignore("null").get(), presentation.getText());
+        Assert.assertEquals(IgnoreLocalize.actionAddtoignoreDescription("null").get(), presentation.getDescription());
         Assert.assertFalse("Action is not visible if there is no Ignore file context", presentation.isEnabledAndVisible());
     }
 }

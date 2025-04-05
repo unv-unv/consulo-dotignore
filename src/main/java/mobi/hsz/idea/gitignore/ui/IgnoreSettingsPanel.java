@@ -24,18 +24,22 @@
 
 package mobi.hsz.idea.gitignore.ui;
 
-import consulo.application.AllIcons;
-import consulo.application.ApplicationManager;
+import consulo.application.Application;
 import consulo.codeEditor.Editor;
 import consulo.codeEditor.EditorFactory;
 import consulo.disposer.Disposable;
 import consulo.document.Document;
 import consulo.document.event.DocumentEvent;
 import consulo.document.event.DocumentListener;
-import consulo.fileChooser.*;
+import consulo.dotignore.localize.IgnoreLocalize;
+import consulo.fileChooser.FileChooserDescriptor;
+import consulo.fileChooser.FileChooserFactory;
+import consulo.fileChooser.FileSaverDescriptor;
+import consulo.fileChooser.IdeaFileChooser;
 import consulo.language.editor.LangDataKeys;
-import consulo.platform.Platform;
+import consulo.localize.LocalizeValue;
 import consulo.platform.base.icon.PlatformIconGroup;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.InputValidatorEx;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
@@ -43,12 +47,13 @@ import consulo.ui.ex.action.DefaultActionGroup;
 import consulo.ui.ex.awt.*;
 import consulo.ui.ex.awt.table.JBTable;
 import consulo.undoRedo.CommandProcessor;
-import consulo.util.collection.ContainerUtil;
 import consulo.util.jdom.JDOMUtil;
 import consulo.util.lang.StringUtil;
 import consulo.virtualFileSystem.VirtualFile;
 import consulo.virtualFileSystem.VirtualFileWrapper;
 import consulo.virtualFileSystem.archive.ArchiveFileType;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
 import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
@@ -56,8 +61,6 @@ import mobi.hsz.idea.gitignore.util.Constants;
 import mobi.hsz.idea.gitignore.util.Utils;
 import org.jdom.Element;
 import org.jdom.JDOMException;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -134,8 +137,10 @@ public class IgnoreSettingsPanel implements Disposable {
         languagesTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         languagesTable.setColumnSelectionAllowed(false);
         languagesTable.setRowHeight(22);
-        languagesTable.setPreferredScrollableViewportSize(new Dimension(-1,
-                languagesTable.getRowHeight() * IgnoreBundle.LANGUAGES.size() / 2));
+        languagesTable.setPreferredScrollableViewportSize(new Dimension(
+            -1,
+            languagesTable.getRowHeight() * IgnoreBundle.LANGUAGES.size() / 2
+        ));
 
         languagesTable.setStriped(true);
         languagesTable.setShowGrid(false);
@@ -194,7 +199,7 @@ public class IgnoreSettingsPanel implements Disposable {
      *
      * @return {@link IgnoreSettings.UserTemplate} list
      */
-    @NotNull
+    @Nonnull
     public List<IgnoreSettings.UserTemplate> getUserTemplates() {
         return this.templatesListPanel.getList();
     }
@@ -204,7 +209,7 @@ public class IgnoreSettingsPanel implements Disposable {
      *
      * @param userTemplates {@link IgnoreSettings.UserTemplate} list
      */
-    public void setUserTemplates(@NotNull List<IgnoreSettings.UserTemplate> userTemplates) {
+    public void setUserTemplates(@Nonnull List<IgnoreSettings.UserTemplate> userTemplates) {
         this.templatesListPanel.resetForm(userTemplates);
     }
 
@@ -322,7 +327,7 @@ public class IgnoreSettingsPanel implements Disposable {
      * @return {@link #languagesTable} model
      */
     public LanguagesTableModel getLanguagesSettings() {
-        return (LanguagesTableModel) this.languagesTable.getModel();
+        return (LanguagesTableModel)this.languagesTable.getModel();
     }
 
     /** Extension for the CRUD list panel. */
@@ -332,7 +337,7 @@ public class IgnoreSettingsPanel implements Disposable {
 
         /** Constructs CRUD panel with list listener for editor updating. */
         public TemplatesListPanel() {
-            super(null, ContainerUtil.newArrayList());
+            super(null, new ArrayList<>());
             myList.addListSelectionListener(e -> {
                 boolean enabled = myListModel.size() > 0;
                 editorPanel.setEnabled(enabled);
@@ -353,97 +358,107 @@ public class IgnoreSettingsPanel implements Disposable {
         protected void customizeDecorator(ToolbarDecorator decorator) {
             super.customizeDecorator(decorator);
 
-            final DefaultActionGroup group = new DefaultActionGroup();
+            DefaultActionGroup group = new DefaultActionGroup();
             group.addSeparator();
 
             group.add(new AnAction(
-                    IgnoreBundle.message("action.importTemplates"),
-                    IgnoreBundle.message("action.importTemplates.description"),
-                    AllIcons.Actions.Install
+                IgnoreLocalize.actionImporttemplates(),
+                IgnoreLocalize.actionImporttemplatesDescription(),
+                PlatformIconGroup.actionsInstall()
             ) {
-                @SuppressWarnings("unchecked")
                 @Override
-                public void actionPerformed(@NotNull final AnActionEvent event) {
-                    final FileChooserDescriptor descriptor =
-                            new FileChooserDescriptor(true, false, true, false, true, false) {
-                                @Override
-                                public boolean isFileVisible(VirtualFile file, boolean showHiddenFiles) {
-                                    return super.isFileVisible(file, showHiddenFiles) &&
-                                            (file.isDirectory() || FILE_EXTENSION.equals(file.getExtension()) ||
-                                                    file.getFileType() instanceof ArchiveFileType);
-                                }
+                @RequiredUIAccess
+                @SuppressWarnings("unchecked")
+                public void actionPerformed(@Nonnull AnActionEvent event) {
+                    FileChooserDescriptor descriptor =
+                        new FileChooserDescriptor(true, false, true, false, true, false) {
+                            @Override
+                            public boolean isFileVisible(VirtualFile file, boolean showHiddenFiles) {
+                                return super.isFileVisible(file, showHiddenFiles)
+                                    && (file.isDirectory() || FILE_EXTENSION.equals(file.getExtension())
+                                    || file.getFileType() instanceof ArchiveFileType);
+                            }
 
-                                @Override
-                                public boolean isFileSelectable(VirtualFile file) {
-                                    return file.getExtension().endsWith("xml");
-                                }
-                            };
-                    descriptor.setDescription(IgnoreBundle.message("action.importTemplates.wrapper.description"));
-                    descriptor.setTitle(IgnoreBundle.message("action.importTemplates.wrapper"));
+                            @Override
+                            @RequiredUIAccess
+                            public boolean isFileSelectable(VirtualFile file) {
+                                return file.getExtension().endsWith("xml");
+                            }
+                        };
+                    descriptor.withDescriptionValue(IgnoreLocalize.actionImporttemplatesWrapperDescription());
+                    descriptor.withTitleValue(IgnoreLocalize.actionImporttemplatesWrapper());
                     descriptor.putUserData(
-                            LangDataKeys.MODULE_CONTEXT,
-                            event.getData(LangDataKeys.MODULE)
+                        LangDataKeys.MODULE_CONTEXT,
+                        event.getData(LangDataKeys.MODULE)
                     );
 
-                    final VirtualFile file = IdeaFileChooser.chooseFile(descriptor, templatesListPanel, null, null);
+                    VirtualFile file = IdeaFileChooser.chooseFile(descriptor, templatesListPanel, null, null);
                     if (file != null) {
                         try {
-                            final org.jdom.Document document = JDOMUtil.loadDocument(file.getInputStream());
+                            org.jdom.Document document = JDOMUtil.loadDocument(file.getInputStream());
                             Element element = document.getRootElement();
                             List<IgnoreSettings.UserTemplate> templates = IgnoreSettings.loadTemplates(element);
                             for (IgnoreSettings.UserTemplate template : templates) {
                                 myListModel.addElement(template);
                             }
-                            Messages.showInfoMessage(templatesListPanel,
-                                    IgnoreBundle.message("action.importTemplates.success", templates.size()),
-                                    IgnoreBundle.message("action.exportTemplates.success.title"));
+                            Messages.showInfoMessage(
+                                templatesListPanel,
+                                IgnoreLocalize.actionImporttemplatesSuccess(templates.size()).get(),
+                                IgnoreLocalize.actionExporttemplatesSuccessTitle().get()
+                            );
                             return;
-                        } catch (IOException | JDOMException e) {
+                        }
+                        catch (IOException | JDOMException e) {
                             e.printStackTrace();
                         }
                     }
 
-                    Messages.showErrorDialog(templatesListPanel, IgnoreBundle.message("action.importTemplates.error"));
+                    Messages.showErrorDialog(templatesListPanel, IgnoreLocalize.actionImporttemplatesError().get());
                 }
             });
 
             group.add(new AnAction(
-                    IgnoreBundle.message("action.exportTemplates"),
-                    IgnoreBundle.message("action.exportTemplates.description"),
-                    PlatformIconGroup.actionsExport()
+                IgnoreLocalize.actionExporttemplates(),
+                IgnoreLocalize.actionExporttemplatesDescription(),
+                PlatformIconGroup.actionsExport()
             ) {
                 @Override
-                public void actionPerformed(@NotNull AnActionEvent event) {
-                    final VirtualFileWrapper wrapper = FileChooserFactory.getInstance().createSaveFileDialog(
-                            new FileSaverDescriptor(
-                                    IgnoreBundle.message("action.exportTemplates.wrapper"),
-                                    "",
-                                    FILE_EXTENSION
-                            ),
-                            templatesListPanel
+                @RequiredUIAccess
+                public void actionPerformed(@Nonnull AnActionEvent event) {
+                    VirtualFileWrapper wrapper = FileChooserFactory.getInstance().createSaveFileDialog(
+                        new FileSaverDescriptor(
+                            IgnoreLocalize.actionExporttemplatesWrapper().get(),
+                            LocalizeValue.empty().get(),
+                            FILE_EXTENSION
+                        ),
+                        templatesListPanel
                     ).save(null, null);
 
                     if (wrapper != null) {
-                        final List<IgnoreSettings.UserTemplate> items = getCurrentItems();
-                        final org.jdom.Document document = new org.jdom.Document(
-                                IgnoreSettings.createTemplatesElement(items)
+                        List<IgnoreSettings.UserTemplate> items = getCurrentItems();
+                        org.jdom.Document document = new org.jdom.Document(
+                            IgnoreSettings.createTemplatesElement(items)
                         );
                         try {
                             JDOMUtil.writeDocument(document, wrapper.getFile(), Constants.NEWLINE);
-                            Messages.showInfoMessage(templatesListPanel,
-                                    IgnoreBundle.message("action.exportTemplates.success", items.size()),
-                                    IgnoreBundle.message("action.exportTemplates.success.title"));
-                        } catch (IOException e) {
+                            Messages.showInfoMessage(
+                                templatesListPanel,
+                                IgnoreLocalize.actionExporttemplatesSuccess(items.size()).get(),
+                                IgnoreLocalize.actionExporttemplatesSuccessTitle().get()
+                            );
+                        }
+                        catch (IOException e) {
                             Messages.showErrorDialog(
-                                    templatesListPanel,
-                                    IgnoreBundle.message("action.exportTemplates.error")
+                                templatesListPanel,
+                                IgnoreLocalize.actionExporttemplatesError().get()
                             );
                         }
                     }
                 }
 
                 @Override
-                public void update(@NotNull AnActionEvent e) {
+                @RequiredUIAccess
+                public void update(@Nonnull AnActionEvent e) {
                     e.getPresentation().setEnabled(getCurrentItems().size() > 0);
                 }
             });
@@ -457,6 +472,7 @@ public class IgnoreSettingsPanel implements Disposable {
          */
         @Nullable
         @Override
+        @RequiredUIAccess
         protected IgnoreSettings.UserTemplate findItemToAdd() {
             return showEditDialog(new IgnoreSettings.UserTemplate());
         }
@@ -468,51 +484,55 @@ public class IgnoreSettingsPanel implements Disposable {
          * @return modified template
          */
         @Nullable
-        private IgnoreSettings.UserTemplate showEditDialog(@NotNull final IgnoreSettings.UserTemplate initialValue) {
-            String name = Messages.showInputDialog(this,
-                    IgnoreBundle.message("settings.userTemplates.dialogDescription"),
-                    IgnoreBundle.message("settings.userTemplates.dialogTitle"),
-                    Messages.getQuestionIcon(), initialValue.getName(), new InputValidatorEx() {
+        @RequiredUIAccess
+        private IgnoreSettings.UserTemplate showEditDialog(@Nonnull IgnoreSettings.UserTemplate initialValue) {
+            String name = Messages.showInputDialog(
+                this,
+                IgnoreLocalize.settingsUsertemplatesDialogdescription().get(),
+                IgnoreLocalize.settingsUsertemplatesDialogtitle().get(),
+                UIUtil.getQuestionIcon(),
+                initialValue.getName(),
+                new InputValidatorEx() {
+                    /**
+                     * Checks whether the <code>inputString</code> is valid. It is invoked each time
+                     * input changes.
+                     *
+                     * @param inputString the input to check
+                     * @return true if input string is valid
+                     */
+                    @Override
+                    @RequiredUIAccess
+                    public boolean checkInput(String inputString) {
+                        return !StringUtil.isEmpty(inputString);
+                    }
 
-                        /**
-                         * Checks whether the <code>inputString</code> is valid. It is invoked each time
-                         * input changes.
-                         *
-                         * @param inputString the input to check
-                         * @return true if input string is valid
-                         */
-                        @Override
-                        public boolean checkInput(String inputString) {
-                            return !StringUtil.isEmpty(inputString);
-                        }
+                    /**
+                     * This method is invoked just before message dialog is closed with OK code.
+                     * If <code>false</code> is returned then then the message dialog will not be closed.
+                     *
+                     * @param inputString the input to check
+                     * @return true if the dialog could be closed, false otherwise.
+                     */
+                    @Override
+                    @RequiredUIAccess
+                    public boolean canClose(String inputString) {
+                        return !StringUtil.isEmpty(inputString);
+                    }
 
-                        /**
-                         * This method is invoked just before message dialog is closed with OK code.
-                         * If <code>false</code> is returned then then the message dialog will not be closed.
-                         *
-                         * @param inputString the input to check
-                         * @return true if the dialog could be closed, false otherwise.
-                         */
-                        @Override
-                        public boolean canClose(String inputString) {
-                            return !StringUtil.isEmpty(inputString);
-                        }
-
-                        /**
-                         * Returns error message depending on the input string.
-                         *
-                         * @param inputString the input to check
-                         * @return error text
-                         */
-                        @Nullable
-                        @Override
-                        public String getErrorText(String inputString) {
-                            if (!checkInput(inputString)) {
-                                return IgnoreBundle.message("settings.userTemplates.dialogError");
-                            }
-                            return null;
-                        }
-                    });
+                    /**
+                     * Returns error message depending on the input string.
+                     *
+                     * @param inputString the input to check
+                     * @return error text
+                     */
+                    @Nullable
+                    @Override
+                    @RequiredUIAccess
+                    public String getErrorText(String inputString) {
+                        return !checkInput(inputString) ? IgnoreLocalize.settingsUsertemplatesDialogerror().get() : null;
+                    }
+                }
+            );
 
             if (name != null) {
                 initialValue.setName(name);
@@ -526,7 +546,7 @@ public class IgnoreSettingsPanel implements Disposable {
          * @param userTemplates templates list
          */
         @SuppressWarnings("unchecked")
-        public void resetForm(@NotNull List<IgnoreSettings.UserTemplate> userTemplates) {
+        public void resetForm(@Nonnull List<IgnoreSettings.UserTemplate> userTemplates) {
             myListModel.clear();
             for (IgnoreSettings.UserTemplate template : userTemplates) {
                 myListModel.addElement(new IgnoreSettings.UserTemplate(template.getName(), template.getContent()));
@@ -540,7 +560,8 @@ public class IgnoreSettingsPanel implements Disposable {
          * @return modified template
          */
         @Override
-        protected IgnoreSettings.UserTemplate editSelectedItem(@NotNull IgnoreSettings.UserTemplate item) {
+        @RequiredUIAccess
+        protected IgnoreSettings.UserTemplate editSelectedItem(@Nonnull IgnoreSettings.UserTemplate item) {
             return showEditDialog(item);
         }
 
@@ -550,9 +571,9 @@ public class IgnoreSettingsPanel implements Disposable {
          * @return templates list
          */
         public List<IgnoreSettings.UserTemplate> getList() {
-            ArrayList<IgnoreSettings.UserTemplate> list = ContainerUtil.newArrayList();
+            ArrayList<IgnoreSettings.UserTemplate> list = new ArrayList<>();
             for (int i = 0; i < myListModel.size(); i++) {
-                list.add((IgnoreSettings.UserTemplate) myListModel.getElementAt(i));
+                list.add(myListModel.getElementAt(i));
             }
             return list;
         }
@@ -580,7 +601,7 @@ public class IgnoreSettingsPanel implements Disposable {
             if (index == -1) {
                 return null;
             }
-            return (IgnoreSettings.UserTemplate) myListModel.get(index);
+            return myListModel.get(index);
         }
 
         /**
@@ -589,7 +610,7 @@ public class IgnoreSettingsPanel implements Disposable {
          * @return {@link IgnoreSettings.UserTemplate} list
          */
         public List<IgnoreSettings.UserTemplate> getCurrentItems() {
-            List<IgnoreSettings.UserTemplate> list = ContainerUtil.newArrayList();
+            List<IgnoreSettings.UserTemplate> list = new ArrayList<>();
             int[] ids = myList.getSelectedIndices();
             for (int i = 0; i < ids.length; i++) {
                 list.add(getList().get(i));
@@ -613,15 +634,15 @@ public class IgnoreSettingsPanel implements Disposable {
         public EditorPanel() {
             super(new BorderLayout());
             this.previewDocument = EditorFactory.getInstance().createDocument("");
-            this.label = new JBLabel(IgnoreBundle.message("settings.userTemplates.noTemplateSelected"), JBLabel.CENTER);
+            this.label = new JBLabel(IgnoreLocalize.settingsUsertemplatesNotemplateselected().get(), JBLabel.CENTER);
             this.preview = Utils.createPreviewEditor(previewDocument, null, false);
             this.preview.getDocument().addDocumentListener(new DocumentListener() {
                 @Override
-                public void beforeDocumentChange(@NotNull DocumentEvent event) {
+                public void beforeDocumentChange(@Nonnull DocumentEvent event) {
                 }
 
                 @Override
-                public void documentChanged(@NotNull DocumentEvent event) {
+                public void documentChanged(@Nonnull DocumentEvent event) {
                     templatesListPanel.updateContent(event.getDocument().getText());
                 }
             });
@@ -634,11 +655,13 @@ public class IgnoreSettingsPanel implements Disposable {
          *
          * @param enabled if true shows editor, else shows label
          */
+        @Override
         public void setEnabled(boolean enabled) {
             if (enabled) {
                 remove(this.label);
                 add(this.preview.getComponent());
-            } else {
+            }
+            else {
                 add(this.label);
                 remove(this.preview.getComponent());
             }
@@ -651,11 +674,12 @@ public class IgnoreSettingsPanel implements Disposable {
          *
          * @param content new content
          */
-        public void setContent(@NotNull final String content) {
-            ApplicationManager.getApplication().runWriteAction(
-                    () -> CommandProcessor.getInstance().runUndoTransparentAction(
-                            () -> previewDocument.replaceString(0, previewDocument.getTextLength(), content)
-                    )
+        @RequiredUIAccess
+        public void setContent(@Nonnull String content) {
+            Application.get().runWriteAction(
+                () -> CommandProcessor.getInstance().runUndoTransparentAction(
+                    () -> previewDocument.replaceString(0, previewDocument.getTextLength(), content)
+                )
             );
         }
     }
@@ -666,15 +690,15 @@ public class IgnoreSettingsPanel implements Disposable {
         private final IgnoreSettings.IgnoreLanguagesSettings settings = new IgnoreSettings.IgnoreLanguagesSettings();
 
         /** Table's columns names. */
-        private final String[] columnNames = new String[]{
-                IgnoreBundle.message("settings.languagesSettings.table.name"),
-                IgnoreBundle.message("settings.languagesSettings.table.newFile"),
-                IgnoreBundle.message("settings.languagesSettings.table.enable")
+        private final LocalizeValue[] columnNames = new LocalizeValue[]{
+            IgnoreLocalize.settingsLanguagessettingsTableName(),
+            IgnoreLocalize.settingsLanguagessettingsTableNewfile(),
+            IgnoreLocalize.settingsLanguagessettingsTableEnable()
         };
 
         /** Table's columns classes. */
         private final Class[] columnClasses = new Class[]{
-                String.class, Boolean.class, Boolean.class
+            String.class, Boolean.class, Boolean.class
         };
 
         /**
@@ -707,7 +731,7 @@ public class IgnoreSettingsPanel implements Disposable {
          */
         @Override
         public String getColumnName(int column) {
-            return columnNames[column];
+            return columnNames[column].get();
         }
 
         /**
@@ -727,7 +751,6 @@ public class IgnoreSettingsPanel implements Disposable {
          * @param row    the row whose value is to be queried
          * @param column the column whose value is to be queried
          * @return true
-         *
          * @see #setValueAt
          */
         @Override
@@ -742,16 +765,15 @@ public class IgnoreSettingsPanel implements Disposable {
          * @param row    the row whose value is to be queried
          * @param column the column whose value is to be queried
          * @return the value Object at the specified cell
-         *
          * @throws ArrayIndexOutOfBoundsException if an invalid row or column was given
          */
         @Override
         public Object getValueAt(int row, int column) {
-            final IgnoreLanguage language = ContainerUtil.newArrayList(settings.keySet()).get(row);
+            IgnoreLanguage language = new ArrayList<>(settings.keySet()).get(row);
             if (language == null) {
                 return null;
             }
-            final TreeMap<IgnoreSettings.IgnoreLanguagesSettings.KEY, Object> data = settings.get(language);
+            TreeMap<IgnoreSettings.IgnoreLanguagesSettings.KEY, Object> data = settings.get(language);
 
             switch (column) {
                 case 0:
@@ -775,7 +797,7 @@ public class IgnoreSettingsPanel implements Disposable {
          */
         @Override
         public void setValueAt(Object value, int row, int column) {
-            IgnoreLanguage language = ContainerUtil.newArrayList(settings.keySet()).get(row);
+            IgnoreLanguage language = new ArrayList<>(settings.keySet()).get(row);
             TreeMap<IgnoreSettings.IgnoreLanguagesSettings.KEY, Object> data = settings.get(language);
 
             switch (column) {
@@ -804,7 +826,7 @@ public class IgnoreSettingsPanel implements Disposable {
          *
          * @param settings to update
          */
-        public void update(@NotNull IgnoreSettings.IgnoreLanguagesSettings settings) {
+        public void update(@Nonnull IgnoreSettings.IgnoreLanguagesSettings settings) {
             this.settings.clear();
             this.settings.putAll(settings);
         }

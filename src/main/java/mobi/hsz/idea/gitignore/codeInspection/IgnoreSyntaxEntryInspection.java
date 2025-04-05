@@ -24,18 +24,18 @@
 
 package mobi.hsz.idea.gitignore.codeInspection;
 
+import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.dotignore.codeInspection.IgnoreInspection;
+import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
 import consulo.language.psi.PsiElementVisitor;
+import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
 import mobi.hsz.idea.gitignore.psi.IgnoreSyntax;
 import mobi.hsz.idea.gitignore.psi.IgnoreVisitor;
-import org.jetbrains.annotations.NotNull;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Inspection tool that checks if syntax entry has correct value.
@@ -48,7 +48,7 @@ public class IgnoreSyntaxEntryInspection extends IgnoreInspection {
     @Nonnull
     @Override
     public String getDisplayName() {
-        return IgnoreBundle.message("codeInspection.syntaxEntry");
+        return IgnoreLocalize.codeinspectionSyntaxentry().get();
     }
 
     @Nonnull
@@ -64,12 +64,13 @@ public class IgnoreSyntaxEntryInspection extends IgnoreInspection {
      * @param isOnTheFly true if inspection was run in non-batch mode
      * @return not-null visitor for this inspection
      */
-    @NotNull
+    @Nonnull
     @Override
-    public PsiElementVisitor buildVisitor(@NotNull final ProblemsHolder holder, boolean isOnTheFly) {
+    public PsiElementVisitor buildVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly) {
         return new IgnoreVisitor() {
             @Override
-            public void visitSyntax(@NotNull IgnoreSyntax syntax) {
+            @RequiredReadAction
+            public void visitSyntax(@Nonnull IgnoreSyntax syntax) {
                 IgnoreLanguage language = (IgnoreLanguage) syntax.getContainingFile().getLanguage();
                 if (!language.isSyntaxSupported()) {
                     return;
@@ -82,8 +83,10 @@ public class IgnoreSyntaxEntryInspection extends IgnoreInspection {
                     }
                 }
 
-                holder.registerProblem(syntax, IgnoreBundle.message("codeInspection.syntaxEntry.message"),
-                        new IgnoreSyntaxEntryFix(syntax));
+                holder.newProblem(IgnoreLocalize.codeinspectionSyntaxentryMessage())
+                    .range(syntax)
+                    .withFixes(new IgnoreSyntaxEntryFix(syntax))
+                    .create();
             }
         };
     }

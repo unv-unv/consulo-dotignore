@@ -24,26 +24,29 @@
 
 package mobi.hsz.idea.gitignore.codeInspection;
 
+import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.application.progress.ProgressManager;
 import consulo.dotignore.codeInspection.IgnoreInspection;
+import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
-import consulo.language.psi.*;
+import consulo.language.psi.PsiElementVisitor;
+import consulo.language.psi.PsiPolyVariantReference;
+import consulo.language.psi.PsiReference;
+import consulo.language.psi.ResolveResult;
 import consulo.language.psi.path.FileReferenceOwner;
 import consulo.project.Project;
-import consulo.util.collection.ContainerUtil;
 import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.FilesIndexCacheProjectComponent;
-import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.IgnoreManager;
 import mobi.hsz.idea.gitignore.psi.IgnoreEntry;
 import mobi.hsz.idea.gitignore.psi.IgnoreVisitor;
 import mobi.hsz.idea.gitignore.util.Glob;
 import mobi.hsz.idea.gitignore.util.Utils;
-import org.jetbrains.annotations.NotNull;
 
-import jakarta.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -59,7 +62,7 @@ public class IgnoreUnusedEntryInspection extends IgnoreInspection {
     @Nonnull
     @Override
     public String getDisplayName() {
-        return IgnoreBundle.message("codeInspection.unusedEntry");
+        return IgnoreLocalize.codeinspectionUnusedentry().get();
     }
 
     @Nonnull
@@ -75,16 +78,17 @@ public class IgnoreUnusedEntryInspection extends IgnoreInspection {
      * @param isOnTheFly true if inspection was run in non-batch mode
      * @return not-null visitor for this inspection
      */
-    @NotNull
+    @Nonnull
     @Override
-    public PsiElementVisitor buildVisitor(@NotNull final ProblemsHolder holder, boolean isOnTheFly) {
-        final Project project = holder.getProject();
-        final FilesIndexCacheProjectComponent cache = FilesIndexCacheProjectComponent.getInstance(project);
-        final IgnoreManager manager = IgnoreManager.getInstance(project);
+    public PsiElementVisitor buildVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly) {
+        Project project = holder.getProject();
+        FilesIndexCacheProjectComponent cache = FilesIndexCacheProjectComponent.getInstance(project);
+        IgnoreManager manager = IgnoreManager.getInstance(project);
 
         return new IgnoreVisitor() {
             @Override
-            public void visitEntry(@NotNull IgnoreEntry entry) {
+            @RequiredReadAction
+            public void visitEntry(@Nonnull IgnoreEntry entry) {
                 PsiReference[] references = entry.getReferences();
                 boolean resolved = true;
                 int previous = Integer.MAX_VALUE;
@@ -103,8 +107,10 @@ public class IgnoreUnusedEntryInspection extends IgnoreInspection {
 
                 if (!resolved) {
                     if (!isEntryExcluded(entry, holder.getProject())) {
-                        holder.registerProblem(entry, IgnoreBundle.message("codeInspection.unusedEntry.message"),
-                                new IgnoreRemoveEntryFix(entry));
+                        holder.newProblem(IgnoreLocalize.codeinspectionUnusedentryMessage())
+                            .range(entry)
+                            .withFixes(new IgnoreRemoveEntryFix(entry))
+                            .create();
                     }
                 }
 
@@ -118,21 +124,22 @@ public class IgnoreUnusedEntryInspection extends IgnoreInspection {
              * @param project current project
              * @return entry is excluded in current project
              */
-            private boolean isEntryExcluded(@NotNull IgnoreEntry entry, @NotNull Project project) {
-                final Pattern pattern = Glob.createPattern(entry);
+            @RequiredReadAction
+            private boolean isEntryExcluded(@Nonnull IgnoreEntry entry, @Nonnull Project project) {
+                Pattern pattern = Glob.createPattern(entry);
                 if (pattern == null) {
                     return false;
                 }
 
-                final VirtualFile projectRoot = project.getBaseDir();
-                final List<VirtualFile> matched = ContainerUtil.newArrayList();
-                final Collection<VirtualFile> files = cache.getFilesForPattern(project, pattern);
+                VirtualFile projectRoot = project.getBaseDir();
+                List<VirtualFile> matched = new ArrayList<>();
+                Collection<VirtualFile> files = cache.getFilesForPattern(project, pattern);
 
                 if (projectRoot == null) {
                     return false;
                 }
 
-                for (final VirtualFile root : Utils.getExcludedRoots(project)) {
+                for (VirtualFile root : Utils.getExcludedRoots(project)) {
                     for (VirtualFile file : files) {
                         ProgressManager.checkCanceled();
                         if (!Utils.isUnder(file, root)) {
@@ -145,7 +152,7 @@ public class IgnoreUnusedEntryInspection extends IgnoreInspection {
                         }
                     }
 
-                    if (matched.size() > 0) {
+                    if (!matched.isEmpty()) {
                         return true;
                     }
                 }

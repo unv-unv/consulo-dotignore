@@ -31,6 +31,8 @@ import consulo.project.Project;
 import consulo.ui.image.Image;
 import consulo.util.collection.ContainerUtil;
 import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.outer.OuterFileFetcher;
@@ -39,11 +41,7 @@ import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
 import mobi.hsz.idea.gitignore.util.ExpiringMap;
 import mobi.hsz.idea.gitignore.util.Icons;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import jakarta.annotation.Nonnull;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeMap;
@@ -59,11 +57,10 @@ public class IgnoreLanguage extends Language implements InjectableLanguage {
     public static final IgnoreLanguage INSTANCE = new IgnoreLanguage();
 
     /** The dot. */
-    @NonNls
     private static final String DOT = ".";
 
     /** The Ignore file extension suffix. */
-    @NotNull
+    @Nonnull
     private final String extension;
 
     /** The Ignore VCS directory name. */
@@ -75,11 +72,11 @@ public class IgnoreLanguage extends Language implements InjectableLanguage {
     private final Image icon;
 
     /** Outer files for the specified {@link IgnoreLanguage}. */
-    @NotNull
+    @Nonnull
     private final OuterFileFetcher[] fetchers;
 
     /** Outer files cache. */
-    @NotNull
+    @Nonnull
     protected final ExpiringMap<Integer, Set<VirtualFile>> outerFiles = new ExpiringMap<>(5000);
 
     /** {@link IgnoreLanguage} is a non-instantiable static class. */
@@ -89,17 +86,22 @@ public class IgnoreLanguage extends Language implements InjectableLanguage {
 
     /** {@link IgnoreLanguage} is a non-instantiable static class. */
     protected IgnoreLanguage(
-            @NotNull String name, @NotNull String extension, @Nullable String vcsDirectory,
-            @Nullable Image icon)
-    {
+        @Nonnull String name, 
+        @Nonnull String extension, 
+        @Nullable String vcsDirectory,
+        @Nullable Image icon
+    ) {
         this(name, extension, vcsDirectory, icon, new OuterFileFetcher[0]);
     }
 
     /** {@link IgnoreLanguage} is a non-instantiable static class. */
     protected IgnoreLanguage(
-            @NotNull String name, @NotNull String extension, @Nullable String vcsDirectory,
-            @Nullable Image icon, @NotNull OuterFileFetcher[] fetchers)
-    {
+        @Nonnull String name, 
+        @Nonnull String extension, 
+        @Nullable String vcsDirectory,
+        @Nullable Image icon, 
+        @Nonnull OuterFileFetcher[] fetchers
+    ) {
         super(name);
         this.extension = extension;
         this.vcsDirectory = vcsDirectory;
@@ -112,7 +114,7 @@ public class IgnoreLanguage extends Language implements InjectableLanguage {
      *
      * @return extension
      */
-    @NotNull
+    @Nonnull
     public String getExtension() {
         return extension;
     }
@@ -132,12 +134,12 @@ public class IgnoreLanguage extends Language implements InjectableLanguage {
      *
      * @return filename.
      */
-    @NotNull
+    @Nonnull
     public String getFilename() {
         return DOT + getExtension();
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public String getDisplayName() {
         return getFilename() + " (" + getID() + ")";
@@ -158,7 +160,7 @@ public class IgnoreLanguage extends Language implements InjectableLanguage {
      *
      * @return {@link IgnoreFileType} instance.
      */
-    @NotNull
+    @Nonnull
     public IgnoreFileType getFileType() {
         return IgnoreFileType.INSTANCE;
     }
@@ -168,7 +170,7 @@ public class IgnoreLanguage extends Language implements InjectableLanguage {
      *
      * @return {@link IgnoreFile} instance.
      */
-    public final IgnoreFile createFile(@NotNull final FileViewProvider viewProvider) {
+    public final IgnoreFile createFile(@Nonnull final FileViewProvider viewProvider) {
         return new IgnoreFile(viewProvider, getFileType());
     }
 
@@ -186,7 +188,7 @@ public class IgnoreLanguage extends Language implements InjectableLanguage {
      *
      * @return default syntax
      */
-    @NotNull
+    @Nonnull
     public IgnoreBundle.Syntax getDefaultSyntax() {
         return IgnoreBundle.Syntax.GLOB;
     }
@@ -206,7 +208,7 @@ public class IgnoreLanguage extends Language implements InjectableLanguage {
      *
      * @return outer file fetcher array
      */
-    @NotNull
+    @Nonnull
     public final OuterFileFetcher[] getOuterFileFetchers() {
         return fetchers;
     }
@@ -217,8 +219,8 @@ public class IgnoreLanguage extends Language implements InjectableLanguage {
      * @param project current project
      * @return outer files
      */
-    @NotNull
-    public Set<VirtualFile> getOuterFiles(@NotNull final Project project) {
+    @Nonnull
+    public Set<VirtualFile> getOuterFiles(@Nonnull final Project project) {
         return getOuterFiles(project, false);
     }
 
@@ -228,11 +230,11 @@ public class IgnoreLanguage extends Language implements InjectableLanguage {
      * @param project current project
      * @return outer files
      */
-    @NotNull
-    public Set<VirtualFile> getOuterFiles(@NotNull final Project project, boolean dumb) {
-        final int key = new HashCodeBuilder().append(project).append(getFileType()).toHashCode();
+    @Nonnull
+    public Set<VirtualFile> getOuterFiles(@Nonnull final Project project, boolean dumb) {
+        int key = new HashCodeBuilder().append(project).append(getFileType()).toHashCode();
         if (outerFiles.get(key) == null) {
-            final Set<VirtualFile> files = new HashSet<>();
+            Set<VirtualFile> files = new HashSet<>();
             for (OuterFileFetcher fetcher : getOuterFileFetchers()) {
                 ContainerUtil.addAllNotNull(files, fetcher.fetch(project));
             }
@@ -247,7 +249,7 @@ public class IgnoreLanguage extends Language implements InjectableLanguage {
      * @return language is enabled
      */
     public final boolean isEnabled() {
-        final TreeMap<IgnoreSettings.IgnoreLanguagesSettings.KEY, Object> data =
+        TreeMap<IgnoreSettings.IgnoreLanguagesSettings.KEY, Object> data =
                 IgnoreSettings.getInstance().getLanguagesSettings().get(this);
         boolean value = false;
         if (data != null) {
@@ -262,7 +264,7 @@ public class IgnoreLanguage extends Language implements InjectableLanguage {
      * @return new file action is allowed
      */
     public final boolean isNewAllowed() {
-        final TreeMap<IgnoreSettings.IgnoreLanguagesSettings.KEY, Object> data =
+        TreeMap<IgnoreSettings.IgnoreLanguagesSettings.KEY, Object> data =
                 IgnoreSettings.getInstance().getLanguagesSettings().get(this);
         boolean value = false;
         if (data != null) {
@@ -287,7 +289,7 @@ public class IgnoreLanguage extends Language implements InjectableLanguage {
      * @return fixed directory
      */
     @Nullable
-    public VirtualFile getFixedDirectory(@NotNull Project project) {
+    public VirtualFile getFixedDirectory(@Nonnull Project project) {
         return null;
     }
 }
