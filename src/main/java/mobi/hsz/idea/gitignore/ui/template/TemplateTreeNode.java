@@ -25,9 +25,9 @@
 package mobi.hsz.idea.gitignore.ui.template;
 
 import consulo.ui.ex.awt.tree.CheckedTreeNode;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import mobi.hsz.idea.gitignore.util.Resources;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * {@link TemplateTreeNode} is an implementation of checkbox tree node.
@@ -67,7 +67,7 @@ public class TemplateTreeNode extends CheckedTreeNode {
      *
      * @param template current template
      */
-    public TemplateTreeNode(@NotNull Resources.Template template) {
+    public TemplateTreeNode(@Nonnull Resources.Template template) {
         super(template);
         this.template = template;
         this.container = template.getContainer();

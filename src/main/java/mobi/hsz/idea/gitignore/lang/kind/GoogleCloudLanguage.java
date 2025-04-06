@@ -24,11 +24,11 @@
 
 package mobi.hsz.idea.gitignore.lang.kind;
 
+import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.file.type.kind.GoogleCloudFileType;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
 import mobi.hsz.idea.gitignore.util.Icons;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Google Cloud {@link IgnoreLanguage} definition.
@@ -50,7 +50,7 @@ public class GoogleCloudLanguage extends IgnoreLanguage {
      *
      * @return {@link GoogleCloudFileType} instance
      */
-    @NotNull
+    @Nonnull
     @Override
     public IgnoreFileType getFileType() {
         return GoogleCloudFileType.INSTANCE;

@@ -43,8 +43,8 @@ import java.util.List;
  * @since 1.5
  */
 public abstract class Common<T> extends LightPlatformCodeInsightFixtureTestCase {
-
-    protected void privateConstructor(@Nonnull Class<T> clz) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    protected void privateConstructor(@Nonnull Class<T> clz)
+        throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         Constructor<T> constructor = clz.getDeclaredConstructor();
         assertTrue(Modifier.isPrivate(constructor.getModifiers()));
         constructor.setAccessible(true);
@@ -63,7 +63,7 @@ public abstract class Common<T> extends LightPlatformCodeInsightFixtureTestCase 
 
     @Nonnull
     protected List<IgnoreEntry> getFixtureChildrenEntries() {
-        final List<IgnoreEntry> children = new ArrayList<>();
+        List<IgnoreEntry> children = new ArrayList<>();
         myFixture.getFile().acceptChildren(new IgnoreVisitor() {
             @Override
             public void visitEntry(@Nonnull IgnoreEntry entry) {

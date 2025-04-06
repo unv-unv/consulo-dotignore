@@ -24,10 +24,6 @@
 
 package mobi.hsz.idea.gitignore;
 
-import consulo.annotation.DeprecationInfo;
-import consulo.annotation.internal.MigratedExtensionsTo;
-import consulo.application.CommonBundle;
-import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.util.collection.ContainerUtil;
 import consulo.virtualFileSystem.VirtualFile;
 import jakarta.annotation.Nonnull;
@@ -36,7 +32,6 @@ import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
 import mobi.hsz.idea.gitignore.lang.kind.*;
 import mobi.hsz.idea.gitignore.util.CachedConcurrentMap;
-import org.jetbrains.annotations.PropertyKey;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,11 +44,7 @@ import java.util.ResourceBundle;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 0.4
  */
-@Deprecated
-@DeprecationInfo("Use IgnoreLocalize")
-@MigratedExtensionsTo(IgnoreLocalize.class)
 public class IgnoreBundle {
-
     /** The {@link ResourceBundle} path. */
     public static final String BUNDLE_NAME = "messages.IgnoreBundle";
 
@@ -140,32 +131,6 @@ public class IgnoreBundle {
         public String getPresentation() {
             return KEY + " " + toString();
         }
-    }
-
-    /**
-     * Loads a {@link String} from the {@link #BUNDLE} {@link ResourceBundle}.
-     *
-     * @param key    the key of the resource
-     * @param params the optional parameters for the specific resource
-     * @return the {@link String} value or {@code null} if no resource found for the key
-     */
-    public static String message(@PropertyKey(resourceBundle = BUNDLE_NAME) String key, Object... params) {
-        return CommonBundle.message(BUNDLE, key, params);
-    }
-
-    /**
-     * Loads a {@link String} from the {@link #BUNDLE} {@link ResourceBundle}.
-     *
-     * @param key          the key of the resource
-     * @param defaultValue the default value that will be returned if there is nothing set
-     * @param params       the optional parameters for the specific resource
-     * @return the {@link String} value or {@code null} if no resource found for the key
-     */
-    public static String messageOrDefault(
-        @PropertyKey(resourceBundle = BUNDLE_NAME) String key, String defaultValue,
-        Object... params
-    ) {
-        return CommonBundle.messageOrDefault(BUNDLE, key, defaultValue, params);
     }
 
     /**

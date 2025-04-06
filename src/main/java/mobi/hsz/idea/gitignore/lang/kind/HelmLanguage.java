@@ -24,11 +24,11 @@
 
 package mobi.hsz.idea.gitignore.lang.kind;
 
+import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.file.type.kind.HelmFileType;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
 import mobi.hsz.idea.gitignore.util.Icons;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Kubernetes Helm {@link IgnoreLanguage} definition.
@@ -50,7 +50,7 @@ public class HelmLanguage extends IgnoreLanguage {
      *
      * @return {@link HelmFileType} instance
      */
-    @NotNull
+    @Nonnull
     @Override
     public IgnoreFileType getFileType() {
         return HelmFileType.INSTANCE;

@@ -28,8 +28,8 @@ import consulo.project.Project;
 import consulo.ui.ex.awt.tree.CheckedTreeNode;
 import consulo.versionControlSystem.root.VcsRoot;
 import consulo.virtualFileSystem.VirtualFile;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * {@link FileTreeNode} is an implementation of checkbox tree node.
@@ -39,11 +39,11 @@ import org.jetbrains.annotations.Nullable;
  */
 public class FileTreeNode extends CheckedTreeNode {
     /** Current {@link VirtualFile} element. */
-    @NotNull
+    @Nonnull
     private final VirtualFile file;
 
     /** Current {@link Project} element. */
-    @NotNull
+    @Nonnull
     private final Project project;
 
     /** {@link VcsRoot} of the given {@link #file}. */
@@ -57,7 +57,7 @@ public class FileTreeNode extends CheckedTreeNode {
      * @param file    current file to render
      * @param vcsRoot VCS root
      */
-    public FileTreeNode(@NotNull Project project, @NotNull VirtualFile file, @Nullable VcsRoot vcsRoot) {
+    public FileTreeNode(@Nonnull Project project, @Nonnull VirtualFile file, @Nullable VcsRoot vcsRoot) {
         super(file);
         this.project = project;
         this.file = file;
@@ -69,7 +69,7 @@ public class FileTreeNode extends CheckedTreeNode {
      *
      * @return project
      */
-    @NotNull
+    @Nonnull
     public Project getProject() {
         return project;
     }
@@ -79,7 +79,7 @@ public class FileTreeNode extends CheckedTreeNode {
      *
      * @return file
      */
-    @NotNull
+    @Nonnull
     public VirtualFile getFile() {
         return file;
     }

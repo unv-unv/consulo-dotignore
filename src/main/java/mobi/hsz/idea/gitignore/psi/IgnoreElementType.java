@@ -25,9 +25,8 @@
 package mobi.hsz.idea.gitignore.psi;
 
 import consulo.language.ast.IElementType;
+import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Custom element type.
@@ -37,7 +36,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class IgnoreElementType extends IElementType {
     /** Build a new instance of @{link IgnoreElementType} */
-    public IgnoreElementType(@NotNull @NonNls String debugName) {
+    public IgnoreElementType(@Nonnull String debugName) {
         super(debugName, IgnoreLanguage.INSTANCE);
     }
 }

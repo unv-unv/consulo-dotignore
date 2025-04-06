@@ -131,8 +131,8 @@ public class MissingGitignoreNotificationProvider implements EditorNotificationP
      * @param builder
      * @return notification panel
      */
-    private EditorNotificationBuilder createPanel(@Nonnull final Project project, EditorNotificationBuilder builder) {
-        final IgnoreFileType fileType = GitFileType.INSTANCE;
+    private EditorNotificationBuilder createPanel(@Nonnull Project project, EditorNotificationBuilder builder) {
+        IgnoreFileType fileType = GitFileType.INSTANCE;
         builder.withText(IgnoreLocalize.daemonMissinggitignore());
         builder.withAction(IgnoreLocalize.daemonAddunversionedfilesCreate(), (e) -> {
             PsiDirectory directory = PsiManager.getInstance(project).findDirectory(project.getBaseDir());

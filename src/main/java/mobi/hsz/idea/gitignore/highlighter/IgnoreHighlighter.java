@@ -30,10 +30,10 @@ import consulo.language.editor.highlight.SyntaxHighlighterBase;
 import consulo.language.lexer.Lexer;
 import consulo.project.Project;
 import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import mobi.hsz.idea.gitignore.lang.IgnoreParserDefinition;
 import mobi.hsz.idea.gitignore.lexer.IgnoreLexerAdapter;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -79,7 +79,7 @@ public class IgnoreHighlighter extends SyntaxHighlighterBase {
      *
      * @return lexer adapter
      */
-    @NotNull
+    @Nonnull
     @Override
     public Lexer getHighlightingLexer() {
         return new IgnoreLexerAdapter(virtualFile);
@@ -91,9 +91,9 @@ public class IgnoreHighlighter extends SyntaxHighlighterBase {
      * @param tokenType element type
      * @return attributes list
      */
-    @NotNull
+    @Nonnull
     @Override
-    public TextAttributesKey[] getTokenHighlights(IElementType tokenType) {
+    public TextAttributesKey[] getTokenHighlights(@Nonnull IElementType tokenType) {
         return pack(ATTRIBUTES.get(tokenType));
     }
 }

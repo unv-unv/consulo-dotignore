@@ -26,8 +26,8 @@ package mobi.hsz.idea.gitignore.util;
 
 import consulo.application.dumb.DumbAwareRunnable;
 import consulo.application.util.concurrent.AppExecutorUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -50,7 +50,7 @@ public class InterruptibleScheduledFuture implements DumbAwareRunnable {
     private int attempt = 0;
 
     /** Task to run. */
-    @NotNull
+    @Nonnull
     private final Runnable task;
 
     /** Current scheduled feature. */
@@ -73,7 +73,7 @@ public class InterruptibleScheduledFuture implements DumbAwareRunnable {
      * @param delay       time to wait before next task's run
      * @param maxAttempts max amount of task's invocations
      */
-    public InterruptibleScheduledFuture(@NotNull Runnable task, int delay, int maxAttempts) {
+    public InterruptibleScheduledFuture(@Nonnull Runnable task, int delay, int maxAttempts) {
         this.task = task;
         this.delay = delay;
         this.maxAttempts = maxAttempts;

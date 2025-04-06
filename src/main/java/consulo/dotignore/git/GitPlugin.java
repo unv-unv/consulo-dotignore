@@ -2,7 +2,7 @@ package consulo.dotignore.git;
 
 /**
  * @author VISTALL
- * @since 30/03/2023
+ * @since 2023-03-30
  */
 public class GitPlugin {
 }

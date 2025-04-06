@@ -24,11 +24,11 @@
 
 package mobi.hsz.idea.gitignore.lang.kind;
 
+import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.file.type.kind.PrettierFileType;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
 import mobi.hsz.idea.gitignore.util.Icons;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Prettier {@link IgnoreLanguage} definition.
@@ -50,7 +50,7 @@ public class PrettierLanguage extends IgnoreLanguage {
      *
      * @return {@link PrettierFileType} instance
      */
-    @NotNull
+    @Nonnull
     @Override
     public IgnoreFileType getFileType() {
         return PrettierFileType.INSTANCE;

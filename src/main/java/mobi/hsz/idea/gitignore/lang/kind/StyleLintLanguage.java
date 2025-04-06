@@ -24,11 +24,11 @@
 
 package mobi.hsz.idea.gitignore.lang.kind;
 
+import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.file.type.kind.StyleLintFileType;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
 import mobi.hsz.idea.gitignore.util.Icons;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * StyleLint {@link StyleLintLanguage} definition.
@@ -50,7 +50,7 @@ public class StyleLintLanguage extends IgnoreLanguage {
      *
      * @return {@link StyleLintFileType} instance
      */
-    @NotNull
+    @Nonnull
     @Override
     public IgnoreFileType getFileType() {
         return StyleLintFileType.INSTANCE;

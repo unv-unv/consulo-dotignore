@@ -24,26 +24,25 @@
 
 package mobi.hsz.idea.gitignore.lang;
 
-import consulo.language.ast.IFileElementType;
-import consulo.language.ast.TokenType;
-import org.jetbrains.annotations.NotNull;
-import consulo.language.ast.ASTNode;
+import consulo.annotation.access.RequiredReadAction;
 import consulo.language.Language;
+import consulo.language.ast.ASTNode;
+import consulo.language.ast.IFileElementType;
+import consulo.language.ast.TokenSet;
+import consulo.language.ast.TokenType;
+import consulo.language.file.FileViewProvider;
+import consulo.language.lexer.Lexer;
 import consulo.language.parser.ParserDefinition;
 import consulo.language.parser.PsiParser;
-import consulo.language.lexer.Lexer;
-import consulo.language.file.FileViewProvider;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiFile;
-import consulo.language.ast.TokenSet;
 import consulo.language.version.LanguageVersion;
+import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.lexer.IgnoreLexerAdapter;
 import mobi.hsz.idea.gitignore.parser.IgnoreParser;
 import mobi.hsz.idea.gitignore.psi.IgnoreFile;
 import mobi.hsz.idea.gitignore.psi.IgnoreTypes;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Defines the implementation of a parser for a custom language.
@@ -100,9 +99,9 @@ public class IgnoreParserDefinition implements ParserDefinition {
      *
      * @return the lexer instance.
      */
-    @NotNull
+    @Nonnull
     @Override
-    public Lexer createLexer(LanguageVersion languageVersion) {
+    public Lexer createLexer(@Nonnull LanguageVersion languageVersion) {
         return new IgnoreLexerAdapter();
     }
 
@@ -111,8 +110,9 @@ public class IgnoreParserDefinition implements ParserDefinition {
      *
      * @return the parser instance.
      */
+    @Nonnull
     @Override
-    public PsiParser createParser(LanguageVersion languageVersion) {
+    public PsiParser createParser(@Nonnull LanguageVersion languageVersion) {
         return new IgnoreParser();
     }
 
@@ -121,6 +121,7 @@ public class IgnoreParserDefinition implements ParserDefinition {
      *
      * @return the file node element type.
      */
+    @Nonnull
     @Override
     public IFileElementType getFileNodeType() {
         return FILE;
@@ -135,9 +136,9 @@ public class IgnoreParserDefinition implements ParserDefinition {
      *
      * @return the set of whitespace token types.
      */
-    @NotNull
+    @Nonnull
     @Override
-    public TokenSet getWhitespaceTokens(LanguageVersion languageVersion) {
+    public TokenSet getWhitespaceTokens(@Nonnull LanguageVersion languageVersion) {
         return WHITE_SPACES;
     }
 
@@ -148,9 +149,9 @@ public class IgnoreParserDefinition implements ParserDefinition {
      *
      * @return the set of comment token types.
      */
-    @NotNull
+    @Nonnull
     @Override
-    public TokenSet getCommentTokens(LanguageVersion languageVersion) {
+    public TokenSet getCommentTokens(@Nonnull LanguageVersion languageVersion) {
         return COMMENTS;
     }
 
@@ -160,9 +161,9 @@ public class IgnoreParserDefinition implements ParserDefinition {
      *
      * @return the set of string literal element types.
      */
-    @NotNull
+    @Nonnull
     @Override
-    public TokenSet getStringLiteralElements(LanguageVersion languageVersion) {
+    public TokenSet getStringLiteralElements(@Nonnull LanguageVersion languageVersion) {
         return TokenSet.EMPTY;
     }
 
@@ -174,9 +175,10 @@ public class IgnoreParserDefinition implements ParserDefinition {
      * @param node the node for which the PSI element should be returned.
      * @return the PSI element matching the element type of the AST node.
      */
-    @NotNull
+    @Nonnull
     @Override
-    public PsiElement createElement(ASTNode node) {
+    @RequiredReadAction
+    public PsiElement createElement(@Nonnull ASTNode node) {
         return IgnoreTypes.Factory.createElement(node);
     }
 
@@ -186,11 +188,11 @@ public class IgnoreParserDefinition implements ParserDefinition {
      * @param viewProvider virtual file.
      * @return the PSI file element.
      */
+    @Nonnull
     @Override
     public PsiFile createFile(FileViewProvider viewProvider) {
-        if (viewProvider.getBaseLanguage() instanceof IgnoreLanguage) {
-            return ((IgnoreLanguage) viewProvider.getBaseLanguage()).createFile(viewProvider);
-        }
-        return new IgnoreFile(viewProvider, IgnoreFileType.INSTANCE);
+        return viewProvider.getBaseLanguage() instanceof IgnoreLanguage ignoreLanguage
+            ? ignoreLanguage.createFile(viewProvider)
+            : new IgnoreFile(viewProvider, IgnoreFileType.INSTANCE);
     }
 }

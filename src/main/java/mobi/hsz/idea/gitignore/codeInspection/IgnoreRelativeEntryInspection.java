@@ -63,7 +63,12 @@ public class IgnoreRelativeEntryInspection extends IgnoreInspection {
      */
     @Nonnull
     @Override
-    public PsiElementVisitor buildVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly, @Nonnull LocalInspectionToolSession session, @Nonnull Object state) {
+    public PsiElementVisitor buildVisitor(
+        @Nonnull ProblemsHolder holder,
+        boolean isOnTheFly,
+        @Nonnull LocalInspectionToolSession session,
+        @Nonnull Object state
+    ) {
         PsiFile file = holder.getFile();
 
         if (!(file instanceof IgnoreFile)) {

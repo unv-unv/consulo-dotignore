@@ -24,11 +24,12 @@
 
 package mobi.hsz.idea.gitignore.codeInsight;
 
+import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.language.editor.HighlightRangeExtension;
 import consulo.language.psi.PsiFile;
+import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Highlight common ranges in the file.
@@ -45,7 +46,8 @@ public class IgnoreHighlightRangeExtension implements HighlightRangeExtension {
      * @return allowed to highlight
      */
     @Override
-    public boolean isForceHighlightParents(@NotNull PsiFile file) {
+    @RequiredReadAction
+    public boolean isForceHighlightParents(@Nonnull PsiFile file) {
         return file.getLanguage() instanceof IgnoreLanguage;
     }
 }

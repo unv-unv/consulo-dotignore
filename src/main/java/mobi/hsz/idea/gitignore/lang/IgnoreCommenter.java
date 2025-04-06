@@ -26,8 +26,8 @@ package mobi.hsz.idea.gitignore.lang;
 
 import consulo.language.Commenter;
 import consulo.language.Language;
+import jakarta.annotation.Nullable;
 import mobi.hsz.idea.gitignore.util.Constants;
-import org.jetbrains.annotations.Nullable;
 
 import jakarta.annotation.Nonnull;
 

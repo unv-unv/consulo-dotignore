@@ -12,7 +12,7 @@ import java.util.function.Function;
 
 /**
  * @author VISTALL
- * @since 28/03/2023
+ * @since 2023-03-28
  */
 public abstract class IgnoreLanguageExtensionExtender<E> implements ExtensionExtender<E> {
     private final Class<E> extensionClass;

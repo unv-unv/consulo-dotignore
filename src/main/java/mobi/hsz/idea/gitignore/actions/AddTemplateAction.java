@@ -40,8 +40,7 @@ import mobi.hsz.idea.gitignore.ui.GeneratorDialog;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 0.5.3
  */
-public class AddTemplateAction extends AnAction
-{
+public class AddTemplateAction extends AnAction {
     /** Builds a new instance of {@link AddTemplateAction}. */
     public AddTemplateAction() {
         super(IgnoreLocalize.actionAddtemplate(), IgnoreLocalize.actionAddtemplateDescription());

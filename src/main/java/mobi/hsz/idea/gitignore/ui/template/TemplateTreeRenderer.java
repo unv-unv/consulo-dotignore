@@ -24,11 +24,11 @@
 
 package mobi.hsz.idea.gitignore.ui.template;
 
+import consulo.localize.LocalizeValue;
 import consulo.ui.ex.JBColor;
 import consulo.ui.ex.SimpleTextAttributes;
 import consulo.ui.ex.awt.UIUtil;
 import consulo.ui.ex.awt.tree.CheckboxTree;
-import mobi.hsz.idea.gitignore.IgnoreBundle;
 
 import javax.swing.*;
 import java.awt.*;
@@ -70,18 +70,19 @@ public abstract class TemplateTreeRenderer extends CheckboxTree.CheckboxTreeCell
             : UIUtil.getTreeTextForeground();
         int style = SimpleTextAttributes.STYLE_PLAIN;
 
-        String text = "", hint = "";
+        String text = "";
+        LocalizeValue hint = LocalizeValue.empty();
         if (node.getTemplate() != null) { // template leaf
             text = node.getTemplate().getName();
         }
         else if (node.getContainer() != null) { // container group
-            hint = IgnoreBundle.message("template.container." + node.getContainer().toString().toLowerCase());
+            hint = node.getContainer().getHint();
             getCheckbox().setVisible(false);
         }
 
         // TODO migrated to speed search ? SearchUtil.appendFragments(getFilter(), text, style, foreground, background, getTextRenderer());
         getTextRenderer().append(
-            hint,
+            hint.get(),
             selected ? new SimpleTextAttributes(Font.PLAIN, foreground) : SimpleTextAttributes.GRAYED_ATTRIBUTES
         );
         setForeground(foreground);

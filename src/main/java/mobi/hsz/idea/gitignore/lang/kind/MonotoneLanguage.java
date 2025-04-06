@@ -24,12 +24,12 @@
 
 package mobi.hsz.idea.gitignore.lang.kind;
 
+import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.file.type.kind.MonotoneFileType;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
 import mobi.hsz.idea.gitignore.util.Icons;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Monotone {@link IgnoreLanguage} definition.
@@ -51,7 +51,7 @@ public class MonotoneLanguage extends IgnoreLanguage {
      *
      * @return {@link MonotoneFileType} instance
      */
-    @NotNull
+    @Nonnull
     @Override
     public IgnoreFileType getFileType() {
         return MonotoneFileType.INSTANCE;
@@ -62,7 +62,7 @@ public class MonotoneLanguage extends IgnoreLanguage {
      *
      * @return default syntax
      */
-    @NotNull
+    @Nonnull
     @Override
     public IgnoreBundle.Syntax getDefaultSyntax() {
         return IgnoreBundle.Syntax.REGEXP;

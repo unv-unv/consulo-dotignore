@@ -6,7 +6,7 @@ import mobi.hsz.idea.gitignore.lang.IgnoreBraceMatcher;
 
 /**
  * @author VISTALL
- * @since 28/03/2023
+ * @since 2023-03-28
  */
 @ExtensionImpl
 public class IgnoreBraceMatcherExtender extends IgnoreLanguageExtensionExtender<PairedBraceMatcher> {

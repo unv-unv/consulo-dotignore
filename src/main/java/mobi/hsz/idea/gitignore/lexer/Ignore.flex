@@ -11,19 +11,19 @@ import static mobi.hsz.idea.gitignore.psi.IgnoreTypes.*;
 %%
 
 %{
-  private IgnoreLanguage language;
+    private IgnoreLanguage language;
 
-  public IgnoreLexer(@Nullable VirtualFile virtualFile) {
-    this((java.io.Reader)null);
+    public IgnoreLexer(@Nullable VirtualFile virtualFile) {
+        this((java.io.Reader)null);
 
-    if (virtualFile != null && virtualFile.getFileType() instanceof IgnoreFileType) {
-      this.language = ((IgnoreFileType) virtualFile.getFileType()).getIgnoreLanguage();
+        if (virtualFile != null && virtualFile.getFileType() instanceof IgnoreFileType ignoreFileType) {
+            this.language = ignoreFileType.getIgnoreLanguage();
+        }
     }
-  }
 
-  private boolean isSyntaxSupported() {
-    return language == null || language.isSyntaxSupported();
-  }
+    private boolean isSyntaxSupported() {
+        return language == null || language.isSyntaxSupported();
+    }
 %}
 
 %public

@@ -1,9 +1,9 @@
 package mobi.hsz.idea.gitignore.inspections;
 
-import consulo.util.lang.StringUtil;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
+import consulo.util.lang.StringUtil;
+import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.lang.kind.GitLanguage;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 
@@ -34,7 +34,7 @@ abstract public class InspectionTestCase extends LightPlatformCodeInsightFixture
         myFixture.testHighlighting(true, false, true);
     }
     
-    protected void doHighlightingFileTestWithQuickFix(@NotNull String quickFixName) {
+    protected void doHighlightingFileTestWithQuickFix(@Nonnull String quickFixName) {
         myFixture.configureByFile(getTestName(true) + FILENAME);
         myFixture.testHighlighting(true, false, true);
         myFixture.launchAction(myFixture.findSingleIntention(quickFixName));

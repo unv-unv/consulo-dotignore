@@ -26,18 +26,17 @@ package mobi.hsz.idea.gitignore.codeInsight;
 
 import consulo.annotation.component.ExtensionImpl;
 import consulo.language.Language;
-import consulo.language.editor.completion.*;
+import consulo.language.editor.completion.CompletionContributor;
+import consulo.language.editor.completion.CompletionType;
 import consulo.language.editor.completion.lookup.LookupElementBuilder;
 import consulo.language.pattern.StandardPatterns;
 import consulo.language.psi.PsiElement;
-import consulo.language.util.ProcessingContext;
-import consulo.util.collection.ContainerUtil;
+import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
 import mobi.hsz.idea.gitignore.psi.IgnoreSyntax;
-import org.jetbrains.annotations.NotNull;
 
-import jakarta.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -49,8 +48,8 @@ import java.util.List;
 @ExtensionImpl
 public class SyntaxCompletionContributor extends CompletionContributor {
     /** Allowed values for the completion. */
-    @NotNull
-    private static final List<LookupElementBuilder> SYNTAX_ELEMENTS = ContainerUtil.newArrayList();
+    @Nonnull
+    private static final List<LookupElementBuilder> SYNTAX_ELEMENTS = new ArrayList<>();
 
     static {
         for (IgnoreBundle.Syntax syntax : IgnoreBundle.Syntax.values()) {
@@ -60,25 +59,21 @@ public class SyntaxCompletionContributor extends CompletionContributor {
 
     /** Constructor. */
     public SyntaxCompletionContributor() {
-        extend(CompletionType.BASIC,
-                StandardPatterns.instanceOf(PsiElement.class),
-                new CompletionProvider() {
-                    @Override
-                    public void addCompletions(@NotNull CompletionParameters parameters,
-                                                  @NotNull ProcessingContext context,
-                                                  @NotNull CompletionResultSet result) {
-                        PsiElement current = parameters.getPosition();
-                        if (current.getParent() instanceof IgnoreSyntax && current.getPrevSibling() != null) {
-                            result.addAllElements(SYNTAX_ELEMENTS);
-                        }
-                    }
+        extend(
+            CompletionType.BASIC,
+            StandardPatterns.instanceOf(PsiElement.class),
+            (parameters, context, result) -> {
+                PsiElement current = parameters.getPosition();
+                if (current.getParent() instanceof IgnoreSyntax && current.getPrevSibling() != null) {
+                    result.addAllElements(SYNTAX_ELEMENTS);
                 }
+            }
         );
     }
 
     /** Allow autoPopup to appear after custom symbol. */
     @Override
-    public boolean invokeAutoPopup(@NotNull PsiElement position, char typeChar) {
+    public boolean invokeAutoPopup(@Nonnull PsiElement position, char typeChar) {
         return true;
     }
 

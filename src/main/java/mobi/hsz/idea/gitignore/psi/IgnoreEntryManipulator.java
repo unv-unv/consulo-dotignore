@@ -24,6 +24,7 @@
 
 package mobi.hsz.idea.gitignore.psi;
 
+import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.document.util.TextRange;
 import consulo.language.psi.AbstractElementManipulator;
@@ -31,11 +32,9 @@ import consulo.language.psi.PsiFile;
 import consulo.language.psi.PsiFileFactory;
 import consulo.language.psi.util.PsiTreeUtil;
 import consulo.language.util.IncorrectOperationException;
+import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
-import org.jetbrains.annotations.NotNull;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Entry manipulator.
@@ -55,8 +54,9 @@ public class IgnoreEntryManipulator extends AbstractElementManipulator<IgnoreEnt
      * @throws IncorrectOperationException if something goes wrong
      */
     @Override
-    public IgnoreEntry handleContentChange(@NotNull IgnoreEntry entry, @NotNull TextRange range, String newContent)
-            throws IncorrectOperationException {
+    @RequiredReadAction
+    public IgnoreEntry handleContentChange(@Nonnull IgnoreEntry entry, @Nonnull TextRange range, String newContent)
+        throws IncorrectOperationException {
         if (!(entry.getLanguage() instanceof IgnoreLanguage)) {
             return entry;
         }
@@ -64,7 +64,7 @@ public class IgnoreEntryManipulator extends AbstractElementManipulator<IgnoreEnt
         IgnoreFileType fileType = (IgnoreFileType) language.getAssociatedFileType();
         assert fileType != null;
         PsiFile file = PsiFileFactory.getInstance(entry.getProject())
-                .createFileFromText(language.getFilename(), fileType, range.replace(entry.getText(), newContent));
+            .createFileFromText(language.getFilename(), fileType, range.replace(entry.getText(), newContent));
         IgnoreEntry newEntry = PsiTreeUtil.findChildOfType(file, IgnoreEntry.class);
         assert newEntry != null;
         return (IgnoreEntry) entry.replace(newEntry);
@@ -76,14 +76,15 @@ public class IgnoreEntryManipulator extends AbstractElementManipulator<IgnoreEnt
      * @param element element to be changed
      * @return range
      */
-    @NotNull
+    @Nonnull
     @Override
-    public TextRange getRangeInElement(@NotNull IgnoreEntry element) {
+    @RequiredReadAction
+    public TextRange getRangeInElement(@Nonnull IgnoreEntry element) {
         IgnoreNegation negation = element.getNegation();
         if (negation != null) {
             return TextRange.create(
-                    negation.getStartOffsetInParent() + negation.getTextLength(),
-                    element.getTextLength()
+                negation.getStartOffsetInParent() + negation.getTextLength(),
+                element.getTextLength()
             );
         }
         return super.getRangeInElement(element);

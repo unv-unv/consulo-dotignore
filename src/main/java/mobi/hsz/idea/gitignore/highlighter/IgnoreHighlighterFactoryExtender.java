@@ -6,7 +6,7 @@ import consulo.language.editor.highlight.SyntaxHighlighterFactory;
 
 /**
  * @author VISTALL
- * @since 28/03/2023
+ * @since 2023-03-28
  */
 @ExtensionImpl
 public class IgnoreHighlighterFactoryExtender extends IgnoreLanguageExtensionExtender<SyntaxHighlighterFactory> {

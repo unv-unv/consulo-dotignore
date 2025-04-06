@@ -21,7 +21,9 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Listener for ignore editor manager. */
+/**
+ * Listener for ignore editor manager.
+ */
 @TopicImpl(ComponentScope.PROJECT)
 public class IgnoreEditorManagerListener implements FileEditorManagerListener {
     private final Project project;
@@ -44,7 +46,7 @@ public class IgnoreEditorManagerListener implements FileEditorManagerListener {
             return;
         }
 
-        IgnoreLanguage language = ((IgnoreFileType) fileType).getIgnoreLanguage();
+        IgnoreLanguage language = ((IgnoreFileType)fileType).getIgnoreLanguage();
         if (!language.isEnabled()) {
             return;
         }
@@ -56,24 +58,28 @@ public class IgnoreEditorManagerListener implements FileEditorManagerListener {
             }
 
             for (FileEditor fileEditor : source.getEditors(file)) {
-                if (fileEditor instanceof TextEditor) {
-                    OuterIgnoreWrapper wrapper = new OuterIgnoreWrapper(project, language, outerFiles);
-                    JComponent component = wrapper.getComponent();
-                    IgnoreSettings.Listener settingsListener = (key, value) -> {
-                        if (IgnoreSettings.KEY.OUTER_IGNORE_RULES.equals(key)) {
-                            component.setVisible((Boolean) value);
-                        }
-                    };
+                if (!(fileEditor instanceof TextEditor)) {
+                    return;
+                }
+                OuterIgnoreWrapper wrapper = new OuterIgnoreWrapper(project, language, outerFiles);
+                JComponent component = wrapper.getComponent();
+                IgnoreSettings.Listener settingsListener = (key, value) -> {
+                    if (IgnoreSettings.KEY.OUTER_IGNORE_RULES.equals(key)) {
+                        component.setVisible((Boolean)value);
+                    }
+                };
 
-                    IgnoreSettings.getInstance().addListener(settingsListener);
-                    source.addBottomComponent(fileEditor, component);
+                IgnoreSettings.getInstance().addListener(settingsListener);
+                source.addBottomComponent(fileEditor, component);
 
-                    Disposer.register(fileEditor, wrapper);
-                    Disposer.register(fileEditor, () -> {
+                Disposer.register(fileEditor, wrapper);
+                Disposer.register(
+                    fileEditor,
+                    () -> {
                         IgnoreSettings.getInstance().removeListener(settingsListener);
                         source.removeBottomComponent(fileEditor, component);
-                    });
-                }
+                    }
+                );
             }
         });
     }

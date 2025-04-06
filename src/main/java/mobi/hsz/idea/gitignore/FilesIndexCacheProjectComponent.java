@@ -38,13 +38,16 @@ import consulo.util.lang.StringUtil;
 import consulo.virtualFileSystem.VirtualFile;
 import consulo.virtualFileSystem.VirtualFileManager;
 import consulo.virtualFileSystem.event.*;
+import jakarta.annotation.Nonnull;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mobi.hsz.idea.gitignore.util.Constants;
 import mobi.hsz.idea.gitignore.util.MatcherUtil;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Pattern;
 
@@ -61,53 +64,53 @@ import java.util.regex.Pattern;
 @Singleton
 public class FilesIndexCacheProjectComponent implements Disposable {
     /** Concurrent cache map. */
-    @NotNull
+    @Nonnull
     private final ConcurrentMap<String, Collection<VirtualFile>> cacheMap;
 
     /** {@link VirtualFileManager} instance. */
-    @NotNull
+    @Nonnull
     private final VirtualFileManager virtualFileManager;
 
     /** {@link FileIndex} instance. */
-    @NotNull
+    @Nonnull
     private final FileIndex projectFileIndex;
 
     /** {@link VirtualFileListener} instance to watch for operations on the filesystem. */
-    @NotNull
+    @Nonnull
     private final VirtualFileListener virtualFileListener = new VirtualFileListener() {
         @Override
-        public void propertyChanged(@NotNull VirtualFilePropertyEvent event) {
+        public void propertyChanged(@Nonnull VirtualFilePropertyEvent event) {
             if (event.getPropertyName().equals("name")) {
                 removeAffectedCaches(event);
             }
         }
 
         @Override
-        public void fileCreated(@NotNull VirtualFileEvent event) {
+        public void fileCreated(@Nonnull VirtualFileEvent event) {
             removeAffectedCaches(event);
         }
 
         @Override
-        public void fileDeleted(@NotNull VirtualFileEvent event) {
+        public void fileDeleted(@Nonnull VirtualFileEvent event) {
             removeAffectedCaches(event);
         }
 
         @Override
-        public void fileMoved(@NotNull VirtualFileMoveEvent event) {
+        public void fileMoved(@Nonnull VirtualFileMoveEvent event) {
             removeAffectedCaches(event);
         }
 
         @Override
-        public void fileCopied(@NotNull VirtualFileCopyEvent event) {
+        public void fileCopied(@Nonnull VirtualFileCopyEvent event) {
             removeAffectedCaches(event);
         }
 
         @Override
-        public void beforeFileMovement(@NotNull VirtualFileMoveEvent event) {
+        public void beforeFileMovement(@Nonnull VirtualFileMoveEvent event) {
             removeAffectedCaches(event);
         }
 
-        private void removeAffectedCaches(@NotNull VirtualFileEvent event) {
+        private void removeAffectedCaches(@Nonnull VirtualFileEvent event) {
             for (String key : cacheMap.keySet()) {
                 List<String> parts = StringUtil.split(key, Constants.DOLLAR);
                 if (MatcherUtil.matchAnyPart(parts.toArray(new String[0]), event.getFile().getPath())) {
@@ -123,7 +126,7 @@ public class FilesIndexCacheProjectComponent implements Disposable {
      * @param project current project
      * @return {@link FilesIndexCacheProjectComponent instance}
      */
-    public static FilesIndexCacheProjectComponent getInstance(@NotNull final Project project) {
+    public static FilesIndexCacheProjectComponent getInstance(@Nonnull Project project) {
         return project.getComponent(FilesIndexCacheProjectComponent.class);
     }
 
@@ -133,7 +136,7 @@ public class FilesIndexCacheProjectComponent implements Disposable {
      * @param project current project
      */
     @Inject
-    public FilesIndexCacheProjectComponent(@NotNull final Project project) {
+    public FilesIndexCacheProjectComponent(@Nonnull Project project) {
         cacheMap = ContainerUtil.newConcurrentMap();
         virtualFileManager = VirtualFileManager.getInstance();
         projectFileIndex = ProjectRootManager.getInstance(project).getFileIndex();
@@ -147,18 +150,18 @@ public class FilesIndexCacheProjectComponent implements Disposable {
      * @param pattern to handle
      * @return matched files list
      */
-    @NotNull
-    public Collection<VirtualFile> getFilesForPattern(@NotNull final Project project, @NotNull Pattern pattern) {
-        final GlobalSearchScope scope = GlobalSearchScope.projectScope(project);
-        final String[] parts = MatcherUtil.getParts(pattern);
+    @Nonnull
+    public Collection<VirtualFile> getFilesForPattern(@Nonnull Project project, @Nonnull Pattern pattern) {
+        GlobalSearchScope scope = GlobalSearchScope.projectScope(project);
+        String[] parts = MatcherUtil.getParts(pattern);
 
         if (parts.length > 0) {
-            final String key = StringUtil.join(parts, Constants.DOLLAR);
+            String key = StringUtil.join(parts, Constants.DOLLAR);
             if (cacheMap.get(key) == null) {
-                final Set<VirtualFile> files = new HashSet<>(1000);
+                Set<VirtualFile> files = new HashSet<>(1000);
 
                 projectFileIndex.iterateContent(fileOrDir -> {
-                    final String name = fileOrDir.getName();
+                    String name = fileOrDir.getName();
                     if (MatcherUtil.matchAnyPart(parts, name)) {
                         for (VirtualFile file : FilenameIndex.getVirtualFilesByName(project, name, scope)) {
                             if (file.isValid() && MatcherUtil.matchAllParts(parts, file.getPath())) {

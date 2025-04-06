@@ -26,9 +26,9 @@ package mobi.hsz.idea.gitignore.util;
 
 import consulo.util.collection.primitive.ints.IntMaps;
 import consulo.util.collection.primitive.ints.IntObjectMap;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -130,7 +130,7 @@ public class MatcherUtil {
      * @param matcher to handle
      * @return extracted parts
      */
-    @NotNull
+    @Nonnull
     public static String[] getParts(@Nullable Matcher matcher) {
         if (matcher == null) {
             return new String[0];
@@ -144,7 +144,7 @@ public class MatcherUtil {
      * @param pattern to handle
      * @return extracted parts
      */
-    @NotNull
+    @Nonnull
     public static String[] getParts(@Nullable Pattern pattern) {
         if (pattern == null) {
             return new String[0];

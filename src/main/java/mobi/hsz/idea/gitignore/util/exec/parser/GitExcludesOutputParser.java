@@ -27,9 +27,9 @@ package mobi.hsz.idea.gitignore.util.exec.parser;
 import consulo.util.lang.StringUtil;
 import consulo.virtualFileSystem.VirtualFile;
 import consulo.virtualFileSystem.util.VirtualFileUtil;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import mobi.hsz.idea.gitignore.util.Utils;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 
@@ -49,8 +49,8 @@ public class GitExcludesOutputParser extends ExecutionOutputParser<VirtualFile> 
      */
     @Nullable
     @Override
-    protected VirtualFile parseOutput(@NotNull final String text) {
-        final String path = Utils.resolveUserDir(text);
+    protected VirtualFile parseOutput(@Nonnull String text) {
+        String path = Utils.resolveUserDir(text);
         return StringUtil.isNotEmpty(path) ? VirtualFileUtil.findFileByIoFile(new File(path), true) : null;
     }
 }

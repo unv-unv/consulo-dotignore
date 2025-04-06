@@ -27,10 +27,8 @@ package mobi.hsz.idea.gitignore.lang;
 import consulo.language.BracePair;
 import consulo.language.Language;
 import consulo.language.PairedBraceMatcher;
-import mobi.hsz.idea.gitignore.psi.IgnoreTypes;
-import org.jetbrains.annotations.NotNull;
-
 import jakarta.annotation.Nonnull;
+import mobi.hsz.idea.gitignore.psi.IgnoreTypes;
 
 /**
  * Definition of {@link PairedBraceMatcher} class.
@@ -62,7 +60,7 @@ public class IgnoreBraceMatcher implements PairedBraceMatcher {
      *
      * @return the array of brace pair definitions.
      */
-    @NotNull
+    @Nonnull
     @Override
     public BracePair[] getPairs() {
         return PAIRS;

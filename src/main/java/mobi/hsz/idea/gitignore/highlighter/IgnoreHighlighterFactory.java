@@ -29,10 +29,8 @@ import consulo.language.editor.highlight.SyntaxHighlighter;
 import consulo.language.editor.highlight.SyntaxHighlighterFactory;
 import consulo.project.Project;
 import consulo.virtualFileSystem.VirtualFile;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * {@link SyntaxHighlighterFactory} class definition.
@@ -63,7 +61,7 @@ public class IgnoreHighlighterFactory extends SyntaxHighlighterFactory {
      * @param virtualFile might be necessary to collect file specific settings
      * @return <code>SyntaxHighlighter</code> interface implementation for this particular language.
      */
-    @NotNull
+    @Nonnull
     @Override
     public SyntaxHighlighter getSyntaxHighlighter(@Nullable Project project, @Nullable VirtualFile virtualFile) {
         return new IgnoreHighlighter(project, virtualFile);

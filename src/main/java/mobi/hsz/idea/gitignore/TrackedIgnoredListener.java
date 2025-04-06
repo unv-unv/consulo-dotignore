@@ -4,7 +4,7 @@ import consulo.annotation.component.ComponentScope;
 import consulo.annotation.component.TopicAPI;
 import consulo.versionControlSystem.root.VcsRoot;
 import consulo.virtualFileSystem.VirtualFile;
-import org.jetbrains.annotations.NotNull;
+import jakarta.annotation.Nonnull;
 
 import java.util.concurrent.ConcurrentMap;
 
@@ -16,5 +16,5 @@ public interface TrackedIgnoredListener {
     /** Topic for detected tracked and indexed files. */
     Class<TrackedIgnoredListener> TRACKED_IGNORED = TrackedIgnoredListener.class;
 
-    void handleFiles(@NotNull ConcurrentMap<VirtualFile, VcsRoot> files);
+    void handleFiles(@Nonnull ConcurrentMap<VirtualFile, VcsRoot> files);
 }

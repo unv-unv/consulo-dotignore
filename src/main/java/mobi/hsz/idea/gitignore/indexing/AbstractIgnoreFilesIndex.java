@@ -25,12 +25,12 @@
 package mobi.hsz.idea.gitignore.indexing;
 
 import consulo.application.dumb.DumbAware;
-import consulo.index.io.KeyDescriptor;
 import consulo.index.io.DataIndexer;
+import consulo.index.io.KeyDescriptor;
 import consulo.language.psi.stub.FileBasedIndex;
 import consulo.language.psi.stub.FileBasedIndexExtension;
 import consulo.language.psi.stub.FileContent;
-import org.jetbrains.annotations.NotNull;
+import jakarta.annotation.Nonnull;
 
 /**
  * Abstract class of {@link FileBasedIndexExtension} that contains base configuration for {@link IgnoreFilesIndex}.
@@ -39,14 +39,14 @@ import org.jetbrains.annotations.NotNull;
  * @since 2.0
  */
 public abstract class AbstractIgnoreFilesIndex<K, V> extends FileBasedIndexExtension<K, V>
-        implements KeyDescriptor<K>, DataIndexer<K, V, FileContent>, FileBasedIndex.InputFilter, DumbAware {
+    implements KeyDescriptor<K>, DataIndexer<K, V, FileContent>, FileBasedIndex.InputFilter, DumbAware {
 
     /**
      * Returns {@link DataIndexer} implementation.
      *
      * @return {@link DataIndexer} instance.
      */
-    @NotNull
+    @Nonnull
     @Override
     public DataIndexer<K, V, FileContent> getIndexer() {
         return this;
@@ -57,7 +57,7 @@ public abstract class AbstractIgnoreFilesIndex<K, V> extends FileBasedIndexExten
      *
      * @return {@link KeyDescriptor} instance.
      */
-    @NotNull
+    @Nonnull
     @Override
     public KeyDescriptor<K> getKeyDescriptor() {
         return this;
@@ -78,7 +78,7 @@ public abstract class AbstractIgnoreFilesIndex<K, V> extends FileBasedIndexExten
      *
      * @return {@link FileBasedIndex.InputFilter} instance.
      */
-    @NotNull
+    @Nonnull
     @Override
     public FileBasedIndex.InputFilter getInputFilter() {
         return this;

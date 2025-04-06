@@ -46,7 +46,6 @@ import consulo.ui.ex.tree.PresentationData;
 import consulo.util.collection.ContainerUtil;
 import consulo.util.lang.StringUtil;
 import consulo.virtualFileSystem.VirtualFile;
-import consulo.virtualFileSystem.fileType.FileType;
 import consulo.virtualFileSystem.util.VirtualFileUtil;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
