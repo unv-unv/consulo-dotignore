@@ -25,9 +25,8 @@
 package mobi.hsz.idea.gitignore.util.exec.parser;
 
 import consulo.util.lang.StringUtil;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Parser for the {@link mobi.hsz.idea.gitignore.util.exec.ExternalExec#GIT_UNIGNORED_FILES} command that
@@ -38,7 +37,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public class GitUnignoredFilesOutputParser extends ExecutionOutputParser<String> {
     /** Prefix to remove from the command's result. */
-    @NonNls
     private static final String GIT_UNIGNORED_FILES_PREFIX = "Would remove";
 
     /**
@@ -49,7 +47,7 @@ public class GitUnignoredFilesOutputParser extends ExecutionOutputParser<String>
      */
     @Nullable
     @Override
-    protected String parseOutput(@NotNull String text) {
+    protected String parseOutput(@Nonnull String text) {
         return StringUtil.trim(StringUtil.trimStart(text, GIT_UNIGNORED_FILES_PREFIX));
     }
 }

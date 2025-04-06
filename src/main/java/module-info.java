@@ -1,6 +1,6 @@
 /**
  * @author VISTALL
- * @since 30/03/2023
+ * @since 2023-03-30
  */
 open module mobi.hsz.idea.gitignore {
     requires consulo.ide.api;

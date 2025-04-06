@@ -35,10 +35,10 @@ import consulo.virtualFileSystem.VirtualFile;
 import consulo.virtualFileSystem.status.FileStatus;
 import consulo.virtualFileSystem.status.FileStatusFactory;
 import consulo.virtualFileSystem.status.FileStatusProvider;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import jakarta.inject.Inject;
 import mobi.hsz.idea.gitignore.IgnoreManager;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Ignore instance of {@link FileStatusProvider} that provides {@link #IGNORED} status
@@ -50,14 +50,17 @@ import org.jetbrains.annotations.Nullable;
 @ExtensionImpl
 public class IgnoreFileStatusProvider implements FileStatusProvider, DumbAware {
     /** Ignored status. */
-    public static final FileStatus IGNORED = FileStatusFactory.getInstance().createFileStatus("IGNORE.PROJECT_VIEW.IGNORED", IgnoreLocalize.projectviewIgnored(),
-            StandardColors.GRAY);
+    public static final FileStatus IGNORED = FileStatusFactory.getInstance().createFileStatus(
+        "IGNORE.PROJECT_VIEW.IGNORED",
+        IgnoreLocalize.projectviewIgnored(),
+        StandardColors.GRAY
+    );
 
     /** Instance of {@link IgnoreManager}. */
     private final IgnoreManager ignoreManager;
 
     @Inject
-    public IgnoreFileStatusProvider(@NotNull Project project) {
+    public IgnoreFileStatusProvider(@Nonnull Project project) {
         this.ignoreManager = IgnoreManager.getInstance(project);
     }
 
@@ -69,14 +72,13 @@ public class IgnoreFileStatusProvider implements FileStatusProvider, DumbAware {
      */
     @Nullable
     @Override
-    public FileStatus getFileStatus(@NotNull VirtualFile virtualFile) {
-        return ignoreManager.isFileIgnored(virtualFile) &&
-                !ignoreManager.isFileTracked(virtualFile) ? IGNORED : null;
+    public FileStatus getFileStatus(@Nonnull VirtualFile virtualFile) {
+        return ignoreManager.isFileIgnored(virtualFile) && !ignoreManager.isFileTracked(virtualFile) ? IGNORED : null;
     }
 
     /** Does nothing. */
     @Override
-    public void refreshFileStatusFromDocument(@NotNull VirtualFile virtualFile, @NotNull Document doc) {
+    public void refreshFileStatusFromDocument(@Nonnull VirtualFile virtualFile, @Nonnull Document doc) {
     }
 
     /**
@@ -85,9 +87,9 @@ public class IgnoreFileStatusProvider implements FileStatusProvider, DumbAware {
      * @param virtualFile file
      * @return nothing
      */
-    @NotNull
+    @Nonnull
     @Override
-    public ThreeState getNotChangedDirectoryParentingStatus(@NotNull VirtualFile virtualFile) {
+    public ThreeState getNotChangedDirectoryParentingStatus(@Nonnull VirtualFile virtualFile) {
         throw new UnsupportedOperationException("Shouldn't be called");
     }
 }

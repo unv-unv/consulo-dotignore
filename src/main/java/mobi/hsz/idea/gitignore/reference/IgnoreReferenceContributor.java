@@ -28,12 +28,10 @@ import consulo.annotation.component.ExtensionImpl;
 import consulo.language.Language;
 import consulo.language.psi.*;
 import consulo.language.util.ProcessingContext;
+import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
 import mobi.hsz.idea.gitignore.psi.IgnoreEntry;
 import mobi.hsz.idea.gitignore.psi.IgnoreFile;
-import org.jetbrains.annotations.NotNull;
-
-import jakarta.annotation.Nonnull;
 
 import static consulo.language.pattern.PlatformPatterns.psiElement;
 import static consulo.language.pattern.PlatformPatterns.psiFile;
@@ -52,9 +50,11 @@ public class IgnoreReferenceContributor extends PsiReferenceContributor {
      * @param psiReferenceRegistrar reference provider
      */
     @Override
-    public void registerReferenceProviders(@NotNull PsiReferenceRegistrar psiReferenceRegistrar) {
-        psiReferenceRegistrar.registerReferenceProvider(psiElement().inFile(psiFile(IgnoreFile.class)),
-                new IgnoreReferenceProvider());
+    public void registerReferenceProviders(@Nonnull PsiReferenceRegistrar psiReferenceRegistrar) {
+        psiReferenceRegistrar.registerReferenceProvider(
+            psiElement().inFile(psiFile(IgnoreFile.class)),
+            new IgnoreReferenceProvider()
+        );
     }
 
     @Nonnull
@@ -74,16 +74,15 @@ public class IgnoreReferenceContributor extends PsiReferenceContributor {
          * @param processingContext context
          * @return {@link PsiReference} list
          */
-        @NotNull
+        @Nonnull
         @Override
         public PsiReference[] getReferencesByElement(
-                @NotNull PsiElement psiElement,
-                @NotNull ProcessingContext processingContext)
-        {
-            if (psiElement instanceof IgnoreEntry) {
-                return new IgnoreReferenceSet((IgnoreEntry) psiElement).getAllReferences();
-            }
-            return PsiReference.EMPTY_ARRAY;
+            @Nonnull PsiElement psiElement,
+            @Nonnull ProcessingContext processingContext
+        ) {
+            return psiElement instanceof IgnoreEntry ignoreEntry
+                ? new IgnoreReferenceSet(ignoreEntry).getAllReferences()
+                : PsiReference.EMPTY_ARRAY;
         }
     }
 }

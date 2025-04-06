@@ -98,7 +98,7 @@ public class Glob {
         HashMap<IgnoreEntry, Pattern> map = new HashMap<>();
 
         for (IgnoreEntry entry : entries) {
-            result.put(entry, ContainerUtil.newArrayList());
+            result.put(entry, new ArrayList<>());
 
             Pattern pattern = createPattern(entry);
             if (pattern != null) {
@@ -106,36 +106,35 @@ public class Glob {
             }
         }
 
-        VirtualFileVisitor<HashMap<IgnoreEntry, Pattern>> visitor =
-            new VirtualFileVisitor<HashMap<IgnoreEntry, Pattern>>(VirtualFileVisitor.NO_FOLLOW_SYMLINKS) {
-                @Override
-                public boolean visitFile(@Nonnull VirtualFile file) {
-                    HashMap<IgnoreEntry, Pattern> current = new HashMap<>(getCurrentValue());
-                    if (current.isEmpty()) {
-                        return false;
-                    }
-
-                    String path = Utils.getRelativePath(root, file);
-                    if (path == null || Utils.isVcsDirectory(file)) {
-                        return false;
-                    }
-
-                    for (Map.Entry<IgnoreEntry, Pattern> item : current.entrySet()) {
-                        Pattern value = item.getValue();
-                        boolean matches = false;
-                        if (value == null || matcher.match(value, path)) {
-                            matches = true;
-                            result.get(item.getKey()).add(file);
-                        }
-                        if (includeNested && matches) {
-                            current.put(item.getKey(), null);
-                        }
-                    }
-
-                    setValueForChildren(current);
-                    return true;
+        VirtualFileVisitor<HashMap<IgnoreEntry, Pattern>> visitor = new VirtualFileVisitor<>(VirtualFileVisitor.NO_FOLLOW_SYMLINKS) {
+            @Override
+            public boolean visitFile(@Nonnull VirtualFile file) {
+                HashMap<IgnoreEntry, Pattern> current = new HashMap<>(getCurrentValue());
+                if (current.isEmpty()) {
+                    return false;
                 }
-            };
+
+                String path = Utils.getRelativePath(root, file);
+                if (path == null || Utils.isVcsDirectory(file)) {
+                    return false;
+                }
+
+                for (Map.Entry<IgnoreEntry, Pattern> item : current.entrySet()) {
+                    Pattern value = item.getValue();
+                    boolean matches = false;
+                    if (value == null || matcher.match(value, path)) {
+                        matches = true;
+                        result.get(item.getKey()).add(file);
+                    }
+                    if (includeNested && matches) {
+                        current.put(item.getKey(), null);
+                    }
+                }
+
+                setValueForChildren(current);
+                return true;
+            }
+        };
         visitor.setValueForChildren(map);
         VirtualFileUtil.visitChildrenRecursively(root, visitor);
 

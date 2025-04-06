@@ -1,8 +1,8 @@
 package mobi.hsz.idea.gitignore.refactoring;
 
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
+import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.file.type.kind.GitFileType;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 
@@ -33,7 +33,7 @@ public class RenameTest extends LightPlatformCodeInsightFixtureTestCase {
         doTest("!di<caret>r/file.txt", "newDir", "!newDir/file.txt");
     }
 
-    private void doTest(@NotNull String beforeText, @NotNull String newName, @NotNull String afterText) {
+    private void doTest(@Nonnull String beforeText, @Nonnull String newName, @Nonnull String afterText) {
         myFixture.configureByText(GitFileType.INSTANCE, beforeText);
         myFixture.renameElementAtCaret(newName);
         myFixture.checkResult(afterText);

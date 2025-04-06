@@ -24,12 +24,12 @@
 
 package mobi.hsz.idea.gitignore.util.exec.parser;
 
-import consulo.util.collection.ContainerUtil;
 import consulo.process.ProcessOutputTypes;
+import consulo.util.collection.ContainerUtil;
 import consulo.util.dataholder.Key;
 import consulo.util.lang.StringUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 import java.util.ArrayList;
 
@@ -41,8 +41,8 @@ import java.util.ArrayList;
  */
 public abstract class ExecutionOutputParser<T> {
     /** Outputs list. */
-    @NotNull
-    private final ArrayList<T> outputs = ContainerUtil.newArrayList();
+    @Nonnull
+    private final ArrayList<T> outputs = new ArrayList<>();
 
     /** Exit code value. */
     private int exitCode;
@@ -56,7 +56,7 @@ public abstract class ExecutionOutputParser<T> {
      * @param text       execution response
      * @param outputType output type
      */
-    public void onTextAvailable(@NotNull String text, @NotNull Key outputType) {
+    public void onTextAvailable(@Nonnull String text, @Nonnull Key outputType) {
         if (outputType == ProcessOutputTypes.SYSTEM) {
             return;
         }
@@ -76,7 +76,7 @@ public abstract class ExecutionOutputParser<T> {
      * @return single parsed result
      */
     @Nullable
-    protected abstract T parseOutput(@NotNull String text);
+    protected abstract T parseOutput(@Nonnull String text);
 
     /**
      * Method called at the end of the parsing process.

@@ -36,7 +36,7 @@ import org.junit.Assert;
  */
 public class AddTemplateActionTest extends Common<AddTemplateAction> {
     public void testAddTemplateActionInvocation() {
-        final AddTemplateAction action = new AddTemplateAction();
+        AddTemplateAction action = new AddTemplateAction();
         Presentation presentation;
 
         presentation = myFixture.testAction(action);

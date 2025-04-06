@@ -24,12 +24,12 @@
 
 package mobi.hsz.idea.gitignore.lang.kind;
 
+import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.file.type.kind.MercurialFileType;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
 import mobi.hsz.idea.gitignore.util.Icons;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Mercurial {@link IgnoreLanguage} definition.
@@ -51,7 +51,7 @@ public class MercurialLanguage extends IgnoreLanguage {
      *
      * @return {@link MercurialFileType} instance
      */
-    @NotNull
+    @Nonnull
     @Override
     public IgnoreFileType getFileType() {
         return MercurialFileType.INSTANCE;
@@ -72,8 +72,8 @@ public class MercurialLanguage extends IgnoreLanguage {
      *
      * @return default syntax
      */
+    @Nonnull
     @Override
-    @NotNull
     public IgnoreBundle.Syntax getDefaultSyntax() {
         return IgnoreBundle.Syntax.REGEXP;
     }

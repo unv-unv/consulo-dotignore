@@ -186,21 +186,21 @@ template.container.user:
   text: User templates
 template.container.starred:
   text: Starred templates
-tokenType.slash:
-  text: <slash>
-tokenType.BRACKET_LEFT:
+token.type.bracket.left:
   text: <left bracket>
-tokenType.BRACKET_RIGHT:
+token.type.bracket.right:
   text: <right bracket>
-tokenType.COMMENT:
+token.type.comment:
   text: <comment>
-tokenType.CRLF:
+token.type.empty.line:
   text: <empty line>
-tokenType.HEADER:
+token.type.header:
   text: <header>
-tokenType.SECTION:
+token.type.section:
   text: <section>
-tokenType.VALUE:
+token.type.slash:
+  text: <slash>
+token.type.value:
   text: <value>
 settings.displayName:
   text: .ignore files

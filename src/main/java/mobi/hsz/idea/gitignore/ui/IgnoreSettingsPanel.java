@@ -24,6 +24,8 @@
 
 package mobi.hsz.idea.gitignore.ui;
 
+import com.intellij.uiDesigner.core.GridConstraints;
+import com.intellij.uiDesigner.core.GridLayoutManager;
 import consulo.application.Application;
 import consulo.codeEditor.Editor;
 import consulo.codeEditor.EditorFactory;
@@ -68,6 +70,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.TreeMap;
 
 import static mobi.hsz.idea.gitignore.settings.IgnoreSettings.IgnoreLanguagesSettings.KEY.ENABLE;
@@ -122,6 +125,12 @@ public class IgnoreSettingsPanel implements Disposable {
     /** Editor panel element. */
     private EditorPanel editorPanel;
 
+    public IgnoreSettingsPanel() {
+        createUIComponents();
+
+        $$$setupUI$$$();
+    }
+
     /** Create UI components. */
     private void createUIComponents() {
         templatesListPanel = new TemplatesListPanel();
@@ -148,6 +157,331 @@ public class IgnoreSettingsPanel implements Disposable {
         languagesTable.setDragEnabled(false);
 
         languagesPanel = ScrollPaneFactory.createScrollPane(languagesTable);
+    }
+
+    private void $$$setupUI$$$() {
+        panel = new JPanel();
+        panel.setLayout(new GridLayoutManager(3, 1, JBUI.emptyInsets(), -1, -1));
+        final JPanel panel1 = new JPanel();
+        panel1.setLayout(new GridLayoutManager(8, 1, JBUI.emptyInsets(), -1, -1));
+        panel1.setEnabled(true);
+        panel.add(
+            panel1,
+            new GridConstraints(
+                0,
+                0,
+                1,
+                1,
+                GridConstraints.ANCHOR_NORTH,
+                GridConstraints.FILL_HORIZONTAL,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                null,
+                null,
+                null,
+                0,
+                true
+            )
+        );
+        panel1.setBorder(BorderFactory.createTitledBorder(IgnoreLocalize.settingsGeneral().get()));
+        missingGitignore = new JCheckBox();
+        this.$$$loadButtonText$$$(
+            missingGitignore,
+            IgnoreLocalize.settingsGeneralMissinggitignore().get()
+        );
+        panel1.add(
+            missingGitignore,
+            new GridConstraints(
+                0,
+                0,
+                1,
+                1,
+                GridConstraints.ANCHOR_WEST,
+                GridConstraints.FILL_NONE,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                GridConstraints.SIZEPOLICY_FIXED,
+                null,
+                null,
+                null,
+                0,
+                false
+            )
+        );
+        outerIgnoreRules = new JCheckBox();
+        this.$$$loadButtonText$$$(
+            outerIgnoreRules,
+            IgnoreLocalize.settingsGeneralOuterignorerules().get()
+        );
+        panel1.add(
+            outerIgnoreRules,
+            new GridConstraints(
+                2,
+                0,
+                1,
+                1,
+                GridConstraints.ANCHOR_WEST,
+                GridConstraints.FILL_NONE,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                GridConstraints.SIZEPOLICY_FIXED,
+                null,
+                null,
+                null,
+                0,
+                false
+            )
+        );
+        ignoredFileStatus = new JCheckBox();
+        this.$$$loadButtonText$$$(
+            ignoredFileStatus,
+            IgnoreLocalize.settingsGeneralIgnoredfilestatus().get()
+        );
+        panel1.add(
+            ignoredFileStatus,
+            new GridConstraints(
+                1,
+                0,
+                1,
+                1,
+                GridConstraints.ANCHOR_WEST,
+                GridConstraints.FILL_NONE,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                GridConstraints.SIZEPOLICY_FIXED,
+                null,
+                null,
+                null,
+                0,
+                false
+            )
+        );
+        insertAtCursor = new JCheckBox();
+        this.$$$loadButtonText$$$(
+            insertAtCursor,
+            IgnoreLocalize.settingsGeneralInsertatcursor().get()
+        );
+        panel1.add(
+            insertAtCursor,
+            new GridConstraints(
+                3,
+                0,
+                1,
+                1,
+                GridConstraints.ANCHOR_WEST,
+                GridConstraints.FILL_NONE,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                GridConstraints.SIZEPOLICY_FIXED,
+                null,
+                null,
+                null,
+                0,
+                false
+            )
+        );
+        addUnversionedFiles = new JCheckBox();
+        this.$$$loadButtonText$$$(
+            addUnversionedFiles,
+            IgnoreLocalize.settingsGeneralAddunversionedfiles().get()
+        );
+        panel1.add(
+            addUnversionedFiles,
+            new GridConstraints(
+                4,
+                0,
+                1,
+                1,
+                GridConstraints.ANCHOR_WEST,
+                GridConstraints.FILL_NONE,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                GridConstraints.SIZEPOLICY_FIXED,
+                null,
+                null,
+                null,
+                0,
+                false
+            )
+        );
+        unignoreFiles = new JCheckBox();
+        this.$$$loadButtonText$$$(
+            unignoreFiles,
+            IgnoreLocalize.settingsGeneralUnignorefiles().get()
+        );
+        panel1.add(
+            unignoreFiles,
+            new GridConstraints(
+                5,
+                0,
+                1,
+                1,
+                GridConstraints.ANCHOR_WEST,
+                GridConstraints.FILL_NONE,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                GridConstraints.SIZEPOLICY_FIXED,
+                null,
+                null,
+                null,
+                0,
+                false
+            )
+        );
+        informTrackedIgnored = new JCheckBox();
+        this.$$$loadButtonText$$$(
+            informTrackedIgnored,
+            IgnoreLocalize.settingsGeneralInformtrackedignored().get()
+        );
+        panel1.add(
+            informTrackedIgnored,
+            new GridConstraints(
+                6,
+                0,
+                1,
+                1,
+                GridConstraints.ANCHOR_WEST,
+                GridConstraints.FILL_NONE,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                GridConstraints.SIZEPOLICY_FIXED,
+                null,
+                null,
+                null,
+                0,
+                false
+            )
+        );
+        notifyIgnoredEditing = new JCheckBox();
+        this.$$$loadButtonText$$$(
+            notifyIgnoredEditing,
+            IgnoreLocalize.settingsGeneralNotifyignoredediting().get()
+        );
+        panel1.add(
+            notifyIgnoredEditing,
+            new GridConstraints(
+                7,
+                0,
+                1,
+                1,
+                GridConstraints.ANCHOR_WEST,
+                GridConstraints.FILL_NONE,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                GridConstraints.SIZEPOLICY_FIXED,
+                null,
+                null,
+                null,
+                0,
+                false
+            )
+        );
+        final JPanel panel2 = new JPanel();
+        panel2.setLayout(new GridLayoutManager(1, 1, JBUI.emptyInsets(), -1, -1));
+        panel.add(
+            panel2,
+            new GridConstraints(
+                1,
+                0,
+                1,
+                1,
+                GridConstraints.ANCHOR_NORTH,
+                GridConstraints.FILL_HORIZONTAL,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                GridConstraints.SIZEPOLICY_FIXED,
+                null,
+                null,
+                null,
+                0,
+                false
+            )
+        );
+        panel2.setBorder(BorderFactory.createTitledBorder(IgnoreLocalize.settingsUsertemplates().get()));
+        panel2.add(
+            templatesSplitter,
+            new GridConstraints(
+                0,
+                0,
+                1,
+                1,
+                GridConstraints.ANCHOR_NORTH,
+                GridConstraints.FILL_HORIZONTAL,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                null,
+                null,
+                null,
+                0,
+                false
+            )
+        );
+        final JPanel panel3 = new JPanel();
+        panel3.setLayout(new GridLayoutManager(1, 1, JBUI.emptyInsets(), -1, -1));
+        panel.add(
+            panel3,
+            new GridConstraints(
+                2,
+                0,
+                1,
+                1,
+                GridConstraints.ANCHOR_NORTH,
+                GridConstraints.FILL_HORIZONTAL,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                null,
+                null,
+                null,
+                0,
+                false
+            )
+        );
+        panel3.setBorder(BorderFactory.createTitledBorder(IgnoreLocalize.settingsLanguagessettings().get()));
+        panel3.add(
+            languagesPanel,
+            new GridConstraints(
+                0,
+                0,
+                1,
+                1,
+                GridConstraints.ANCHOR_NORTH,
+                GridConstraints.FILL_HORIZONTAL,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                null,
+                null,
+                null,
+                0,
+                false
+            )
+        );
+    }
+
+    /**
+     * @noinspection ALL
+     */
+    private void $$$loadButtonText$$$(AbstractButton component, String text) {
+        StringBuffer result = new StringBuffer();
+        boolean haveMnemonic = false;
+        char mnemonic = '\0';
+        int mnemonicIndex = -1;
+        for (int i = 0; i < text.length(); i++) {
+            if (text.charAt(i) == '&') {
+                i++;
+                if (i == text.length()) {
+                    break;
+                }
+                if (!haveMnemonic && text.charAt(i) != '&') {
+                    haveMnemonic = true;
+                    mnemonic = text.charAt(i);
+                    mnemonicIndex = result.length();
+                }
+            }
+            result.append(text.charAt(i));
+        }
+        component.setText(result.toString());
+        if (haveMnemonic) {
+            component.setMnemonic(mnemonic);
+            component.setDisplayedMnemonicIndex(mnemonicIndex);
+        }
+    }
+
+    /**
+     * @noinspection ALL
+     */
+    public JComponent $$$getRootComponent$$$() {
+        return panel;
     }
 
     /** Disposes current preview {@link #editorPanel}. */

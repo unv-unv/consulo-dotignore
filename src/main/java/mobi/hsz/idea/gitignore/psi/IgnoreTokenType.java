@@ -24,11 +24,13 @@
 
 package mobi.hsz.idea.gitignore.psi;
 
+import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.language.ast.IElementType;
-import mobi.hsz.idea.gitignore.IgnoreBundle;
+import consulo.localize.LocalizeValue;
+import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
+
+import java.util.Map;
 
 /**
  * Token type definition.
@@ -36,15 +38,25 @@ import org.jetbrains.annotations.NotNull;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 0.1
  */
-public class IgnoreTokenType extends IElementType
-{
+public class IgnoreTokenType extends IElementType {
+    Map<String, LocalizeValue> LOCALIZED_DEBUG_NAMES = Map.of(
+        "/", IgnoreLocalize.tokenTypeSlash(),
+        "BRACKET_LEFT", IgnoreLocalize.tokenTypeBracketLeft(),
+        "BRACKET_RIGHT", IgnoreLocalize.tokenTypeBracketRight(),
+        "COMMENT", IgnoreLocalize.tokenTypeComment(),
+        "CRLF", IgnoreLocalize.tokenTypeEmptyLine(),
+        "HEADER", IgnoreLocalize.tokenTypeHeader(),
+        "SECTION", IgnoreLocalize.tokenTypeSection(),
+        "VALUE", IgnoreLocalize.tokenTypeValue()
+    );
+
     /** Token debug name. */
-    private final String debugName;
+    private final LocalizeValue myLocalizedDebugName;
 
     /** Builds a new instance of @{link IgnoreTokenType}. */
-    public IgnoreTokenType(@NotNull @NonNls String debugName) {
+    public IgnoreTokenType(@Nonnull String debugName) {
         super(debugName, IgnoreLanguage.INSTANCE);
-        this.debugName = debugName;
+        myLocalizedDebugName = LOCALIZED_DEBUG_NAMES.get(debugName);
     }
 
     /**
@@ -54,6 +66,6 @@ public class IgnoreTokenType extends IElementType
      */
     @Override
     public String toString() {
-        return IgnoreBundle.messageOrDefault("tokenType." + debugName, "IgnoreTokenType." + super.toString());
+        return myLocalizedDebugName != null ? myLocalizedDebugName.get(): "IgnoreTokenType." + super.toString();
     }
 }

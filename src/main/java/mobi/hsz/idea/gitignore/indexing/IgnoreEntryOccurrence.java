@@ -94,22 +94,20 @@ public class IgnoreEntryOccurrence implements Serializable {
      */
     @Override
     public boolean equals(@Nullable Object obj) {
-        if (!(obj instanceof IgnoreEntryOccurrence)) {
-            return false;
-        }
-
-        IgnoreEntryOccurrence entry = (IgnoreEntryOccurrence) obj;
-        if (!url.equals(entry.url) || items.size() != entry.items.size()) {
-            return false;
-        }
-
-        for (int i = 0; i < items.size(); i++) {
-            if (!items.get(i).toString().equals(entry.items.get(i).toString())) {
+        if (obj instanceof IgnoreEntryOccurrence entry) {
+            if (!url.equals(entry.url) || items.size() != entry.items.size()) {
                 return false;
             }
-        }
 
-        return true;
+            for (int i = 0; i < items.size(); i++) {
+                if (!items.get(i).toString().equals(entry.items.get(i).toString())) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -142,8 +140,7 @@ public class IgnoreEntryOccurrence implements Serializable {
      * @param entry entry to write
      * @throws IOException I/O exception
      */
-    public static synchronized void serialize(@Nonnull DataOutput out, @Nonnull IgnoreEntryOccurrence entry)
-            throws IOException {
+    public static synchronized void serialize(@Nonnull DataOutput out, @Nonnull IgnoreEntryOccurrence entry) throws IOException {
         out.writeUTF(entry.url);
         out.writeInt(entry.items.size());
         for (Pair<String, Boolean> item : entry.items) {

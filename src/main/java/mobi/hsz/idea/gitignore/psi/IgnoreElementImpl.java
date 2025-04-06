@@ -24,11 +24,11 @@
 
 package mobi.hsz.idea.gitignore.psi;
 
-import consulo.language.impl.psi.ASTWrapperPsiElement;
 import consulo.language.ast.ASTNode;
+import consulo.language.impl.psi.ASTWrapperPsiElement;
 import consulo.language.psi.PsiReference;
 import consulo.language.psi.ReferenceProvidersRegistry;
-import org.jetbrains.annotations.NotNull;
+import jakarta.annotation.Nonnull;
 
 /**
  * Definition of {@link ASTWrapperPsiElement}.
@@ -47,7 +47,7 @@ public class IgnoreElementImpl extends ASTWrapperPsiElement {
      *
      * @return {@link PsiReference} list
      */
-    @NotNull
+    @Nonnull
     @Override
     public PsiReference[] getReferences() {
         return ReferenceProvidersRegistry.getReferencesFromProviders(this);

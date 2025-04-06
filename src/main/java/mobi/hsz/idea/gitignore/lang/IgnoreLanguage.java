@@ -68,7 +68,7 @@ public class IgnoreLanguage extends Language implements InjectableLanguage {
     private final String vcsDirectory;
 
     /** The GitignoreLanguage icon. */
-    @Nullable
+    @Nonnull
     private final Image icon;
 
     /** Outer files for the specified {@link IgnoreLanguage}. */
@@ -89,7 +89,7 @@ public class IgnoreLanguage extends Language implements InjectableLanguage {
         @Nonnull String name, 
         @Nonnull String extension, 
         @Nullable String vcsDirectory,
-        @Nullable Image icon
+        @Nonnull Image icon
     ) {
         this(name, extension, vcsDirectory, icon, new OuterFileFetcher[0]);
     }
@@ -99,7 +99,7 @@ public class IgnoreLanguage extends Language implements InjectableLanguage {
         @Nonnull String name, 
         @Nonnull String extension, 
         @Nullable String vcsDirectory,
-        @Nullable Image icon, 
+        @Nonnull Image icon,
         @Nonnull OuterFileFetcher[] fetchers
     ) {
         super(name);
@@ -170,7 +170,7 @@ public class IgnoreLanguage extends Language implements InjectableLanguage {
      *
      * @return {@link IgnoreFile} instance.
      */
-    public final IgnoreFile createFile(@Nonnull final FileViewProvider viewProvider) {
+    public final IgnoreFile createFile(@Nonnull FileViewProvider viewProvider) {
         return new IgnoreFile(viewProvider, getFileType());
     }
 
@@ -220,7 +220,7 @@ public class IgnoreLanguage extends Language implements InjectableLanguage {
      * @return outer files
      */
     @Nonnull
-    public Set<VirtualFile> getOuterFiles(@Nonnull final Project project) {
+    public Set<VirtualFile> getOuterFiles(@Nonnull Project project) {
         return getOuterFiles(project, false);
     }
 
@@ -231,7 +231,7 @@ public class IgnoreLanguage extends Language implements InjectableLanguage {
      * @return outer files
      */
     @Nonnull
-    public Set<VirtualFile> getOuterFiles(@Nonnull final Project project, boolean dumb) {
+    public Set<VirtualFile> getOuterFiles(@Nonnull Project project, boolean dumb) {
         int key = new HashCodeBuilder().append(project).append(getFileType()).toHashCode();
         if (outerFiles.get(key) == null) {
             Set<VirtualFile> files = new HashSet<>();

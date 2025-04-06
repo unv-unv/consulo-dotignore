@@ -84,15 +84,17 @@ public class IgnoreRelativeEntryFix extends LocalQuickFixOnPsiElement {
         @Nonnull PsiElement startElement,
         @Nonnull PsiElement endElement
     ) {
-        if (startElement instanceof IgnoreEntry) {
-            Document document = PsiDocumentManager.getInstance(project).getDocument(psiFile);
-            if (document != null) {
-                int start = startElement.getStartOffsetInParent();
-                String text = startElement.getText();
-                String fixed = getFixedPath(text);
-                document.replaceString(start, start + text.length(), fixed);
-            }
+        if (!(startElement instanceof IgnoreEntry)) {
+            return;
         }
+        Document document = PsiDocumentManager.getInstance(project).getDocument(psiFile);
+        if (document == null) {
+            return;
+        }
+        int start = startElement.getStartOffsetInParent();
+        String text = startElement.getText();
+        String fixed = getFixedPath(text);
+        document.replaceString(start, start + text.length(), fixed);
     }
 
     /**

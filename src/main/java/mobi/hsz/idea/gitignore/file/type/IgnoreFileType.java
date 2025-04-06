@@ -28,7 +28,6 @@ import consulo.language.file.LanguageFileType;
 import consulo.localize.LocalizeValue;
 import consulo.ui.image.Image;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
-import org.jetbrains.annotations.NotNull;
 
 import jakarta.annotation.Nonnull;
 
@@ -38,14 +37,13 @@ import jakarta.annotation.Nonnull;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 0.8
  */
-public class IgnoreFileType extends LanguageFileType
-{
+public class IgnoreFileType extends LanguageFileType {
     /** Contains {@link IgnoreFileType} singleton. */
-    @NotNull
+    @Nonnull
     public static final IgnoreFileType INSTANCE = new IgnoreFileType();
 
     /** Current file type language. */
-    @NotNull
+    @Nonnull
     private final IgnoreLanguage language;
 
     /** Protected constructor to prevent direct object creation. */
@@ -54,7 +52,7 @@ public class IgnoreFileType extends LanguageFileType
     }
 
     /** Protected constructor to prevent direct object creation. */
-    protected IgnoreFileType(@NotNull IgnoreLanguage language) {
+    protected IgnoreFileType(@Nonnull IgnoreLanguage language) {
         super(language);
         this.language = language;
     }
@@ -64,7 +62,7 @@ public class IgnoreFileType extends LanguageFileType
      *
      * @return The file type name.
      */
-    @NotNull
+    @Nonnull
     @Override
     public String getId() {
         return language.getID() + " file";
@@ -75,7 +73,7 @@ public class IgnoreFileType extends LanguageFileType
      *
      * @return The language name.
      */
-    @NotNull
+    @Nonnull
     public String getLanguageName() {
         return language.getID();
     }
@@ -85,7 +83,7 @@ public class IgnoreFileType extends LanguageFileType
      *
      * @return The file type description.
      */
-    @NotNull
+    @Nonnull
     @Override
     public LocalizeValue getDescription() {
         return LocalizeValue.of(language.getDisplayName());
@@ -96,7 +94,7 @@ public class IgnoreFileType extends LanguageFileType
      *
      * @return The extension, not including the leading '.'.
      */
-    @NotNull
+    @Nonnull
     @Override
     public String getDefaultExtension() {
         return language.getExtension();
@@ -118,7 +116,7 @@ public class IgnoreFileType extends LanguageFileType
      *
      * @return associated language.
      */
-    @NotNull
+    @Nonnull
     public IgnoreLanguage getIgnoreLanguage() {
         return language;
     }

@@ -24,7 +24,7 @@
 
 package mobi.hsz.idea.gitignore.util.exec.parser;
 
-import org.jetbrains.annotations.NotNull;
+import jakarta.annotation.Nonnull;
 
 /**
  * Simple parser that returns trimmed input.
@@ -39,9 +39,9 @@ public class SimpleOutputParser extends ExecutionOutputParser<String> {
      * @param text input data
      * @return single unignored entry
      */
-    @NotNull
+    @Nonnull
     @Override
-    protected String parseOutput(@NotNull String text) {
+    protected String parseOutput(@Nonnull String text) {
         return text.trim();
     }
 }

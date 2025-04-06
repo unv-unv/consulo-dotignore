@@ -25,7 +25,7 @@
 package mobi.hsz.idea.gitignore.util;
 
 import consulo.util.collection.ContainerUtil;
-import org.jetbrains.annotations.NotNull;
+import jakarta.annotation.Nonnull;
 
 import java.util.concurrent.ConcurrentMap;
 
@@ -37,11 +37,11 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class CachedConcurrentMap<K, V> {
     /** Cache map. */
-    @NotNull
+    @Nonnull
     private final ConcurrentMap<K, V> map;
 
     /** Data fetcher instance invoked if key is not filled with value. */
-    @NotNull
+    @Nonnull
     private final DataFetcher<K, V> fetcher;
 
     /**
@@ -49,7 +49,7 @@ public class CachedConcurrentMap<K, V> {
      *
      * @param fetcher data fetcher
      */
-    private CachedConcurrentMap(@NotNull DataFetcher<K, V> fetcher) {
+    private CachedConcurrentMap(@Nonnull DataFetcher<K, V> fetcher) {
         this.map = ContainerUtil.createConcurrentWeakMap();
         this.fetcher = fetcher;
     }
@@ -60,8 +60,8 @@ public class CachedConcurrentMap<K, V> {
      * @param fetcher fetcher
      * @return instance of {@link CachedConcurrentMap}
      */
-    @NotNull
-    public static <K, V> CachedConcurrentMap<K, V> create(@NotNull DataFetcher<K, V> fetcher) {
+    @Nonnull
+    public static <K, V> CachedConcurrentMap<K, V> create(@Nonnull DataFetcher<K, V> fetcher) {
         return new CachedConcurrentMap<>(fetcher);
     }
 
@@ -71,7 +71,7 @@ public class CachedConcurrentMap<K, V> {
      * @param key data key
      * @return value
      */
-    public V get(@NotNull K key) {
+    public V get(@Nonnull K key) {
         if (!map.containsKey(key)) {
             map.put(key, fetcher.fetch(key));
         }
@@ -83,7 +83,7 @@ public class CachedConcurrentMap<K, V> {
      *
      * @param key current key
      */
-    public void remove(@NotNull K key) {
+    public void remove(@Nonnull K key) {
         this.map.remove(key);
     }
 
@@ -100,6 +100,6 @@ public class CachedConcurrentMap<K, V> {
          * @param key key
          * @return value
          */
-        V fetch(@NotNull K key);
+        V fetch(@Nonnull K key);
     }
 }

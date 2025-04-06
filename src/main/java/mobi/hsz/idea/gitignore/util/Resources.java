@@ -25,6 +25,8 @@
 package mobi.hsz.idea.gitignore.util;
 
 import consulo.container.plugin.PluginManager;
+import consulo.dotignore.localize.IgnoreLocalize;
+import consulo.localize.LocalizeValue;
 import consulo.logging.Logger;
 import consulo.util.io.FileUtil;
 import jakarta.annotation.Nonnull;
@@ -149,10 +151,20 @@ public class Resources {
          * subdirectory) or is user defined and fetched from {@link IgnoreSettings}.
          */
         public enum Container {
-            USER,
-            STARRED,
-            ROOT,
-            GLOBAL
+            USER(IgnoreLocalize.templateContainerUser()),
+            STARRED(IgnoreLocalize.templateContainerStarred()),
+            ROOT(IgnoreLocalize.templateContainerRoot()),
+            GLOBAL(IgnoreLocalize.templateContainerGlobal());
+
+            private final LocalizeValue hint;
+
+            Container(LocalizeValue hint) {
+                this.hint = hint;
+            }
+
+            public LocalizeValue getHint() {
+                return hint;
+            }
         }
 
         /**

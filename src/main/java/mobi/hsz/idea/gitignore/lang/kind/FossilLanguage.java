@@ -26,12 +26,12 @@ package mobi.hsz.idea.gitignore.lang.kind;
 
 import consulo.util.collection.ContainerUtil;
 import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.file.type.kind.FossilFileType;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
 import mobi.hsz.idea.gitignore.outer.OuterFileFetcher;
 import mobi.hsz.idea.gitignore.util.Icons;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Fossil {@link IgnoreLanguage} definition.
@@ -40,21 +40,30 @@ import org.jetbrains.annotations.NotNull;
  * @since 1.1
  */
 public class FossilLanguage extends IgnoreLanguage {
-    /** The {@link FossilLanguage} instance. */
+    /**
+     * The {@link FossilLanguage} instance.
+     */
     public static final FossilLanguage INSTANCE = new FossilLanguage();
 
-    /** {@link IgnoreLanguage} is a non-instantiable static class. */
+    /**
+     * {@link IgnoreLanguage} is a non-instantiable static class.
+     */
     private FossilLanguage() {
-        super("Fossil", "ignore-glob", ".fossil-settings", Icons.FOSSIL, new OuterFileFetcher[]{
-
+        super(
+            "Fossil",
+            "ignore-glob",
+            ".fossil-settings",
+            Icons.FOSSIL,
+            new OuterFileFetcher[]{
                 // Outer file fetched from the .fossil-settings/ignore-glob file.
                 project -> {
-                    final VirtualFile baseDir = project.getBaseDir();
-                    return ContainerUtil.createMaybeSingletonList(baseDir == null ? null : baseDir
-                            .findFileByRelativePath(INSTANCE.getVcsDirectory() + "/" + INSTANCE.getFilename()));
+                    VirtualFile baseDir = project.getBaseDir();
+                    return ContainerUtil.createMaybeSingletonList(
+                        baseDir == null ? null : baseDir.findFileByRelativePath(INSTANCE.getVcsDirectory() + "/" + INSTANCE.getFilename())
+                    );
                 }
-
-        });
+            }
+        );
     }
 
     /**
@@ -62,7 +71,7 @@ public class FossilLanguage extends IgnoreLanguage {
      *
      * @return {@link FossilFileType} instance
      */
-    @NotNull
+    @Nonnull
     @Override
     public IgnoreFileType getFileType() {
         return FossilFileType.INSTANCE;
@@ -73,7 +82,7 @@ public class FossilLanguage extends IgnoreLanguage {
      *
      * @return filename
      */
-    @NotNull
+    @Nonnull
     @Override
     public String getFilename() {
         return getExtension();

@@ -50,16 +50,23 @@ public class FileTreeRenderer extends CheckboxTree.CheckboxTreeCellRenderer {
      * @param row      node is a row
      * @param hasFocus node has focus
      */
-    public void customizeRenderer(final JTree tree, final Object value, final boolean selected,
-                                  final boolean expanded, final boolean leaf, final int row,
-                                  final boolean hasFocus) {
+    @Override
+    public void customizeRenderer(
+        JTree tree,
+        Object value,
+        boolean selected,
+        boolean expanded,
+        boolean leaf,
+        int row,
+        boolean hasFocus
+    ) {
         if (!(value instanceof FileTreeNode)) {
             return;
         }
 
-        final FileTreeNode node = (FileTreeNode) value;
-        final VirtualFile file = node.getFile();
-        final Project project = node.getProject();
+        FileTreeNode node = (FileTreeNode)value;
+        VirtualFile file = node.getFile();
+        Project project = node.getProject();
 
         getTextRenderer().append(file.getName());
         getTextRenderer().setIcon(VirtualFileManager.getInstance().getFileIcon(file, project, Iconable.ICON_FLAG_READ_STATUS));

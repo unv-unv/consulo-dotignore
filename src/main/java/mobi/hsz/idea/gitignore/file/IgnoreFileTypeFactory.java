@@ -28,11 +28,11 @@ import consulo.annotation.component.ExtensionImpl;
 import consulo.virtualFileSystem.fileType.FileNameMatcherFactory;
 import consulo.virtualFileSystem.fileType.FileTypeConsumer;
 import consulo.virtualFileSystem.fileType.FileTypeFactory;
+import jakarta.annotation.Nonnull;
 import jakarta.inject.Inject;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Class that assigns file types with languages.
@@ -55,9 +55,9 @@ public class IgnoreFileTypeFactory extends FileTypeFactory {
      * @param consumer file types consumer
      */
     @Override
-    public void createFileTypes(@NotNull FileTypeConsumer consumer) {
+    public void createFileTypes(@Nonnull FileTypeConsumer consumer) {
         consume(consumer, IgnoreFileType.INSTANCE);
-        for (final IgnoreLanguage language : IgnoreBundle.LANGUAGES) {
+        for (IgnoreLanguage language : IgnoreBundle.LANGUAGES) {
             consume(consumer, language.getFileType());
         }
     }
@@ -68,7 +68,7 @@ public class IgnoreFileTypeFactory extends FileTypeFactory {
      * @param consumer file types consumer
      * @param fileType file type to consume
      */
-    private void consume(@NotNull FileTypeConsumer consumer, @NotNull IgnoreFileType fileType) {
+    private void consume(@Nonnull FileTypeConsumer consumer, @Nonnull IgnoreFileType fileType) {
         consumer.consume(fileType, fileNameMatcherFactory.createExactFileNameMatcher(fileType.getIgnoreLanguage().getFilename()));
         consumer.consume(fileType, fileType.getIgnoreLanguage().getExtension());
     }

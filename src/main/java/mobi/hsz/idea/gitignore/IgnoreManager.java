@@ -233,10 +233,10 @@ public class IgnoreManager implements Disposable {
         }
 
         private void handleEvent(@Nonnull VirtualFileEvent event) {
-            final FileType fileType = event.getFile().getFileType();
-            if (fileType instanceof IgnoreFileType) {
-                cachedIgnoreFilesIndex.remove((IgnoreFileType)fileType);
-                cachedOuterFiles.remove((IgnoreFileType)fileType);
+            FileType fileType = event.getFile().getFileType();
+            if (fileType instanceof IgnoreFileType ignoreFileType) {
+                cachedIgnoreFilesIndex.remove(ignoreFileType);
+                cachedOuterFiles.remove(ignoreFileType);
 
                 if (fileType instanceof GitExcludeFileType) {
                     cachedOuterFiles.remove(GitFileType.INSTANCE);
@@ -288,7 +288,7 @@ public class IgnoreManager implements Disposable {
      * @return {@link IgnoreManager instance}
      */
     @Nonnull
-    public static IgnoreManager getInstance(@Nonnull final Project project) {
+    public static IgnoreManager getInstance(@Nonnull Project project) {
         return project.getComponent(IgnoreManager.class);
     }
 
@@ -298,7 +298,7 @@ public class IgnoreManager implements Disposable {
      * @param project current project
      */
     @Inject
-    public IgnoreManager(@Nonnull final Project project, VirtualFileManager virtualFileManager) {
+    public IgnoreManager(@Nonnull Project project, @Nonnull VirtualFileManager virtualFileManager) {
         myProject = project;
         this.matcher = new MatcherUtil();
         this.virtualFileManager = virtualFileManager;
@@ -332,9 +332,9 @@ public class IgnoreManager implements Disposable {
      * @param file current file
      * @return file is ignored
      */
-    public boolean isFileIgnored(@Nonnull final VirtualFile file) {
-        final Boolean cached = expiringStatusCache.get(file);
-        final VirtualFile baseDir = myProject.getBaseDir();
+    public boolean isFileIgnored(@Nonnull VirtualFile file) {
+        Boolean cached = expiringStatusCache.get(file);
+        VirtualFile baseDir = myProject.getBaseDir();
         if (cached != null) {
             return cached;
         }
@@ -354,13 +354,13 @@ public class IgnoreManager implements Disposable {
                 continue;
             }
 
-            final Collection<IgnoreEntryOccurrence> values = cachedIgnoreFilesIndex.get(fileType);
+            Collection<IgnoreEntryOccurrence> values = cachedIgnoreFilesIndex.get(fileType);
 
             valuesCount += values.size();
             for (IgnoreEntryOccurrence value : values) {
                 ProgressManager.checkCanceled();
                 String relativePath;
-                final VirtualFile entryFile = value.getFile();
+                VirtualFile entryFile = value.getFile();
                 if (entryFile == null) {
                     continue;
                 }
@@ -372,17 +372,18 @@ public class IgnoreManager implements Disposable {
                     relativePath = StringUtil.trimStart(file.getPath(), workingDirectory.getPath());
                 }
                 else {
-                    final VirtualFile vcsRoot = getVcsRootFor(file);
+                    VirtualFile vcsRoot = getVcsRootFor(file);
                     if (vcsRoot != null && !Utils.isUnder(entryFile, vcsRoot)) {
                         if (!cachedOuterFiles.get(fileType).contains(entryFile)) {
                             continue;
                         }
                     }
 
-                    final String parentPath = !Utils.isInProject(entryFile, myProject) &&
-                        myProject.getBasePath() != null ? myProject.getBasePath() : entryFile.getParent().getPath();
-                    if (!StringUtil.startsWith(file.getPath(), parentPath) &&
-                        !ExternalIndexableSetContributor.getAdditionalFiles(myProject).contains(entryFile)) {
+                    String parentPath = !Utils.isInProject(entryFile, myProject) && myProject.getBasePath() != null
+                        ? myProject.getBasePath()
+                        : entryFile.getParent().getPath();
+                    if (!StringUtil.startsWith(file.getPath(), parentPath)
+                        && !ExternalIndexableSetContributor.getAdditionalFiles(myProject).contains(entryFile)) {
                         continue;
                     }
                     relativePath = StringUtil.trimStart(file.getPath(), parentPath);
@@ -398,7 +399,7 @@ public class IgnoreManager implements Disposable {
                 }
 
                 for (Pair<String, Boolean> item : value.getItems()) {
-                    final Pattern pattern = Glob.getPattern(item.first);
+                    Pattern pattern = Glob.getPattern(item.first);
                     if (matcher.match(pattern, relativePath)) {
                         ignored = !item.second;
                         matched = true;
@@ -408,7 +409,7 @@ public class IgnoreManager implements Disposable {
         }
 
         if (valuesCount > 0 && !ignored && !matched) {
-            final VirtualFile directory = file.getParent();
+            VirtualFile directory = file.getParent();
             if (directory != null && !directory.equals(baseDir)) {
                 for (VcsRoot vcsRoot : vcsRoots) {
                     ProgressManager.checkCanceled();
@@ -434,8 +435,8 @@ public class IgnoreManager implements Disposable {
      * @return VCS Root for given file
      */
     @Nullable
-    private VirtualFile getVcsRootFor(@Nonnull final VirtualFile file) {
-        final VcsRoot vcsRoot = ContainerUtil.find(
+    private VirtualFile getVcsRootFor(@Nonnull VirtualFile file) {
+        VcsRoot vcsRoot = ContainerUtil.find(
             ContainerUtil.reverse(vcsRoots),
             root -> root.getPath() != null && Utils.isUnder(file, root.getPath())
         );
@@ -448,10 +449,10 @@ public class IgnoreManager implements Disposable {
      * @param fileName to associate
      * @param fileType file type to bind with pattern
      */
-    public static void associateFileType(@Nonnull final String fileName, @Nonnull final IgnoreFileType fileType) {
-        final Application application = Application.get();
+    public static void associateFileType(@Nonnull String fileName, @Nonnull IgnoreFileType fileType) {
+        Application application = Application.get();
         if (application.isDispatchThread()) {
-            final FileTypeManager fileTypeManager = FileTypeManager.getInstance();
+            FileTypeManager fileTypeManager = FileTypeManager.getInstance();
             application.invokeLater(
                 () -> application.runWriteAction(() -> {
                     fileTypeManager.associate(fileType, FileNameMatcherFactory.getInstance().createExactFileNameMatcher(fileName));
@@ -471,9 +472,9 @@ public class IgnoreManager implements Disposable {
      * @param file current file
      * @return file is ignored and tracked
      */
-    public boolean isFileTracked(@Nonnull final VirtualFile file) {
-        return settings.isInformTrackedIgnored() && !notConfirmedIgnoredFiles.contains(file) &&
-            !confirmedIgnoredFiles.isEmpty() && confirmedIgnoredFiles.containsKey(file);
+    public boolean isFileTracked(@Nonnull VirtualFile file) {
+        return settings.isInformTrackedIgnored() && !notConfirmedIgnoredFiles.contains(file)
+            && !confirmedIgnoredFiles.isEmpty() && confirmedIgnoredFiles.containsKey(file);
     }
 
     /**
