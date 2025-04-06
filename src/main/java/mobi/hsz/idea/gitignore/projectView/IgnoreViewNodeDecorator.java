@@ -25,6 +25,7 @@
 package mobi.hsz.idea.gitignore.projectView;
 
 import consulo.annotation.component.ExtensionImpl;
+import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.project.Project;
 import consulo.project.ui.view.tree.ProjectViewNode;
 import consulo.project.ui.view.tree.ProjectViewNodeDecorator;
@@ -33,12 +34,11 @@ import consulo.ui.ex.awt.UIUtil;
 import consulo.ui.ex.tree.PresentationData;
 import consulo.util.collection.ContainerUtil;
 import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
 import jakarta.inject.Inject;
-import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.IgnoreManager;
 import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
 import mobi.hsz.idea.gitignore.util.Utils;
-import org.jetbrains.annotations.NotNull;
 
 import static consulo.ui.ex.SimpleTextAttributes.STYLE_SMALLER;
 
@@ -53,13 +53,13 @@ import static consulo.ui.ex.SimpleTextAttributes.STYLE_SMALLER;
 public class IgnoreViewNodeDecorator implements ProjectViewNodeDecorator {
     /** Label text attribute for ignored content. */
     private static final SimpleTextAttributes GRAYED_SMALL_ATTRIBUTES =
-            new SimpleTextAttributes(STYLE_SMALLER, UIUtil.getInactiveTextColor());
+        new SimpleTextAttributes(STYLE_SMALLER, UIUtil.getInactiveTextColor());
 
     /** {@link IgnoreManager} instance. */
     private final IgnoreManager manager;
 
     /** {@link IgnoreSettings} instance. */
-    @NotNull
+    @Nonnull
     private final IgnoreSettings ignoreSettings;
 
     /**
@@ -68,7 +68,7 @@ public class IgnoreViewNodeDecorator implements ProjectViewNodeDecorator {
      * @param project current project
      */
     @Inject
-    public IgnoreViewNodeDecorator(@NotNull Project project) {
+    public IgnoreViewNodeDecorator(@Nonnull Project project) {
         this.manager = IgnoreManager.getInstance(project);
         this.ignoreSettings = IgnoreSettings.getInstance();
     }
@@ -82,28 +82,29 @@ public class IgnoreViewNodeDecorator implements ProjectViewNodeDecorator {
      */
     @Override
     public void decorate(ProjectViewNode node, PresentationData data) {
-        final VirtualFile file = node.getVirtualFile();
+        VirtualFile file = node.getVirtualFile();
         if (file == null) {
             return;
         }
 
         if (ignoreSettings.isInformTrackedIgnored() && manager.isFileTracked(file) && manager.isFileIgnored(file)) {
             Utils.addColoredText(
-                    data,
-                    IgnoreBundle.message("projectView.tracked"),
-                    GRAYED_SMALL_ATTRIBUTES
+                data,
+                IgnoreLocalize.projectviewTracked().get(),
+                GRAYED_SMALL_ATTRIBUTES
             );
-        } else if (ignoreSettings.isHideIgnoredFiles() && file.isDirectory()) {
+        }
+        else if (ignoreSettings.isHideIgnoredFiles() && file.isDirectory()) {
             int count = ContainerUtil.filter(
-                    file.getChildren(),
-                    child -> manager.isFileIgnored(child) && !manager.isFileTracked(child)
+                file.getChildren(),
+                child -> manager.isFileIgnored(child) && !manager.isFileTracked(child)
             ).size();
 
             if (count > 0) {
                 Utils.addColoredText(
-                        data,
-                        IgnoreBundle.message("projectView.containsHidden", count),
-                        GRAYED_SMALL_ATTRIBUTES
+                    data,
+                    IgnoreLocalize.projectviewContainshidden(count).get(),
+                    GRAYED_SMALL_ATTRIBUTES
                 );
             }
         }

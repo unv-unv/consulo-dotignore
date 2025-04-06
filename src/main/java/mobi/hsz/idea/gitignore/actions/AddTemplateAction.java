@@ -24,13 +24,13 @@
 
 package mobi.hsz.idea.gitignore.actions;
 
-import consulo.project.Project;
-import consulo.ui.ex.action.AnAction;
-import org.jetbrains.annotations.NotNull;
-import consulo.ui.ex.action.AnActionEvent;
-import consulo.language.editor.CommonDataKeys;
+import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.language.psi.PsiFile;
-import mobi.hsz.idea.gitignore.IgnoreBundle;
+import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
+import consulo.ui.ex.action.AnAction;
+import consulo.ui.ex.action.AnActionEvent;
+import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.psi.IgnoreFile;
 import mobi.hsz.idea.gitignore.ui.GeneratorDialog;
 
@@ -44,7 +44,7 @@ public class AddTemplateAction extends AnAction
 {
     /** Builds a new instance of {@link AddTemplateAction}. */
     public AddTemplateAction() {
-        super(IgnoreBundle.message("action.addTemplate"), IgnoreBundle.message("action.addTemplate.description"), null);
+        super(IgnoreLocalize.actionAddtemplate(), IgnoreLocalize.actionAddtemplateDescription());
     }
 
     /**
@@ -54,9 +54,10 @@ public class AddTemplateAction extends AnAction
      * @param e action event
      */
     @Override
-    public void actionPerformed(@NotNull AnActionEvent e) {
-        final Project project = e.getData(CommonDataKeys.PROJECT);
-        final PsiFile file = e.getData(CommonDataKeys.PSI_FILE);
+    @RequiredUIAccess
+    public void actionPerformed(@Nonnull AnActionEvent e) {
+        Project project = e.getData(Project.KEY);
+        PsiFile file = e.getData(PsiFile.KEY);
 
         if (project == null || !(file instanceof IgnoreFile)) {
             return;
@@ -72,8 +73,9 @@ public class AddTemplateAction extends AnAction
      * @param e action event
      */
     @Override
-    public void update(@NotNull AnActionEvent e) {
-        final PsiFile file = e.getData(CommonDataKeys.PSI_FILE);
+    @RequiredUIAccess
+    public void update(@Nonnull AnActionEvent e) {
+        PsiFile file = e.getData(PsiFile.KEY);
 
         if (!(file instanceof IgnoreFile)) {
             e.getPresentation().setVisible(false);

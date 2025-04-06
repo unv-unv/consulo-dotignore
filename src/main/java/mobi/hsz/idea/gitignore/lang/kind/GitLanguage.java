@@ -27,6 +27,7 @@ package mobi.hsz.idea.gitignore.lang.kind;
 import consulo.project.Project;
 import consulo.util.collection.ContainerUtil;
 import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.file.type.kind.GitExcludeFileType;
 import mobi.hsz.idea.gitignore.file.type.kind.GitFileType;
@@ -37,7 +38,6 @@ import mobi.hsz.idea.gitignore.util.Icons;
 import mobi.hsz.idea.gitignore.util.Utils;
 import mobi.hsz.idea.gitignore.util.exec.ExternalExec;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -59,8 +59,8 @@ public class GitLanguage extends IgnoreLanguage {
     private GitLanguage() {
         super("Git", "gitignore", ".git", Icons.GIT, new OuterFileFetcher[]{
 
-                // Outer file fetched from the `git config core.excludesfile`.
-                project -> ContainerUtil.newArrayList(ExternalExec.getGitExcludesFile())
+            // Outer file fetched from the `git config core.excludesfile`.
+            project -> ContainerUtil.newArrayList(ExternalExec.getGitExcludesFile())
 
         });
     }
@@ -70,7 +70,7 @@ public class GitLanguage extends IgnoreLanguage {
      *
      * @return {@link GitFileType} instance
      */
-    @NotNull
+    @Nonnull
     @Override
     public IgnoreFileType getFileType() {
         return GitFileType.INSTANCE;
@@ -92,20 +92,20 @@ public class GitLanguage extends IgnoreLanguage {
      * @param project current project
      * @return outer files
      */
-    @NotNull
+    @Nonnull
     @Override
-    public Set<VirtualFile> getOuterFiles(@NotNull final Project project, boolean dumb) {
-        final int key = new HashCodeBuilder().append(project).append(getFileType()).toHashCode();
+    public Set<VirtualFile> getOuterFiles(@Nonnull Project project, boolean dumb) {
+        int key = new HashCodeBuilder().append(project).append(getFileType()).toHashCode();
 
         if (dumb || (fetched && outerFiles.get(key) != null)) {
             return super.getOuterFiles(project, true);
         }
 
         fetched = true;
-        final Set<VirtualFile> parentFiles = super.getOuterFiles(project, false);
-        final ArrayList<VirtualFile> files = ContainerUtil.newArrayList(ContainerUtil.filter(
-                IgnoreFilesIndex.getFiles(project, GitExcludeFileType.INSTANCE),
-                virtualFile -> Utils.isInProject(virtualFile, project)
+        Set<VirtualFile> parentFiles = super.getOuterFiles(project, false);
+        ArrayList<VirtualFile> files = new ArrayList<>(ContainerUtil.filter(
+            IgnoreFilesIndex.getFiles(project, GitExcludeFileType.INSTANCE),
+            virtualFile -> Utils.isInProject(virtualFile, project)
         ));
 
         ContainerUtil.addAllNotNull(parentFiles, files);

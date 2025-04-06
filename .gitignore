@@ -1,5 +1,7 @@
 .idea/
 .consulo/
+!/.consulo/codeStyleSettings.xml
+!/.consulo/runConfigurations
 target/
 *.iml
 out/

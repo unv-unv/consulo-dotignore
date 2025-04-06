@@ -26,8 +26,8 @@ public class GlobTest extends Common<Glob> {
         Glob.clearCache();
         myFixture.configureByText(GitFileType.INSTANCE, createIgnoreContent("foo.txt", "bar.txt", "buz.txt", "vcsdir", "dir"));
 
-        final VirtualFile rootFile = getFixtureRootFile();
-        final List<IgnoreEntry> children = getFixtureChildrenEntries();
+        VirtualFile rootFile = getFixtureRootFile();
+        List<IgnoreEntry> children = getFixtureChildrenEntries();
 
         myFixture.addFileToProject("bar.txt", "bar content");
         myFixture.addFileToProject("buz.txt", "buz content");
@@ -99,9 +99,8 @@ public class GlobTest extends Common<Glob> {
         Glob.clearCache();
         myFixture.configureByText(GitFileType.INSTANCE, createIgnoreContent("foo.txt", "bar.txt", "buz.txt", "vcsdir", "dir"));
 
-        final VirtualFile rootFile = getFixtureRootFile();
-        final List<IgnoreEntry> children = getFixtureChildrenEntries();
-
+        VirtualFile rootFile = getFixtureRootFile();
+        List<IgnoreEntry> children = getFixtureChildrenEntries();
 
         myFixture.addFileToProject("bar.txt", "bar content");
         myFixture.addFileToProject("buz.txt", "buz content");
@@ -109,7 +108,7 @@ public class GlobTest extends Common<Glob> {
         myFixture.addFileToProject("dir/buz.txt", "buz2 content");
         myFixture.addFileToProject("dir/biz.txt", "buz2 content");
 
-        final VirtualFile dir = rootFile.findChild("dir");
+        VirtualFile dir = rootFile.findChild("dir");
         assertNotNull(dir);
 
         /** {@link Glob#findAsPaths(VirtualFile, IgnoreEntry)} test */

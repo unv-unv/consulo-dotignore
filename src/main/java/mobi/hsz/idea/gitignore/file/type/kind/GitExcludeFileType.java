@@ -24,13 +24,13 @@
 
 package mobi.hsz.idea.gitignore.file.type.kind;
 
-import consulo.virtualFileSystem.VirtualFile;
 import consulo.project.Project;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.lang.kind.GitExcludeLanguage;
 import mobi.hsz.idea.gitignore.util.Utils;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Describes Git exclude file type.
@@ -48,14 +48,14 @@ public class GitExcludeFileType extends IgnoreFileType {
     }
 
     @Nullable
-    public static VirtualFile getWorkingDirectory(@NotNull Project project, @NotNull VirtualFile outerFile) {
-        final VirtualFile baseDir = project.getBaseDir();
-        final VirtualFile infoDir = baseDir.findFileByRelativePath(".git/info");
+    public static VirtualFile getWorkingDirectory(@Nonnull Project project, @Nonnull VirtualFile outerFile) {
+        VirtualFile baseDir = project.getBaseDir();
+        VirtualFile infoDir = baseDir.findFileByRelativePath(".git/info");
         if (infoDir != null && Utils.isUnder(outerFile, infoDir)) {
             return baseDir;
         }
 
-        final VirtualFile gitModules = baseDir.findFileByRelativePath(".git/modules");
+        VirtualFile gitModules = baseDir.findFileByRelativePath(".git/modules");
         if (gitModules != null && Utils.isUnder(outerFile, gitModules)) {
             String path = Utils.getRelativePath(gitModules, outerFile.getParent().getParent());
             if (path != null) {

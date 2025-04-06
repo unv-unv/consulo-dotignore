@@ -28,8 +28,7 @@ import consulo.component.PropertiesComponent;
 import consulo.project.Project;
 import consulo.project.ProjectPropertiesComponent;
 import consulo.virtualFileSystem.VirtualFile;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
+import jakarta.annotation.Nonnull;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -42,15 +41,12 @@ import java.util.Set;
  */
 public class Properties {
     /** Ignore missing gitignore property key. */
-    @NonNls
     private static final String IGNORE_MISSING_GITIGNORE = "ignore_missing_gitignore";
 
     /** Add unversioned files property key. */
-    @NonNls
     private static final String ADD_UNVERSIONED_FILES = "add_unversioned_files";
 
     /** Dismissed ignored editing notification key. */
-    @NonNls
     private static final String DISMISSED_IGNORED_EDITING_NOTIFICATION = "add_unversioned_files";
 
     /** Private constructor to prevent creating {@link Properties} instance. */
@@ -63,7 +59,7 @@ public class Properties {
      * @param project current project
      * @return {@link #IGNORE_MISSING_GITIGNORE} value
      */
-    public static boolean isIgnoreMissingGitignore(@NotNull Project project) {
+    public static boolean isIgnoreMissingGitignore(@Nonnull Project project) {
         return properties(project).getBoolean(IGNORE_MISSING_GITIGNORE, false);
     }
 
@@ -72,7 +68,7 @@ public class Properties {
      *
      * @param project current project
      */
-    public static void setIgnoreMissingGitignore(@NotNull Project project) {
+    public static void setIgnoreMissingGitignore(@Nonnull Project project) {
         properties(project).setValue(IGNORE_MISSING_GITIGNORE, Boolean.TRUE.toString());
     }
 
@@ -82,7 +78,7 @@ public class Properties {
      * @param project current project
      * @return {@link #ADD_UNVERSIONED_FILES} value
      */
-    public static boolean isAddUnversionedFiles(@NotNull Project project) {
+    public static boolean isAddUnversionedFiles(@Nonnull Project project) {
         return properties(project).getBoolean(ADD_UNVERSIONED_FILES, false);
     }
 
@@ -91,7 +87,7 @@ public class Properties {
      *
      * @param project current project
      */
-    public static void setAddUnversionedFiles(@NotNull Project project) {
+    public static void setAddUnversionedFiles(@Nonnull Project project) {
         properties(project).setValue(ADD_UNVERSIONED_FILES, Boolean.TRUE.toString());
     }
 
@@ -102,8 +98,8 @@ public class Properties {
      * @param file    current file
      * @return notification was dismissed
      */
-    public static boolean isDismissedIgnoredEditingNotification(@NotNull Project project, @NotNull VirtualFile file) {
-        final PropertiesComponent props = properties(project);
+    public static boolean isDismissedIgnoredEditingNotification(@Nonnull Project project, @Nonnull VirtualFile file) {
+        PropertiesComponent props = properties(project);
         String[] values = props.getValues(DISMISSED_IGNORED_EDITING_NOTIFICATION);
 
         return Set.of(values != null ? values : new String[0]).contains(file.getCanonicalPath());
@@ -115,11 +111,11 @@ public class Properties {
      * @param project current project
      * @param file    current file
      */
-    public static void setDismissedIgnoredEditingNotification(@NotNull Project project, @NotNull VirtualFile file) {
-        final PropertiesComponent props = properties(project);
+    public static void setDismissedIgnoredEditingNotification(@Nonnull Project project, @Nonnull VirtualFile file) {
+        PropertiesComponent props = properties(project);
         String[] values = props.getValues(DISMISSED_IGNORED_EDITING_NOTIFICATION);
 
-        final Set<String> set = new HashSet<>(Set.of(values != null ? values : new String[0]));
+        Set<String> set = new HashSet<>(Set.of(values != null ? values : new String[0]));
         set.add(file.getCanonicalPath());
 
         props.setValues(DISMISSED_IGNORED_EDITING_NOTIFICATION, set.toArray(new String[0]));
@@ -131,8 +127,8 @@ public class Properties {
      * @param project current project
      * @return component instance
      */
-    @NotNull
-    private static PropertiesComponent properties(@NotNull Project project) {
+    @Nonnull
+    private static PropertiesComponent properties(@Nonnull Project project) {
         return ProjectPropertiesComponent.getInstance(project);
     }
 }

@@ -24,17 +24,17 @@
 
 package mobi.hsz.idea.gitignore.actions;
 
-import consulo.document.Document;
-import consulo.project.Project;
-import consulo.ui.ex.action.AnAction;
-import org.jetbrains.annotations.NotNull;
-import consulo.ui.ex.action.AnActionEvent;
-import consulo.language.editor.CommonDataKeys;
 import consulo.codeEditor.Editor;
 import consulo.codeEditor.EditorFactory;
-import consulo.util.lang.StringUtil;
+import consulo.document.Document;
+import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.language.psi.PsiFile;
-import mobi.hsz.idea.gitignore.IgnoreBundle;
+import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
+import consulo.ui.ex.action.AnAction;
+import consulo.ui.ex.action.AnActionEvent;
+import consulo.util.lang.StringUtil;
+import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.psi.IgnoreFile;
 import mobi.hsz.idea.gitignore.ui.template.UserTemplateDialog;
 import mobi.hsz.idea.gitignore.util.Icons;
@@ -48,8 +48,11 @@ import mobi.hsz.idea.gitignore.util.Icons;
 public class CreateUserTemplateAction extends AnAction
 {
     public CreateUserTemplateAction() {
-        super(IgnoreBundle.message("action.createUserTemplate"),
-                IgnoreBundle.message("action.createUserTemplate.description"), Icons.IGNORE);
+        super(
+            IgnoreLocalize.actionCreateusertemplate(),
+            IgnoreLocalize.actionCreateusertemplateDescription(),
+            Icons.IGNORE
+        );
     }
 
     /**
@@ -59,9 +62,10 @@ public class CreateUserTemplateAction extends AnAction
      * @param e action event
      */
     @Override
-    public void actionPerformed(@NotNull AnActionEvent e) {
-        final Project project = e.getData(CommonDataKeys.PROJECT);
-        final PsiFile file = e.getData(CommonDataKeys.PSI_FILE);
+    @RequiredUIAccess
+    public void actionPerformed(@Nonnull AnActionEvent e) {
+        Project project = e.getData(Project.KEY);
+        PsiFile file = e.getData(PsiFile.KEY);
 
         if (project == null || !(file instanceof IgnoreFile)) {
             return;
@@ -89,8 +93,9 @@ public class CreateUserTemplateAction extends AnAction
      * @param e action event
      */
     @Override
-    public void update(@NotNull AnActionEvent e) {
-        final PsiFile file = e.getData(CommonDataKeys.PSI_FILE);
+    @RequiredUIAccess
+    public void update(@Nonnull AnActionEvent e) {
+        PsiFile file = e.getData(PsiFile.KEY);
 
         if (!(file instanceof IgnoreFile)) {
             e.getPresentation().setVisible(false);

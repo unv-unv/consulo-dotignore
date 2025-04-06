@@ -24,22 +24,26 @@
 
 package mobi.hsz.idea.gitignore.ui.untrackFiles;
 
-import consulo.application.ApplicationManager;
+import consulo.application.Application;
 import consulo.codeEditor.Editor;
 import consulo.codeEditor.EditorFactory;
 import consulo.document.Document;
+import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.TreeExpander;
 import consulo.ui.ex.action.*;
 import consulo.ui.ex.awt.*;
-import consulo.ui.ex.awt.tree.*;
+import consulo.ui.ex.awt.tree.CheckboxTree;
+import consulo.ui.ex.awt.tree.DefaultTreeExpander;
+import consulo.ui.ex.awt.tree.TreeModelAdapter;
+import consulo.ui.ex.awt.tree.TreeUtil;
 import consulo.versionControlSystem.root.VcsRoot;
 import consulo.virtualFileSystem.VirtualFile;
-import mobi.hsz.idea.gitignore.IgnoreBundle;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import mobi.hsz.idea.gitignore.util.Utils;
 import mobi.hsz.idea.gitignore.util.exec.ExternalExec;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.event.TreeModelEvent;
@@ -61,19 +65,19 @@ import static mobi.hsz.idea.gitignore.RefreshTrackedIgnoredListener.TRACKED_IGNO
  */
 public class UntrackFilesDialog extends DialogWrapper {
     /** Current project. */
-    @NotNull
+    @Nonnull
     private final Project project;
 
     /** A list of the tracked but ignored files. */
-    @NotNull
+    @Nonnull
     private final ConcurrentMap<VirtualFile, VcsRoot> files;
 
     /** Templates tree root node. */
-    @NotNull
+    @Nonnull
     private final FileTreeNode root;
 
     /** Map of the tree view {@link FileTreeNode} nodes. */
-    @NotNull
+    @Nonnull
     private final Map<VirtualFile, FileTreeNode> nodes = new HashMap<>();
 
     /** Commands editor with syntax highlight. */
@@ -89,7 +93,7 @@ public class UntrackFilesDialog extends DialogWrapper {
     private TreeExpander treeExpander;
 
     /** Listener that checks if files list has been changed and rewrites commands in {@link #commandsDocument}. */
-    @NotNull
+    @Nonnull
     private final TreeModelListener treeModelListener = new TreeModelAdapter() {
         /**
          * Invoked after a tree has changed.
@@ -97,10 +101,11 @@ public class UntrackFilesDialog extends DialogWrapper {
          * @param event the event object specifying changed nodes
          */
         @Override
-        public void treeNodesChanged(@NotNull TreeModelEvent event) {
-            final String text = getCommandsText();
+        @RequiredUIAccess
+        public void treeNodesChanged(@Nonnull TreeModelEvent event) {
+            String text = getCommandsText();
 
-            ApplicationManager.getApplication().runWriteAction(() -> commandsDocument.setText(text));
+            Application.get().runWriteAction(() -> commandsDocument.setText(text));
         }
     };
 
@@ -110,15 +115,15 @@ public class UntrackFilesDialog extends DialogWrapper {
      * @param project current project
      * @param files   files map to present
      */
-    public UntrackFilesDialog(@NotNull Project project, @NotNull ConcurrentMap<VirtualFile, VcsRoot> files) {
+    public UntrackFilesDialog(@Nonnull Project project, @Nonnull ConcurrentMap<VirtualFile, VcsRoot> files) {
         super(project, false);
         this.project = project;
         this.files = files;
         this.root = createDirectoryNodes(project.getBaseDir(), null);
 
-        setTitle(IgnoreBundle.message("dialog.untrackFiles.title"));
-        setOKButtonText(IgnoreBundle.message("global.ok"));
-        setCancelButtonText(IgnoreBundle.message("global.cancel"));
+        setTitle(IgnoreLocalize.dialogUntrackfilesTitle());
+        setOKButtonText(IgnoreLocalize.globalOk());
+        setCancelButtonText(IgnoreLocalize.globalCancel());
         init();
     }
 
@@ -129,18 +134,18 @@ public class UntrackFilesDialog extends DialogWrapper {
      * @param vcsRoot {@link VcsRoot} of given file
      * @return leaf
      */
-    @NotNull
-    private FileTreeNode createDirectoryNodes(@NotNull VirtualFile file, @Nullable VcsRoot vcsRoot) {
-        final FileTreeNode node = nodes.get(file);
+    @Nonnull
+    private FileTreeNode createDirectoryNodes(@Nonnull VirtualFile file, @Nullable VcsRoot vcsRoot) {
+        FileTreeNode node = nodes.get(file);
         if (node != null) {
             return node;
         }
 
-        final FileTreeNode newNode = new FileTreeNode(project, file, vcsRoot);
+        FileTreeNode newNode = new FileTreeNode(project, file, vcsRoot);
         nodes.put(file, newNode);
 
         if (nodes.size() != 1) {
-            final VirtualFile parent = file.getParent();
+            VirtualFile parent = file.getParent();
             if (parent != null) {
                 createDirectoryNodes(parent, null).add(newNode);
             }
@@ -157,17 +162,17 @@ public class UntrackFilesDialog extends DialogWrapper {
     @Nullable
     @Override
     protected JComponent createCenterPanel() {
-        final JPanel centerPanel = new JPanel(new BorderLayout());
+        JPanel centerPanel = new JPanel(new BorderLayout());
         centerPanel.setPreferredSize(new Dimension(500, 400));
 
-        final JPanel treePanel = new JPanel(new BorderLayout());
+        JPanel treePanel = new JPanel(new BorderLayout());
         centerPanel.add(treePanel, BorderLayout.CENTER);
 
         /* Scroll panel for the templates tree. */
         JScrollPane treeScrollPanel = createTreeScrollPanel();
         treePanel.add(treeScrollPanel, BorderLayout.CENTER);
 
-        final JPanel northPanel = new JPanel(new GridBagLayout());
+        JPanel northPanel = new JPanel(new GridBagLayout());
         northPanel.setBorder(JBUI.Borders.empty(2, 0));
         northPanel.add(createTreeActionsToolbarPanel(treeScrollPanel).getComponent(),
                 new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.BASELINE_LEADING,
@@ -179,8 +184,8 @@ public class UntrackFilesDialog extends DialogWrapper {
         commandsDocument = EditorFactory.getInstance().createDocument(getCommandsText());
         commands = Utils.createPreviewEditor(commandsDocument, project, true);
 
-        final JPanel commandsPanel = new JPanel(new BorderLayout());
-        final JLabel commandsLabel = new JBLabel(IgnoreBundle.message("dialog.untrackFiles.commands.label"));
+        JPanel commandsPanel = new JPanel(new BorderLayout());
+        JLabel commandsLabel = new JBLabel(IgnoreLocalize.dialogUntrackfilesCommandsLabel().get());
         commandsLabel.setBorder(JBUI.Borders.empty(10, 0));
         commandsPanel.add(commandsLabel, BorderLayout.NORTH);
 
@@ -202,7 +207,7 @@ public class UntrackFilesDialog extends DialogWrapper {
             createDirectoryNodes(entry.getKey(), entry.getValue());
         }
 
-        final FileTreeRenderer renderer = new FileTreeRenderer();
+        FileTreeRenderer renderer = new FileTreeRenderer();
 
         tree = new CheckboxTree(renderer, root);
         tree.setCellRenderer(renderer);
@@ -211,7 +216,7 @@ public class UntrackFilesDialog extends DialogWrapper {
         UIUtil.setLineStyleAngled(tree);
         TreeUtil.installActions(tree);
 
-        final JScrollPane scrollPane = ScrollPaneFactory.createScrollPane(tree);
+        JScrollPane scrollPane = ScrollPaneFactory.createScrollPane(tree);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         TreeUtil.expandAll(tree);
 
@@ -227,14 +232,14 @@ public class UntrackFilesDialog extends DialogWrapper {
      * @param target templates tree
      * @return action toolbar
      */
-    private ActionToolbar createTreeActionsToolbarPanel(@NotNull JComponent target) {
-        final CommonActionsManager actionManager = CommonActionsManager.getInstance();
-        final DefaultActionGroup actions = new DefaultActionGroup();
+    private ActionToolbar createTreeActionsToolbarPanel(@Nonnull JComponent target) {
+        CommonActionsManager actionManager = CommonActionsManager.getInstance();
+        DefaultActionGroup actions = new DefaultActionGroup();
         actions.add(actionManager.createExpandAllAction(treeExpander, tree));
         actions.add(actionManager.createCollapseAllAction(treeExpander, tree));
 
-        final ActionToolbar actionToolbar = ActionManager.getInstance()
-                .createActionToolbar(ActionPlaces.UNKNOWN, actions, true);
+        ActionToolbar actionToolbar = ActionManager.getInstance()
+            .createActionToolbar(ActionPlaces.UNKNOWN, actions, true);
         actionToolbar.setTargetComponent(target);
 
         return actionToolbar;
@@ -264,9 +269,9 @@ public class UntrackFilesDialog extends DialogWrapper {
      *
      * @return sorted files map
      */
-    @NotNull
+    @Nonnull
     private HashMap<VcsRoot, ArrayList<VirtualFile>> getCheckedFiles() {
-        final HashMap<VcsRoot, ArrayList<VirtualFile>> result = new HashMap<>();
+        HashMap<VcsRoot, ArrayList<VirtualFile>> result = new HashMap<>();
 
         FileTreeNode leaf = (FileTreeNode) root.getFirstLeaf();
         if (leaf == null) {
@@ -278,8 +283,8 @@ public class UntrackFilesDialog extends DialogWrapper {
                 continue;
             }
 
-            final VcsRoot vcsRoot = leaf.getVcsRoot();
-            final VirtualFile file = leaf.getFile();
+            VcsRoot vcsRoot = leaf.getVcsRoot();
+            VirtualFile file = leaf.getFile();
             if (vcsRoot == null) {
                 continue;
             }
@@ -298,27 +303,21 @@ public class UntrackFilesDialog extends DialogWrapper {
      *
      * @return commands list
      */
-    @NotNull
+    @Nonnull
     private String getCommandsText() {
-        final StringBuilder builder = new StringBuilder();
+        StringBuilder builder = new StringBuilder();
 
         HashMap<VcsRoot, ArrayList<VirtualFile>> checked = getCheckedFiles();
         for (Map.Entry<VcsRoot, ArrayList<VirtualFile>> entry : checked.entrySet()) {
-            final VirtualFile root = entry.getKey().getPath();
+            VirtualFile root = entry.getKey().getPath();
             if (root == null) {
                 continue;
             }
 
-            builder.append(IgnoreBundle.message(
-                    "dialog.untrackFiles.commands.repository",
-                    root.getCanonicalPath()
-            )).append("\n");
+            builder.append(IgnoreLocalize.dialogUntrackfilesCommandsRepository(root.getCanonicalPath())).append("\n");
 
             for (VirtualFile file : entry.getValue()) {
-                builder.append(IgnoreBundle.message(
-                        "dialog.untrackFiles.commands.command",
-                        Utils.getRelativePath(root, file)
-                )).append("\n");
+                builder.append(IgnoreLocalize.dialogUntrackfilesCommandsCommand(Utils.getRelativePath(root, file))).append("\n");
             }
 
             builder.append("\n");

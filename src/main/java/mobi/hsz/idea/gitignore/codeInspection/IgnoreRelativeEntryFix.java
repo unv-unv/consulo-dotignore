@@ -24,15 +24,17 @@
 
 package mobi.hsz.idea.gitignore.codeInspection;
 
-import consulo.language.editor.inspection.LocalQuickFixOnPsiElement;
+import consulo.annotation.access.RequiredReadAction;
 import consulo.document.Document;
-import consulo.project.Project;
+import consulo.dotignore.localize.IgnoreLocalize;
+import consulo.language.editor.inspection.LocalQuickFixOnPsiElement;
 import consulo.language.psi.PsiDocumentManager;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiFile;
-import mobi.hsz.idea.gitignore.IgnoreBundle;
+import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
+import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.psi.IgnoreEntry;
-import org.jetbrains.annotations.NotNull;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -50,7 +52,7 @@ public class IgnoreRelativeEntryFix extends LocalQuickFixOnPsiElement {
      *
      * @param entry an element that will be handled with QuickFix
      */
-    public IgnoreRelativeEntryFix(@NotNull IgnoreEntry entry) {
+    public IgnoreRelativeEntryFix(@Nonnull IgnoreEntry entry) {
         super(entry);
     }
 
@@ -59,10 +61,11 @@ public class IgnoreRelativeEntryFix extends LocalQuickFixOnPsiElement {
      *
      * @return QuickFix action name
      */
-    @NotNull
+    @Nonnull
     @Override
+    @RequiredReadAction
     public String getText() {
-        return IgnoreBundle.message("quick.fix.relative.entry");
+        return IgnoreLocalize.quickFixRelativeEntry().get();
     }
 
     /**
@@ -74,8 +77,13 @@ public class IgnoreRelativeEntryFix extends LocalQuickFixOnPsiElement {
      * @param endElement   the {@link PsiElement} which is ignored in invoked action
      */
     @Override
-    public void invoke(@NotNull Project project, @NotNull PsiFile psiFile, @NotNull PsiElement startElement,
-                       @NotNull PsiElement endElement) {
+    @RequiredUIAccess
+    public void invoke(
+        @Nonnull Project project,
+        @Nonnull PsiFile psiFile,
+        @Nonnull PsiElement startElement,
+        @Nonnull PsiElement endElement
+    ) {
         if (startElement instanceof IgnoreEntry) {
             Document document = PsiDocumentManager.getInstance(project).getDocument(psiFile);
             if (document != null) {
@@ -97,7 +105,8 @@ public class IgnoreRelativeEntryFix extends LocalQuickFixOnPsiElement {
         path = path.replaceAll("\\/", "/").replaceAll("\\\\\\.", ".");
         try {
             path = new URI(path).normalize().getPath();
-        } catch (URISyntaxException e) {
+        }
+        catch (URISyntaxException e) {
             e.printStackTrace();
         }
 
@@ -109,9 +118,9 @@ public class IgnoreRelativeEntryFix extends LocalQuickFixOnPsiElement {
      *
      * @return QuickFix family name
      */
-    @NotNull
+    @Nonnull
     @Override
     public String getFamilyName() {
-        return IgnoreBundle.message("codeInspection.group");
+        return IgnoreLocalize.codeinspectionGroup().get();
     }
 }

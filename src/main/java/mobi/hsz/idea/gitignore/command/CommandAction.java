@@ -26,7 +26,7 @@ package mobi.hsz.idea.gitignore.command;
 
 import consulo.language.editor.WriteCommandAction;
 import consulo.project.Project;
-import org.jetbrains.annotations.NotNull;
+import jakarta.annotation.Nonnull;
 
 /**
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
@@ -34,7 +34,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public abstract class CommandAction<T> {
     /** Current project. */
-    @NotNull
+    @Nonnull
     private final Project project;
 
     /**
@@ -42,7 +42,7 @@ public abstract class CommandAction<T> {
      *
      * @param project current project
      */
-    public CommandAction(@NotNull Project project) {
+    public CommandAction(@Nonnull Project project) {
         this.project = project;
     }
 

@@ -25,17 +25,17 @@
 package mobi.hsz.idea.gitignore;
 
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
-import consulo.util.collection.ContainerUtil;
 import consulo.util.lang.StringUtil;
 import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.psi.IgnoreEntry;
 import mobi.hsz.idea.gitignore.psi.IgnoreVisitor;
 import mobi.hsz.idea.gitignore.util.Constants;
-import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -44,29 +44,29 @@ import java.util.List;
  */
 public abstract class Common<T> extends LightPlatformCodeInsightFixtureTestCase {
 
-    protected void privateConstructor(@NotNull Class<T> clz) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    protected void privateConstructor(@Nonnull Class<T> clz) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         Constructor<T> constructor = clz.getDeclaredConstructor();
         assertTrue(Modifier.isPrivate(constructor.getModifiers()));
         constructor.setAccessible(true);
         constructor.newInstance();
     }
 
-    @NotNull
+    @Nonnull
     protected String createIgnoreContent(String... entries) {
         return StringUtil.join(entries, Constants.NEWLINE);
     }
 
-    @NotNull
+    @Nonnull
     protected VirtualFile getFixtureRootFile() {
         return myFixture.getFile().getContainingDirectory().getVirtualFile();
     }
 
-    @NotNull
+    @Nonnull
     protected List<IgnoreEntry> getFixtureChildrenEntries() {
-        final List<IgnoreEntry> children = ContainerUtil.newArrayList();
+        final List<IgnoreEntry> children = new ArrayList<>();
         myFixture.getFile().acceptChildren(new IgnoreVisitor() {
             @Override
-            public void visitEntry(@NotNull IgnoreEntry entry) {
+            public void visitEntry(@Nonnull IgnoreEntry entry) {
                 children.add(entry);
             }
         });

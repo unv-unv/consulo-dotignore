@@ -24,14 +24,16 @@
 
 package mobi.hsz.idea.gitignore.actions;
 
+import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.fileEditor.FileEditorComposite;
 import consulo.fileEditor.FileEditorWindow;
 import consulo.fileEditor.action.CloseEditorsActionBase;
+import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import consulo.ui.ex.action.AnActionEvent;
 import consulo.versionControlSystem.ProjectLevelVcsManager;
 import consulo.virtualFileSystem.status.FileStatusManager;
-import mobi.hsz.idea.gitignore.IgnoreBundle;
+import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.vcs.IgnoreFileStatusProvider;
 
 /**
@@ -47,10 +49,10 @@ public class CloseIgnoredEditorsAction extends CloseEditorsActionBase {
      * @return editor is allowed to be closed
      */
     @Override
-    protected boolean isFileToClose(final FileEditorComposite editor, final FileEditorWindow window) {
-        final FileStatusManager fileStatusManager = FileStatusManager.getInstance(window.getManager().getProject());
-        return fileStatusManager != null &&
-                fileStatusManager.getStatus(editor.getFile()).equals(IgnoreFileStatusProvider.IGNORED);
+    protected boolean isFileToClose(FileEditorComposite editor, FileEditorWindow window) {
+        FileStatusManager fileStatusManager = FileStatusManager.getInstance(window.getManager().getProject());
+        return fileStatusManager != null
+            && fileStatusManager.getStatus(editor.getFile()).equals(IgnoreFileStatusProvider.IGNORED);
     }
 
     /**
@@ -59,9 +61,9 @@ public class CloseIgnoredEditorsAction extends CloseEditorsActionBase {
      * @return action is enabled
      */
     @Override
-    protected boolean isActionEnabled(final Project project, final AnActionEvent event) {
-        return super.isActionEnabled(project, event) &&
-                ProjectLevelVcsManager.getInstance(project).getAllActiveVcss().length > 0;
+    protected boolean isActionEnabled(Project project, AnActionEvent event) {
+        return super.isActionEnabled(project, event)
+            && ProjectLevelVcsManager.getInstance(project).getAllActiveVcss().length > 0;
     }
 
     /**
@@ -70,10 +72,11 @@ public class CloseIgnoredEditorsAction extends CloseEditorsActionBase {
      * @param inSplitter is in splitter
      * @return label text
      */
+    @Nonnull
     @Override
-    protected String getPresentationText(final boolean inSplitter) {
+    protected LocalizeValue getPresentationText(boolean inSplitter) {
         return inSplitter ?
-                IgnoreBundle.message("action.closeIgnored.editors.in.tab.group") :
-                IgnoreBundle.message("action.closeIgnored.editors");
+            IgnoreLocalize.actionCloseignoredEditorsInTabGroup() :
+            IgnoreLocalize.actionCloseignoredEditors();
     }
 }

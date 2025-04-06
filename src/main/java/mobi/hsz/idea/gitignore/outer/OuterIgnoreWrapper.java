@@ -32,17 +32,16 @@ import consulo.component.messagebus.MessageBusConnection;
 import consulo.disposer.Disposable;
 import consulo.document.Document;
 import consulo.document.FileDocumentManager;
+import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.project.Project;
 import consulo.ui.ex.awt.*;
-import consulo.util.collection.ContainerUtil;
 import consulo.virtualFileSystem.VirtualFile;
 import consulo.virtualFileSystem.util.VirtualFileUtil;
-import mobi.hsz.idea.gitignore.IgnoreBundle;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
 import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
 import mobi.hsz.idea.gitignore.util.Utils;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -50,6 +49,7 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -69,19 +69,19 @@ public class OuterIgnoreWrapper extends MouseAdapter implements ChangeListener, 
     private final JPanel panel;
 
     /** List of outer editors in the wrapper. */
-    @NotNull
-    private final List<Editor> outerEditors = ContainerUtil.newArrayList();
+    @Nonnull
+    private final List<Editor> outerEditors = new ArrayList<>();
 
     /** The settings storage object. */
-    @NotNull
+    @Nonnull
     private final IgnoreSettings settings;
 
     /** North panel. */
-    @NotNull
+    @Nonnull
     private final JPanel northPanel;
 
     /** Panel wrapper. */
-    @NotNull
+    @Nonnull
     private final TabbedPaneWrapper tabbedPanel;
 
     /** Message bus instance. */
@@ -89,11 +89,11 @@ public class OuterIgnoreWrapper extends MouseAdapter implements ChangeListener, 
     private MessageBusConnection messageBus;
 
     /** Link label instance. */
-    @NotNull
+    @Nonnull
     private final LinkLabel linkLabel;
 
     /** List of all available outer files. */
-    @NotNull
+    @Nonnull
     private final List<VirtualFile> outerFiles;
 
     /** Current panel's height. */
@@ -107,8 +107,11 @@ public class OuterIgnoreWrapper extends MouseAdapter implements ChangeListener, 
 
     /** Constructor. */
     @SuppressWarnings("unchecked")
-    public OuterIgnoreWrapper(@NotNull final Project project, @NotNull final IgnoreLanguage language,
-							  @NotNull final List<VirtualFile> outerFiles) {
+    public OuterIgnoreWrapper(
+        @Nonnull Project project,
+        @Nonnull IgnoreLanguage language,
+        @Nonnull List<VirtualFile> outerFiles
+    ) {
         this.outerFiles = outerFiles;
         settings = IgnoreSettings.getInstance();
 
@@ -118,9 +121,9 @@ public class OuterIgnoreWrapper extends MouseAdapter implements ChangeListener, 
         northPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 5));
 
         JBLabel label = new JBLabel(
-                IgnoreBundle.message("outer.label"),
-                UIUtil.ComponentStyle.REGULAR,
-                UIUtil.FontColor.BRIGHTER
+            IgnoreLocalize.outerLabel().get(),
+            UIUtil.ComponentStyle.REGULAR,
+            UIUtil.FontColor.BRIGHTER
         );
         label.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10));
         northPanel.add(label);
@@ -131,18 +134,18 @@ public class OuterIgnoreWrapper extends MouseAdapter implements ChangeListener, 
         updateTabbedPanelPolicy();
 
         linkLabel = new LinkLabel(
-                outerFiles.get(0).getPath(),
-                null,
-                (aSource, aLinkData) -> Utils.openFile(project, outerFiles.get(tabbedPanel.getSelectedIndex()))
+            outerFiles.get(0).getPath(),
+            null,
+            (aSource, aLinkData) -> Utils.openFile(project, outerFiles.get(tabbedPanel.getSelectedIndex()))
         );
-        final VirtualFile userHomeDir = VirtualFileUtil.getUserHomeDir();
+        VirtualFile userHomeDir = VirtualFileUtil.getUserHomeDir();
 
-        for (final VirtualFile outerFile : outerFiles) {
+        for (VirtualFile outerFile : outerFiles) {
             Document document = FileDocumentManager.getInstance().getDocument(outerFile);
             Editor outerEditor = document != null ? Utils.createPreviewEditor(document, null, true) : null;
 
             if (outerEditor != null) {
-                final JScrollPane scrollPanel = ScrollPaneFactory.createScrollPane(outerEditor.getComponent());
+                JScrollPane scrollPanel = ScrollPaneFactory.createScrollPane(outerEditor.getComponent());
                 scrollPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
                 scrollPanel.setPreferredSize(new Dimension(0, settings.getOuterIgnoreWrapperHeight()));
 
@@ -169,7 +172,8 @@ public class OuterIgnoreWrapper extends MouseAdapter implements ChangeListener, 
     private void updateTabbedPanelPolicy() {
         if (UISettings.getInstance().getScrollTabLayoutInEditor()) {
             tabbedPanel.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
-        } else {
+        }
+        else {
             tabbedPanel.setTabLayoutPolicy(JTabbedPane.WRAP_TAB_LAYOUT);
         }
     }
@@ -191,8 +195,9 @@ public class OuterIgnoreWrapper extends MouseAdapter implements ChangeListener, 
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        Cursor cursor = (e.getPoint().getY() <= DRAG_OFFSET) ?
-                Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR) : Cursor.getDefaultCursor();
+        Cursor cursor = (e.getPoint().getY() <= DRAG_OFFSET)
+            ? Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR)
+            : Cursor.getDefaultCursor();
         panel.setCursor(cursor);
     }
 

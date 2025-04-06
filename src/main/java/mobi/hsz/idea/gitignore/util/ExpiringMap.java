@@ -25,8 +25,8 @@
 package mobi.hsz.idea.gitignore.util;
 
 import consulo.util.lang.Pair;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -62,9 +62,9 @@ public class ExpiringMap<K, V> {
      * @return value or <code>null</code> if expired
      */
     @Nullable
-    public V get(@NotNull K key) {
+    public V get(@Nonnull K key) {
         long current = System.currentTimeMillis();
-        final Pair<V, Long> data = map.get(key);
+        Pair<V, Long> data = map.get(key);
         if (data != null) {
             if ((data.getSecond() + time) > current) {
                 return data.getFirst();
@@ -81,8 +81,8 @@ public class ExpiringMap<K, V> {
      * @param value to set
      * @return added value
      */
-    @NotNull
-    public V set(@NotNull K key, @NotNull V value) {
+    @Nonnull
+    public V set(@Nonnull K key, @Nonnull V value) {
         long current = System.currentTimeMillis();
         map.put(key, Pair.create(value, current));
         return value;
@@ -100,9 +100,9 @@ public class ExpiringMap<K, V> {
      * @param defaultValue value if null
      * @return value or default
      */
-    @NotNull
-    public V getOrElse(@NotNull K key, @NotNull V defaultValue) {
-        final V value = get(key);
+    @Nonnull
+    public V getOrElse(@Nonnull K key, @Nonnull V defaultValue) {
+        V value = get(key);
         return value != null ? value : defaultValue;
     }
 }

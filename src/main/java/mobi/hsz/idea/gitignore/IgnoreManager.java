@@ -28,7 +28,6 @@ import consulo.annotation.component.ComponentScope;
 import consulo.annotation.component.ServiceAPI;
 import consulo.annotation.component.ServiceImpl;
 import consulo.application.Application;
-import consulo.application.ApplicationManager;
 import consulo.application.progress.ProgressManager;
 import consulo.component.messagebus.MessageBusConnection;
 import consulo.disposer.Disposable;
@@ -48,11 +47,16 @@ import consulo.versionControlSystem.ProjectLevelVcsManager;
 import consulo.versionControlSystem.root.VcsRoot;
 import consulo.virtualFileSystem.VirtualFile;
 import consulo.virtualFileSystem.VirtualFileManager;
-import consulo.virtualFileSystem.event.*;
+import consulo.virtualFileSystem.event.VirtualFileCopyEvent;
+import consulo.virtualFileSystem.event.VirtualFileEvent;
+import consulo.virtualFileSystem.event.VirtualFileListener;
+import consulo.virtualFileSystem.event.VirtualFileMoveEvent;
 import consulo.virtualFileSystem.fileType.FileNameMatcherFactory;
 import consulo.virtualFileSystem.fileType.FileType;
 import consulo.virtualFileSystem.status.FileStatusManager;
 import git4idea.GitVcs;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
@@ -65,8 +69,6 @@ import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
 import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
 import mobi.hsz.idea.gitignore.util.*;
 import mobi.hsz.idea.gitignore.util.exec.ExternalExec;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentMap;
@@ -87,7 +89,7 @@ import static mobi.hsz.idea.gitignore.settings.IgnoreSettings.KEY;
 public class IgnoreManager implements Disposable {
     /** List of all available {@link IgnoreFileType}. */
     private static final List<IgnoreFileType> FILE_TYPES =
-            ContainerUtil.map(IgnoreBundle.LANGUAGES, IgnoreLanguage::getFileType);
+        ContainerUtil.map(IgnoreBundle.LANGUAGES, IgnoreLanguage::getFileType);
 
     /** List of filenames that require to be associated with specific {@link IgnoreFileType}. */
     public static final Map<String, IgnoreFileType> FILE_TYPES_ASSOCIATION_QUEUE = ContainerUtil.newConcurrentMap();
@@ -95,31 +97,31 @@ public class IgnoreManager implements Disposable {
     private final Project myProject;
 
     /** {@link MatcherUtil} instance. */
-    @NotNull
+    @Nonnull
     private final MatcherUtil matcher;
 
     /** {@link VirtualFileManager} instance. */
-    @NotNull
+    @Nonnull
     private final VirtualFileManager virtualFileManager;
 
     /** {@link IgnoreSettings} instance. */
-    @NotNull
+    @Nonnull
     private final IgnoreSettings settings;
 
     /** {@link FileStatusManager} instance. */
-    @NotNull
+    @Nonnull
     private final FileStatusManager statusManager;
 
     /** {@link ProjectLevelVcsManager} instance. */
-    @NotNull
+    @Nonnull
     private final ProjectLevelVcsManager projectLevelVcsManager;
 
     /** {@link RefreshTrackedIgnoredRunnable} instance. */
-    @NotNull
+    @Nonnull
     private final RefreshTrackedIgnoredRunnable refreshTrackedIgnoredRunnable;
 
     /** Common runnable listeners. */
-    @NotNull
+    @Nonnull
     private final CommonRunnableListeners commonRunnableListeners;
 
     /** {@link MessageBusConnection} instance. */
@@ -127,24 +129,24 @@ public class IgnoreManager implements Disposable {
     private MessageBusConnection messageBus;
 
     /** List of the files that are ignored and also tracked by Git. */
-    @NotNull
+    @Nonnull
     private final ConcurrentMap<VirtualFile, VcsRoot> confirmedIgnoredFiles = ContainerUtil.createConcurrentWeakMap();
 
     /** List of the new files that were not covered by {@link #confirmedIgnoredFiles} yet. */
-    @NotNull
+    @Nonnull
     private final HashSet<VirtualFile> notConfirmedIgnoredFiles = new HashSet<>();
 
     /** References to the indexed {@link IgnoreEntryOccurrence}. */
-    @NotNull
+    @Nonnull
     private final CachedConcurrentMap<IgnoreFileType, Collection<IgnoreEntryOccurrence>> cachedIgnoreFilesIndex =
-            CachedConcurrentMap.create(key -> IgnoreFilesIndex.getEntries(getProject(), key));
+        CachedConcurrentMap.create(key -> IgnoreFilesIndex.getEntries(getProject(), key));
 
     /** References to the indexed outer files. */
-    @NotNull
+    @Nonnull
     private final CachedConcurrentMap<IgnoreFileType, Collection<VirtualFile>> cachedOuterFiles =
-            CachedConcurrentMap.create(key -> key.getIgnoreLanguage().getOuterFiles(getProject()));
+        CachedConcurrentMap.create(key -> key.getIgnoreLanguage().getOuterFiles(getProject()));
 
-    @NotNull
+    @Nonnull
     private final ExpiringMap<VirtualFile, Boolean> expiringStatusCache = new ExpiringMap<>(1000);
 
     /** {@link FileStatusManager#fileStatusesChanged()} method wrapped with {@link Debounced}. */
@@ -157,19 +159,20 @@ public class IgnoreManager implements Disposable {
     };
 
     /** {@link FileStatusManager#fileStatusesChanged()} method wrapped with {@link Debounced}. */
-    private final Debounced<Boolean> debouncedRefreshTrackedIgnores = new Debounced<Boolean>(1000) {
+    private final Debounced<Boolean> debouncedRefreshTrackedIgnores = new Debounced<>(1000) {
         @Override
         protected void task(@Nullable Boolean refresh) {
             if (Boolean.TRUE.equals(refresh)) {
                 refreshTrackedIgnoredRunnable.refresh();
-            } else {
+            }
+            else {
                 refreshTrackedIgnoredRunnable.run();
             }
         }
     };
 
     /** {@link DumbModeListener#exitDumbMode()} method body wrapped with {@link Debounced}. */
-    private final Debounced<Boolean> debouncedExitDumbMode = new Debounced<Boolean>(3000) {
+    private final Debounced<Boolean> debouncedExitDumbMode = new Debounced<>(3000) {
         @Override
         protected void task(@Nullable Boolean refresh) {
             cachedIgnoreFilesIndex.clear();
@@ -180,58 +183,60 @@ public class IgnoreManager implements Disposable {
         }
     };
 
-    /** Scheduled feature connected with {@link #debouncedRefreshTrackedIgnores}. */
-    @NotNull
+    /**
+     * Scheduled feature connected with {@link #debouncedRefreshTrackedIgnores}.
+     */
+    @Nonnull
     private final InterruptibleScheduledFuture refreshTrackedIgnoredFeature;
 
     /** {@link IgnoreManager} working flag. */
     private boolean working;
 
     /** List of available VCS roots for the current project. */
-    @NotNull
-    private final List<VcsRoot> vcsRoots = ContainerUtil.newArrayList();
+    @Nonnull
+    private final List<VcsRoot> vcsRoots = new ArrayList<>();
 
     /** {@link VirtualFileListener} instance to check if file's content was changed. */
-    @NotNull
+    @Nonnull
     private final VirtualFileListener virtualFileListener = new VirtualFileListener() {
         @Override
-        public void contentsChanged(@NotNull VirtualFileEvent event) {
+        public void contentsChanged(@Nonnull VirtualFileEvent event) {
             handleEvent(event);
         }
 
         @Override
-        public void fileCreated(@NotNull VirtualFileEvent event) {
+        public void fileCreated(@Nonnull VirtualFileEvent event) {
             handleEvent(event);
             notConfirmedIgnoredFiles.add(event.getFile());
             debouncedRefreshTrackedIgnores.run(true);
         }
 
         @Override
-        public void fileDeleted(@NotNull VirtualFileEvent event) {
+        public void fileDeleted(@Nonnull VirtualFileEvent event) {
             handleEvent(event);
             notConfirmedIgnoredFiles.add(event.getFile());
             debouncedRefreshTrackedIgnores.run(true);
         }
 
         @Override
-        public void fileMoved(@NotNull VirtualFileMoveEvent event) {
+        public void fileMoved(@Nonnull VirtualFileMoveEvent event) {
             handleEvent(event);
             notConfirmedIgnoredFiles.add(event.getFile());
             debouncedRefreshTrackedIgnores.run(true);
         }
 
         @Override
-        public void fileCopied(@NotNull VirtualFileCopyEvent event) {
+        public void fileCopied(@Nonnull VirtualFileCopyEvent event) {
             handleEvent(event);
             notConfirmedIgnoredFiles.add(event.getFile());
             debouncedRefreshTrackedIgnores.run(true);
         }
 
-        private void handleEvent(@NotNull VirtualFileEvent event) {
+        private void handleEvent(@Nonnull VirtualFileEvent event) {
             final FileType fileType = event.getFile().getFileType();
             if (fileType instanceof IgnoreFileType) {
-                cachedIgnoreFilesIndex.remove((IgnoreFileType) fileType);
-                cachedOuterFiles.remove((IgnoreFileType) fileType);
+                cachedIgnoreFilesIndex.remove((IgnoreFileType)fileType);
+                cachedOuterFiles.remove((IgnoreFileType)fileType);
 
                 if (fileType instanceof GitExcludeFileType) {
                     cachedOuterFiles.remove(GitFileType.INSTANCE);
@@ -244,14 +249,14 @@ public class IgnoreManager implements Disposable {
     };
 
     /** {@link IgnoreSettings} listener to watch changes in the plugin's settings. */
-    @NotNull
+    @Nonnull
     private final IgnoreSettings.Listener settingsListener = new IgnoreSettings.Listener() {
         @Override
-        public void onChange(@NotNull KEY key, Object value) {
+        public void onChange(@Nonnull KEY key, Object value) {
             switch (key) {
 
                 case IGNORED_FILE_STATUS:
-                    toggle((Boolean) value);
+                    toggle((Boolean)value);
                     break;
 
                 case OUTER_IGNORE_RULES:
@@ -261,7 +266,8 @@ public class IgnoreManager implements Disposable {
                         if (working) {
                             debouncedStatusesChanged.run();
                             debouncedRefreshTrackedIgnores.run();
-                        } else {
+                        }
+                        else {
                             enable();
                         }
                     }
@@ -281,8 +287,8 @@ public class IgnoreManager implements Disposable {
      * @param project current project
      * @return {@link IgnoreManager instance}
      */
-    @NotNull
-    public static IgnoreManager getInstance(@NotNull final Project project) {
+    @Nonnull
+    public static IgnoreManager getInstance(@Nonnull final Project project) {
         return project.getComponent(IgnoreManager.class);
     }
 
@@ -292,7 +298,7 @@ public class IgnoreManager implements Disposable {
      * @param project current project
      */
     @Inject
-    public IgnoreManager(@NotNull final Project project, VirtualFileManager virtualFileManager) {
+    public IgnoreManager(@Nonnull final Project project, VirtualFileManager virtualFileManager) {
         myProject = project;
         this.matcher = new MatcherUtil();
         this.virtualFileManager = virtualFileManager;
@@ -300,7 +306,7 @@ public class IgnoreManager implements Disposable {
         this.statusManager = FileStatusManager.getInstance(project);
         this.refreshTrackedIgnoredRunnable = new RefreshTrackedIgnoredRunnable();
         this.refreshTrackedIgnoredFeature =
-                new InterruptibleScheduledFuture(debouncedRefreshTrackedIgnores, 10000, 5);
+            new InterruptibleScheduledFuture(debouncedRefreshTrackedIgnores, 10000, 5);
         this.refreshTrackedIgnoredFeature.setTrailing(true);
         this.projectLevelVcsManager = ProjectLevelVcsManager.getInstance(project);
         this.commonRunnableListeners = new CommonRunnableListeners(debouncedStatusesChanged);
@@ -315,7 +321,7 @@ public class IgnoreManager implements Disposable {
      *
      * @return {@link MatcherUtil} instance
      */
-    @NotNull
+    @Nonnull
     public MatcherUtil getMatcher() {
         return matcher;
     }
@@ -326,15 +332,15 @@ public class IgnoreManager implements Disposable {
      * @param file current file
      * @return file is ignored
      */
-    public boolean isFileIgnored(@NotNull final VirtualFile file) {
+    public boolean isFileIgnored(@Nonnull final VirtualFile file) {
         final Boolean cached = expiringStatusCache.get(file);
         final VirtualFile baseDir = myProject.getBaseDir();
         if (cached != null) {
             return cached;
         }
-        if (ApplicationManager.getApplication().isDisposed() || myProject.isDisposed() ||
-                DumbService.isDumb(myProject) || !isEnabled() || baseDir == null || !Utils.isUnder(file, baseDir) ||
-                NoAccessDuringPsiEvents.isInsideEventProcessing()) {
+        if (Application.get().isDisposed() || myProject.isDisposed()
+            || DumbService.isDumb(myProject) || !isEnabled() || baseDir == null || !Utils.isUnder(file, baseDir)
+            || NoAccessDuringPsiEvents.isInsideEventProcessing()) {
             return false;
         }
 
@@ -357,13 +363,15 @@ public class IgnoreManager implements Disposable {
                 final VirtualFile entryFile = value.getFile();
                 if (entryFile == null) {
                     continue;
-                } else if (fileType instanceof GitExcludeFileType) {
+                }
+                else if (fileType instanceof GitExcludeFileType) {
                     VirtualFile workingDirectory = GitExcludeFileType.getWorkingDirectory(myProject, entryFile);
                     if (workingDirectory == null || !Utils.isUnder(file, workingDirectory)) {
                         continue;
                     }
                     relativePath = StringUtil.trimStart(file.getPath(), workingDirectory.getPath());
-                } else {
+                }
+                else {
                     final VirtualFile vcsRoot = getVcsRootFor(file);
                     if (vcsRoot != null && !Utils.isUnder(entryFile, vcsRoot)) {
                         if (!cachedOuterFiles.get(fileType).contains(entryFile)) {
@@ -372,9 +380,9 @@ public class IgnoreManager implements Disposable {
                     }
 
                     final String parentPath = !Utils.isInProject(entryFile, myProject) &&
-                            myProject.getBasePath() != null ? myProject.getBasePath() : entryFile.getParent().getPath();
+                        myProject.getBasePath() != null ? myProject.getBasePath() : entryFile.getParent().getPath();
                     if (!StringUtil.startsWith(file.getPath(), parentPath) &&
-                            !ExternalIndexableSetContributor.getAdditionalFiles(myProject).contains(entryFile)) {
+                        !ExternalIndexableSetContributor.getAdditionalFiles(myProject).contains(entryFile)) {
                         continue;
                     }
                     relativePath = StringUtil.trimStart(file.getPath(), parentPath);
@@ -426,10 +434,10 @@ public class IgnoreManager implements Disposable {
      * @return VCS Root for given file
      */
     @Nullable
-    private VirtualFile getVcsRootFor(@NotNull final VirtualFile file) {
+    private VirtualFile getVcsRootFor(@Nonnull final VirtualFile file) {
         final VcsRoot vcsRoot = ContainerUtil.find(
-                ContainerUtil.reverse(vcsRoots),
-                root -> root.getPath() != null && Utils.isUnder(file, root.getPath())
+            ContainerUtil.reverse(vcsRoots),
+            root -> root.getPath() != null && Utils.isUnder(file, root.getPath())
         );
         return vcsRoot != null ? vcsRoot.getPath() : null;
     }
@@ -440,15 +448,19 @@ public class IgnoreManager implements Disposable {
      * @param fileName to associate
      * @param fileType file type to bind with pattern
      */
-    public static void associateFileType(@NotNull final String fileName, @NotNull final IgnoreFileType fileType) {
-        final Application application = ApplicationManager.getApplication();
+    public static void associateFileType(@Nonnull final String fileName, @Nonnull final IgnoreFileType fileType) {
+        final Application application = Application.get();
         if (application.isDispatchThread()) {
             final FileTypeManager fileTypeManager = FileTypeManager.getInstance();
-            application.invokeLater(() -> application.runWriteAction(() -> {
-                fileTypeManager.associate(fileType, FileNameMatcherFactory.getInstance().createExactFileNameMatcher(fileName));
-                FILE_TYPES_ASSOCIATION_QUEUE.remove(fileName);
-            }), application.getNoneModalityState());
-        } else if (!FILE_TYPES_ASSOCIATION_QUEUE.containsKey(fileName)) {
+            application.invokeLater(
+                () -> application.runWriteAction(() -> {
+                    fileTypeManager.associate(fileType, FileNameMatcherFactory.getInstance().createExactFileNameMatcher(fileName));
+                    FILE_TYPES_ASSOCIATION_QUEUE.remove(fileName);
+                }),
+                application.getNoneModalityState()
+            );
+        }
+        else if (!FILE_TYPES_ASSOCIATION_QUEUE.containsKey(fileName)) {
             FILE_TYPES_ASSOCIATION_QUEUE.put(fileName, fileType);
         }
     }
@@ -459,9 +471,9 @@ public class IgnoreManager implements Disposable {
      * @param file current file
      * @return file is ignored and tracked
      */
-    public boolean isFileTracked(@NotNull final VirtualFile file) {
+    public boolean isFileTracked(@Nonnull final VirtualFile file) {
         return settings.isInformTrackedIgnored() && !notConfirmedIgnoredFiles.contains(file) &&
-                !confirmedIgnoredFiles.isEmpty() && confirmedIgnoredFiles.containsKey(file);
+            !confirmedIgnoredFiles.isEmpty() && confirmedIgnoredFiles.containsKey(file);
     }
 
     /**
@@ -499,11 +511,14 @@ public class IgnoreManager implements Disposable {
 
         messageBus.subscribe(TRACKED_IGNORED_REFRESH, () -> debouncedRefreshTrackedIgnores.run(true));
 
-        messageBus.subscribe(ProjectLevelVcsManager.VCS_CONFIGURATION_CHANGED, () -> {
-            ExternalIndexableSetContributor.invalidateCache(myProject);
-            vcsRoots.clear();
-            vcsRoots.addAll(ContainerUtil.newArrayList(projectLevelVcsManager.getAllVcsRoots()));
-        });
+        messageBus.subscribe(
+            ProjectLevelVcsManager.VCS_CONFIGURATION_CHANGED,
+            () -> {
+                ExternalIndexableSetContributor.invalidateCache(myProject);
+                vcsRoots.clear();
+                vcsRoots.addAll(ContainerUtil.newArrayList(projectLevelVcsManager.getAllVcsRoots()));
+            }
+        );
 
         messageBus.subscribe(DumbModeListener.class, new DumbModeListener() {
             @Override
@@ -549,10 +564,11 @@ public class IgnoreManager implements Disposable {
      *
      * @param enable or disable
      */
-    private void toggle(@NotNull Boolean enable) {
+    private void toggle(@Nonnull Boolean enable) {
         if (enable) {
             enable();
-        } else {
+        }
+        else {
             disable();
         }
     }
@@ -562,7 +578,7 @@ public class IgnoreManager implements Disposable {
      *
      * @return tracked and ignored files map
      */
-    @NotNull
+    @Nonnull
     public ConcurrentMap<VirtualFile, VcsRoot> getConfirmedIgnoredFiles() {
         return confirmedIgnoredFiles;
     }
@@ -591,14 +607,14 @@ public class IgnoreManager implements Disposable {
                 return;
             }
 
-            final ConcurrentMap<VirtualFile, VcsRoot> result = ContainerUtil.newConcurrentMap();
+            ConcurrentMap<VirtualFile, VcsRoot> result = ContainerUtil.newConcurrentMap();
             for (VcsRoot vcsRoot : vcsRoots) {
                 if (!(vcsRoot.getVcs() instanceof GitVcs) || vcsRoot.getPath() == null) {
                     continue;
                 }
-                final VirtualFile root = vcsRoot.getPath();
+                VirtualFile root = vcsRoot.getPath();
                 for (String path : ExternalExec.getIgnoredFiles(vcsRoot)) {
-                    final VirtualFile file = root.findFileByRelativePath(path);
+                    VirtualFile file = root.findFileByRelativePath(path);
                     if (file != null) {
                         result.put(file, vcsRoot);
                     }

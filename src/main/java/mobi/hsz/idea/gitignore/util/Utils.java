@@ -24,6 +24,7 @@
 
 package mobi.hsz.idea.gitignore.util;
 
+import consulo.annotation.access.RequiredReadAction;
 import consulo.codeEditor.*;
 import consulo.colorScheme.EditorColorsScheme;
 import consulo.container.plugin.PluginDescriptor;
@@ -47,13 +48,14 @@ import consulo.util.lang.StringUtil;
 import consulo.virtualFileSystem.VirtualFile;
 import consulo.virtualFileSystem.fileType.FileType;
 import consulo.virtualFileSystem.util.VirtualFileUtil;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.command.CreateFileCommandAction;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -81,8 +83,8 @@ public class Utils {
      * @return relative path
      */
     @Nullable
-    public static String getRelativePath(@NotNull VirtualFile directory, @NotNull VirtualFile file) {
-        final String path = VirtualFileUtil.getRelativePath(file, directory, '/');
+    public static String getRelativePath(@Nonnull VirtualFile directory, @Nonnull VirtualFile file) {
+        String path = VirtualFileUtil.getRelativePath(file, directory, '/');
         return path == null ? null : path + (file.isDirectory() ? '/' : "");
     }
 
@@ -97,8 +99,13 @@ public class Utils {
      * @return Ignore file
      */
     @Nullable
-    public static PsiFile getIgnoreFile(@NotNull Project project, @NotNull IgnoreFileType fileType,
-                                        @Nullable PsiDirectory directory, boolean createIfMissing) {
+    @RequiredReadAction
+    public static PsiFile getIgnoreFile(
+        @Nonnull Project project,
+        @Nonnull IgnoreFileType fileType,
+        @Nullable PsiDirectory directory,
+        boolean createIfMissing
+    ) {
         if (directory == null) {
             directory = PsiManager.getInstance(project).findDirectory(project.getBaseDir());
         }
@@ -129,7 +136,8 @@ public class Utils {
      * @return {@link PsiFile} instance
      */
     @Nullable
-    public static PsiFile getPsiFile(@NotNull Project project, @NotNull VirtualFile virtualFile) {
+    @RequiredReadAction
+    public static PsiFile getPsiFile(@Nonnull Project project, @Nonnull VirtualFile virtualFile) {
         PsiFile psiFile = PsiManager.getInstance(project).findFile(virtualFile);
 
         if (psiFile == null) {
@@ -151,7 +159,7 @@ public class Utils {
      * @param project current project
      * @param file    file to open
      */
-    public static void openFile(@NotNull Project project, @NotNull PsiFile file) {
+    public static void openFile(@Nonnull Project project, @Nonnull PsiFile file) {
         openFile(project, file.getVirtualFile());
     }
 
@@ -161,7 +169,7 @@ public class Utils {
      * @param project current project
      * @param file    file to open
      */
-    public static void openFile(@NotNull Project project, @NotNull VirtualFile file) {
+    public static void openFile(@Nonnull Project project, @Nonnull VirtualFile file) {
         FileEditorManager.getInstance(project).openFile(file, true);
     }
 
@@ -172,12 +180,14 @@ public class Utils {
      * @param file    current file
      * @return collection of suitable Ignore files
      */
-    public static List<VirtualFile> getSuitableIgnoreFiles(@NotNull Project project, @NotNull IgnoreFileType fileType,
-                                                           @NotNull VirtualFile file)
-            throws ExternalFileException {
-        List<VirtualFile> files = ContainerUtil.newArrayList();
+    public static List<VirtualFile> getSuitableIgnoreFiles(
+        @Nonnull Project project, @Nonnull IgnoreFileType fileType,
+        @Nonnull VirtualFile file
+    )
+        throws ExternalFileException {
+        List<VirtualFile> files = new ArrayList<>();
         if (file.getCanonicalPath() == null || project.getBaseDir() == null ||
-                !VirtualFileUtil.isAncestor(project.getBaseDir(), file, true)) {
+            !VirtualFileUtil.isAncestor(project.getBaseDir(), file, true)) {
             throw new ExternalFileException();
         }
         VirtualFile baseDir = project.getBaseDir();
@@ -198,12 +208,12 @@ public class Utils {
      * @param directory to check
      * @return given file is VCS directory
      */
-    public static boolean isVcsDirectory(@NotNull VirtualFile directory) {
+    public static boolean isVcsDirectory(@Nonnull VirtualFile directory) {
         if (!directory.isDirectory()) {
             return false;
         }
         for (IgnoreLanguage language : IgnoreBundle.VCS_LANGUAGES) {
-            final String vcsName = language.getVcsDirectory();
+            String vcsName = language.getVcsDirectory();
             if (directory.getName().equals(vcsName) && IgnoreBundle.ENABLED_LANGUAGES.get(language.getFileType())) {
                 return true;
             }
@@ -217,8 +227,9 @@ public class Utils {
      * @param project current project
      * @return list of excluded roots
      */
-    public static List<VirtualFile> getExcludedRoots(@NotNull Project project) {
-        List<VirtualFile> roots = ContainerUtil.newArrayList();
+    @RequiredReadAction
+    public static List<VirtualFile> getExcludedRoots(@Nonnull Project project) {
+        List<VirtualFile> roots = new ArrayList<>();
         ModuleManager manager = ModuleManager.getInstance(project);
         for (Module module : manager.getModules()) {
             ModifiableRootModel model = ModuleRootManager.getInstance(module).getModifiableModel();
@@ -237,7 +248,7 @@ public class Utils {
      * @param filter input string
      * @return list of words without special characters
      */
-    public static List<String> getWords(@NotNull String filter) {
+    public static List<String> getWords(@Nonnull String filter) {
         List<String> words = ContainerUtil.newArrayList(filter.toLowerCase().split("\\W+"));
         words.removeAll(Arrays.asList(null, ""));
         return words;
@@ -250,7 +261,7 @@ public class Utils {
      * @param l2 second list
      * @return lists are equal
      */
-    public static boolean equalLists(@NotNull List<?> l1, @NotNull List<?> l2) {
+    public static boolean equalLists(@Nonnull List<?> l1, @Nonnull List<?> l2) {
         return l1.size() == l2.size() && l1.containsAll(l2) && l2.containsAll(l1);
     }
 
@@ -261,13 +272,7 @@ public class Utils {
      * @return file type
      */
     public static IgnoreFileType getFileType(@Nullable VirtualFile virtualFile) {
-        if (virtualFile != null) {
-            FileType fileType = virtualFile.getFileType();
-            if (fileType instanceof IgnoreFileType) {
-                return (IgnoreFileType) fileType;
-            }
-        }
-        return null;
+        return virtualFile != null && virtualFile.getFileType() instanceof IgnoreFileType ignoreFileType ? ignoreFileType : null;
     }
 
     /**
@@ -277,7 +282,7 @@ public class Utils {
      * @param directory directory
      * @return file is under directory
      */
-    public static boolean isUnder(@NotNull VirtualFile file, @NotNull VirtualFile directory) {
+    public static boolean isUnder(@Nonnull VirtualFile file, @Nonnull VirtualFile directory) {
         if (directory.equals(file)) {
             return true;
         }
@@ -298,9 +303,9 @@ public class Utils {
      * @param project project
      * @return file is under directory
      */
-    public static boolean isInProject(@NotNull final VirtualFile file, @NotNull final Project project) {
+    public static boolean isInProject(@Nonnull VirtualFile file, @Nonnull Project project) {
         return project.getBaseDir() != null && (isUnder(file, project.getBaseDir()) ||
-                StringUtil.startsWith(file.getUrl(), "temp://"));
+            StringUtil.startsWith(file.getUrl(), "temp://"));
     }
 
     /**
@@ -310,13 +315,14 @@ public class Utils {
      * @param project  current project
      * @return editor
      */
-    @NotNull
-    public static Editor createPreviewEditor(@NotNull Document document, @Nullable Project project, boolean isViewer) {
-        EditorEx editor = (EditorEx) EditorFactory.getInstance().createEditor(document, project,
-                IgnoreFileType.INSTANCE, isViewer);
+    @Nonnull
+    public static Editor createPreviewEditor(@Nonnull Document document, @Nullable Project project, boolean isViewer) {
+        EditorEx editor = (EditorEx)EditorFactory.getInstance().createEditor(document, project,
+            IgnoreFileType.INSTANCE, isViewer
+        );
         editor.setCaretEnabled(!isViewer);
 
-        final EditorSettings settings = editor.getSettings();
+        EditorSettings settings = editor.getSettings();
         settings.setLineNumbersShown(false);
         settings.setAdditionalColumnsCount(1);
         settings.setAdditionalLinesCount(0);
@@ -339,7 +345,7 @@ public class Utils {
      * @param id plugin id
      * @return plugin is enabled
      */
-    private static boolean isPluginEnabled(@NotNull final String id) {
+    private static boolean isPluginEnabled(@Nonnull String id) {
         PluginDescriptor p = PluginManager.findPlugin(PluginId.getId(id));
         return p != null && p.isEnabled();
     }
@@ -374,8 +380,7 @@ public class Utils {
      * @param text       text to add
      * @param attributes custom {@link SimpleTextAttributes}
      */
-    public static void addColoredText(@NotNull PresentationData data, @NotNull String text,
-                                      @NotNull SimpleTextAttributes attributes) {
+    public static void addColoredText(@Nonnull PresentationData data, @Nonnull String text, @Nonnull SimpleTextAttributes attributes) {
         if (data.getColoredText().isEmpty()) {
             data.addText(data.getPresentableText(), REGULAR_ATTRIBUTES);
         }

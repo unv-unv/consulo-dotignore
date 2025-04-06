@@ -24,10 +24,12 @@
 
 package mobi.hsz.idea.gitignore.actions;
 
-import consulo.virtualFileSystem.VirtualFile;
+import consulo.dotignore.localize.IgnoreLocalize;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnActionEvent;
+import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Group action that unignores specified file or directory.
@@ -47,9 +49,9 @@ public class UnignoreFileGroupAction extends IgnoreFileGroupAction {
      */
     public UnignoreFileGroupAction() {
         super(
-                "action.addToUnignore.group",
-                "action.addToUnignore.group.description",
-                "action.addToUnignore.group.noPopup"
+            IgnoreLocalize.actionAddtounignoreGroup(),
+            IgnoreLocalize.actionAddtounignoreGroupDescription(),
+            IgnoreLocalize::actionAddtounignoreGroupNopopup
         );
         settings = IgnoreSettings.getInstance();
     }
@@ -61,7 +63,7 @@ public class UnignoreFileGroupAction extends IgnoreFileGroupAction {
      * @return action instance
      */
     @Override
-    protected IgnoreFileAction createAction(@NotNull VirtualFile file) {
+    protected IgnoreFileAction createAction(@Nonnull VirtualFile file) {
         return new UnignoreFileAction(file);
     }
 
@@ -73,7 +75,8 @@ public class UnignoreFileGroupAction extends IgnoreFileGroupAction {
      * @param e action event
      */
     @Override
-    public void update(@NotNull AnActionEvent e) {
+    @RequiredUIAccess
+    public void update(@Nonnull AnActionEvent e) {
         boolean status = settings.isUnignoreActions();
         e.getPresentation().setVisible(status);
         if (status) {

@@ -33,6 +33,8 @@ import consulo.language.psi.PsiFile;
 import consulo.language.psi.PsiManager;
 import consulo.project.Project;
 import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import jakarta.inject.Inject;
 import mobi.hsz.idea.gitignore.command.CreateFileCommandAction;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
@@ -41,10 +43,7 @@ import mobi.hsz.idea.gitignore.lang.kind.GitLanguage;
 import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
 import mobi.hsz.idea.gitignore.ui.GeneratorDialog;
 import mobi.hsz.idea.gitignore.util.Properties;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import jakarta.annotation.Nonnull;
 import java.util.function.Supplier;
 
 /**
@@ -57,15 +56,15 @@ import java.util.function.Supplier;
 @ExtensionImpl
 public class MissingGitignoreNotificationProvider implements EditorNotificationProvider {
     /** Current project. */
-    @NotNull
+    @Nonnull
     private final Project project;
 
     /** Notifications component. */
-    @NotNull
+    @Nonnull
     private final EditorNotifications notifications;
 
     /** Plugin settings holder. */
-    @NotNull
+    @Nonnull
     private final IgnoreSettings settings;
 
     /**
@@ -75,7 +74,7 @@ public class MissingGitignoreNotificationProvider implements EditorNotificationP
      * @param notifications notifications component
      */
     @Inject
-    public MissingGitignoreNotificationProvider(@NotNull Project project, @NotNull EditorNotifications notifications) {
+    public MissingGitignoreNotificationProvider(@Nonnull Project project, @Nonnull EditorNotifications notifications) {
         this.project = project;
         this.notifications = notifications;
         this.settings = IgnoreSettings.getInstance();
@@ -132,7 +131,7 @@ public class MissingGitignoreNotificationProvider implements EditorNotificationP
      * @param builder
      * @return notification panel
      */
-    private EditorNotificationBuilder createPanel(@NotNull final Project project, EditorNotificationBuilder builder) {
+    private EditorNotificationBuilder createPanel(@Nonnull final Project project, EditorNotificationBuilder builder) {
         final IgnoreFileType fileType = GitFileType.INSTANCE;
         builder.withText(IgnoreLocalize.daemonMissinggitignore());
         builder.withAction(IgnoreLocalize.daemonAddunversionedfilesCreate(), (e) -> {

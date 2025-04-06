@@ -24,9 +24,9 @@
 
 package mobi.hsz.idea.gitignore.inspections;
 
-import mobi.hsz.idea.gitignore.IgnoreBundle;
-import mobi.hsz.idea.gitignore.lang.kind.GitLanguage;
+import consulo.dotignore.localize.IgnoreLocalize;
 import mobi.hsz.idea.gitignore.codeInspection.IgnoreRelativeEntryInspection;
+import mobi.hsz.idea.gitignore.lang.kind.GitLanguage;
 
 public class RelativeEntryInspectionTest extends InspectionTestCase {
     private static final String FILENAME = GitLanguage.INSTANCE.getFilename();
@@ -46,7 +46,7 @@ public class RelativeEntryInspectionTest extends InspectionTestCase {
         for (int i = 1; i < 6; i++) {
             myFixture.configureByFile(name + i + FILENAME);
             myFixture.testHighlighting(true, false, true);
-            myFixture.launchAction(myFixture.findSingleIntention(IgnoreBundle.message("quick.fix.relative.entry")));
+            myFixture.launchAction(myFixture.findSingleIntention(IgnoreLocalize.quickFixRelativeEntry().get()));
             myFixture.checkResultByFile(name + i + "-after" + FILENAME);
         }
     }

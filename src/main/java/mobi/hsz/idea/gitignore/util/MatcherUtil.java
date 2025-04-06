@@ -24,13 +24,13 @@
 
 package mobi.hsz.idea.gitignore.util;
 
-import consulo.util.collection.ContainerUtil;
 import consulo.util.collection.primitive.ints.IntMaps;
 import consulo.util.collection.primitive.ints.IntObjectMap;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -62,7 +62,7 @@ public class MatcherUtil {
             int hashCode = new HashCodeBuilder().append(pattern).append(path).toHashCode();
 
             if (!cache.containsKey(hashCode)) {
-                final String[] parts = getParts(pattern);
+                String[] parts = getParts(pattern);
                 boolean result = false;
 
                 if (parts.length == 0 || matchAllParts(parts, path)) {
@@ -150,8 +150,8 @@ public class MatcherUtil {
             return new String[0];
         }
 
-        final List<String> parts = ContainerUtil.newArrayList();
-        final String sPattern = pattern.toString();
+        List<String> parts = new ArrayList<>();
+        String sPattern = pattern.toString();
 
         StringBuilder part = new StringBuilder();
         boolean inSquare = false;

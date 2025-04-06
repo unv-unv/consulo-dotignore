@@ -29,7 +29,7 @@ import consulo.module.content.layer.event.ModuleRootEvent;
 import consulo.module.content.layer.event.ModuleRootListener;
 import consulo.module.event.ModuleListener;
 import consulo.project.Project;
-import org.jetbrains.annotations.NotNull;
+import jakarta.annotation.Nonnull;
 
 import java.util.List;
 
@@ -39,79 +39,70 @@ import java.util.List;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 2.2.0
  */
-public class CommonRunnableListeners implements RefreshStatusesListener, ModuleRootListener, ModuleListener
-{
-	/**
-	 * Task to run.
-	 */
-	@NotNull
-	private final Runnable task;
+public class CommonRunnableListeners implements RefreshStatusesListener, ModuleRootListener, ModuleListener {
+    /**
+     * Task to run.
+     */
+    @Nonnull
+    private final Runnable task;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param task to run by all listeners
-	 */
-	public CommonRunnableListeners(@NotNull Runnable task)
-	{
-		this.task = task;
-	}
+    /**
+     * Constructor.
+     *
+     * @param task to run by all listeners
+     */
+    public CommonRunnableListeners(@Nonnull Runnable task) {
+        this.task = task;
+    }
 
-	/**
-	 * {@link RefreshStatusesListener} event.
-	 */
-	@Override
-	public void refresh()
-	{
-		task.run();
-	}
+    /**
+     * {@link RefreshStatusesListener} event.
+     */
+    @Override
+    public void refresh() {
+        task.run();
+    }
 
-	/**
-	 * {@link ModuleRootListener} event (ignored).
-	 */
-	@Override
-	public void beforeRootsChange(@NotNull ModuleRootEvent event)
-	{
-	}
+    /**
+     * {@link ModuleRootListener} event (ignored).
+     */
+    @Override
+    public void beforeRootsChange(@Nonnull ModuleRootEvent event) {
+    }
 
-	/**
-	 * {@link ModuleRootListener} event.
-	 */
-	@Override
-	public void rootsChanged(@NotNull ModuleRootEvent event)
-	{
-		task.run();
-	}
+    /**
+     * {@link ModuleRootListener} event.
+     */
+    @Override
+    public void rootsChanged(@Nonnull ModuleRootEvent event) {
+        task.run();
+    }
 
-	/**
-	 * {@link ModuleListener} event.
-	 */
-	@Override
-	public void moduleAdded(@NotNull Project project, @NotNull Module module)
-	{
-		task.run();
-	}
+    /**
+     * {@link ModuleListener} event.
+     */
+    @Override
+    public void moduleAdded(@Nonnull Project project, @Nonnull Module module) {
+        task.run();
+    }
 
-	/**
-	 * {@link ModuleListener} event (ignored).
-	 */
-	@Override
-	public void beforeModuleRemoved(@NotNull Project project, @NotNull Module module)
-	{
-	}
+    /**
+     * {@link ModuleListener} event (ignored).
+     */
+    @Override
+    public void beforeModuleRemoved(@Nonnull Project project, @Nonnull Module module) {
+    }
 
-	/**
-	 * {@link ModuleListener} event.
-	 */
-	@Override
-	public void moduleRemoved(@NotNull Project project, @NotNull Module module)
-	{
-		task.run();
-	}
+    /**
+     * {@link ModuleListener} event.
+     */
+    @Override
+    public void moduleRemoved(@Nonnull Project project, @Nonnull Module module) {
+        task.run();
+    }
 
-	@Override
-	public void modulesRenamed(Project project, List<Module> list)
-	{
-		task.run();
-	}
+    @Override
+    public void modulesRenamed(Project project, List<Module> list) {
+        task.run();
+    }
 }

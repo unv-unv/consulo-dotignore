@@ -24,18 +24,19 @@
 
 package mobi.hsz.idea.gitignore.codeInspection;
 
+import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.dotignore.codeInspection.IgnoreInspection;
+import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
 import consulo.language.psi.PsiElementVisitor;
+import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.psi.IgnoreEntry;
 import mobi.hsz.idea.gitignore.psi.IgnoreVisitor;
 import mobi.hsz.idea.gitignore.util.Glob;
-import org.jetbrains.annotations.NotNull;
 
-import jakarta.annotation.Nonnull;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -57,7 +58,7 @@ public class IgnoreIncorrectEntryInspection extends IgnoreInspection {
     @Nonnull
     @Override
     public String getDisplayName() {
-        return IgnoreBundle.message("codeInspection.incorrectEntry");
+        return IgnoreLocalize.codeinspectionIncorrectentry().get();
     }
 
     /**
@@ -67,13 +68,14 @@ public class IgnoreIncorrectEntryInspection extends IgnoreInspection {
      * @param isOnTheFly true if inspection was run in non-batch mode
      * @return not-null visitor for this inspection
      */
-    @NotNull
+    @Nonnull
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public PsiElementVisitor buildVisitor(@NotNull final ProblemsHolder holder, boolean isOnTheFly) {
+    public PsiElementVisitor buildVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly) {
         return new IgnoreVisitor() {
             @Override
-            public void visitEntry(@NotNull IgnoreEntry entry) {
+            @RequiredReadAction
+            public void visitEntry(@Nonnull IgnoreEntry entry) {
                 String regex = entry.getText();
                 if (IgnoreBundle.Syntax.GLOB.equals(entry.getSyntax())) {
                     regex = Glob.createRegex(regex, false);
@@ -82,8 +84,9 @@ public class IgnoreIncorrectEntryInspection extends IgnoreInspection {
                 try {
                     Pattern.compile(regex);
                 } catch (PatternSyntaxException e) {
-                    holder.registerProblem(entry,
-                            IgnoreBundle.message("codeInspection.incorrectEntry.message", e.getDescription()));
+                    holder.newProblem(IgnoreLocalize.codeinspectionIncorrectentryMessage(e.getDescription()))
+                        .range(entry)
+                        .create();
                 }
             }
         };

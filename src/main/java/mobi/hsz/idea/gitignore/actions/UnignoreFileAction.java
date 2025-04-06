@@ -24,11 +24,12 @@
 
 package mobi.hsz.idea.gitignore.actions;
 
+import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.util.Utils;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Action that adds currently selected {@link VirtualFile} to the specified Ignore {@link VirtualFile} as unignored.
@@ -65,7 +66,7 @@ public class UnignoreFileAction extends IgnoreFileAction {
      * @param virtualFile Gitignore file
      */
     public UnignoreFileAction(@Nullable IgnoreFileType fileType, @Nullable VirtualFile virtualFile) {
-        super(fileType, virtualFile, "action.addToUnignore", "action.addToUnignore.description");
+        super(fileType, virtualFile, IgnoreLocalize::actionAddtounignore, IgnoreLocalize::actionAddtounignoreDescription);
     }
 
     /**
@@ -76,10 +77,10 @@ public class UnignoreFileAction extends IgnoreFileAction {
      * @param file file used for generating output path
      * @return relative path
      */
-    @NotNull
+    @Nonnull
     @Override
-    protected String getPath(@NotNull VirtualFile root, @NotNull VirtualFile file) {
-        final String path = super.getPath(root, file);
+    protected String getPath(@Nonnull VirtualFile root, @Nonnull VirtualFile file) {
+        String path = super.getPath(root, file);
         return path.isEmpty() ? path : '!' + path;
     }
 }

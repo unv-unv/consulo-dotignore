@@ -1,19 +1,18 @@
 package consulo.dotignore.codeInspection;
 
+import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.language.editor.inspection.LocalInspectionTool;
-import mobi.hsz.idea.gitignore.IgnoreBundle;
-
 import jakarta.annotation.Nonnull;
 
 /**
  * @author VISTALL
- * @since 29/03/2023
+ * @since 2023-03-29
  */
 public abstract class IgnoreInspection extends LocalInspectionTool {
     @Nonnull
     @Override
     public String getGroupDisplayName() {
-        return IgnoreBundle.message("codeInspection.group");
+        return IgnoreLocalize.codeinspectionGroup().get();
     }
 
     @Override

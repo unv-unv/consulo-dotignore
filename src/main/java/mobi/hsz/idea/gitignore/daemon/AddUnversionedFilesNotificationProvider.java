@@ -27,13 +27,18 @@ package mobi.hsz.idea.gitignore.daemon;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.dotignore.localize.IgnoreLocalize;
-import consulo.fileEditor.*;
+import consulo.fileEditor.EditorNotificationBuilder;
+import consulo.fileEditor.EditorNotificationProvider;
+import consulo.fileEditor.EditorNotifications;
+import consulo.fileEditor.FileEditor;
 import consulo.language.psi.PsiFile;
 import consulo.language.psi.PsiManager;
 import consulo.project.Project;
 import consulo.util.collection.ContainerUtil;
 import consulo.util.lang.StringUtil;
 import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import jakarta.inject.Inject;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.command.AppendFileCommandAction;
@@ -45,10 +50,7 @@ import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
 import mobi.hsz.idea.gitignore.util.Constants;
 import mobi.hsz.idea.gitignore.util.Properties;
 import mobi.hsz.idea.gitignore.util.exec.ExternalExec;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import jakarta.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -63,19 +65,19 @@ import java.util.function.Supplier;
 @ExtensionImpl
 public class AddUnversionedFilesNotificationProvider implements EditorNotificationProvider {
     /** Current project. */
-    @NotNull
+    @Nonnull
     private final Project project;
 
     /** Notifications component. */
-    @NotNull
+    @Nonnull
     private final EditorNotifications notifications;
 
     /** Plugin settings holder. */
-    @NotNull
+    @Nonnull
     private final IgnoreSettings settings;
 
     /** List of unignored files. */
-    @NotNull
+    @Nonnull
     private final List<String> unignoredFiles = new ArrayList<>();
 
     /** Map to obtain if file was handled. */
@@ -89,9 +91,9 @@ public class AddUnversionedFilesNotificationProvider implements EditorNotificati
      */
     @Inject
     public AddUnversionedFilesNotificationProvider(
-            @NotNull Project project,
-            @NotNull EditorNotifications notifications)
-    {
+        @Nonnull Project project,
+        @Nonnull EditorNotifications notifications
+    ) {
         this.project = project;
         this.notifications = notifications;
         this.settings = IgnoreSettings.getInstance();
@@ -103,12 +105,14 @@ public class AddUnversionedFilesNotificationProvider implements EditorNotificati
         return ".ignore-add-unversion-files";
     }
 
-    @RequiredReadAction
     @Nullable
     @Override
+    @RequiredReadAction
     public EditorNotificationBuilder buildNotification(
-            @Nonnull VirtualFile file, @Nonnull FileEditor fileEditor, @Nonnull Supplier<EditorNotificationBuilder> supplier)
-    {
+        @Nonnull VirtualFile file,
+        @Nonnull FileEditor fileEditor,
+        @Nonnull Supplier<EditorNotificationBuilder> supplier
+    ) {
         // Break if feature is disabled in the Settings
         if (!settings.isAddUnversionedFiles()) {
             return null;
@@ -122,7 +126,7 @@ public class AddUnversionedFilesNotificationProvider implements EditorNotificati
             return null;
         }
 
-        final IgnoreLanguage language = IgnoreBundle.obtainLanguage(file);
+        IgnoreLanguage language = IgnoreBundle.obtainLanguage(file);
         if (language == null || !language.isVCS() || !(language instanceof GitLanguage)) {
             return null;
         }
@@ -142,19 +146,20 @@ public class AddUnversionedFilesNotificationProvider implements EditorNotificati
      * @param project current project
      * @return notification panel
      */
-    private EditorNotificationBuilder createPanel(@NotNull final Project project, EditorNotificationBuilder builder) {
-        final IgnoreFileType fileType = GitFileType.INSTANCE;
+    private EditorNotificationBuilder createPanel(@Nonnull Project project, EditorNotificationBuilder builder) {
+        IgnoreFileType fileType = GitFileType.INSTANCE;
         builder.withText(IgnoreLocalize.daemonAddunversionedfiles());
         builder.withAction(IgnoreLocalize.daemonAddunversionedfilesCreate(), (e) -> {
-            final VirtualFile virtualFile = project.getBaseDir().findChild(GitLanguage.INSTANCE.getFilename());
-            final PsiFile file = virtualFile != null ? PsiManager.getInstance(project).findFile(virtualFile) : null;
+            VirtualFile virtualFile = project.getBaseDir().findChild(GitLanguage.INSTANCE.getFilename());
+            PsiFile file = virtualFile != null ? PsiManager.getInstance(project).findFile(virtualFile) : null;
             if (file != null) {
-                final String content = StringUtil.join(unignoredFiles, Constants.NEWLINE);
+                String content = StringUtil.join(unignoredFiles, Constants.NEWLINE);
 
                 try {
                     new AppendFileCommandAction(project, file, content, true, false)
-                            .execute();
-                } catch (Throwable throwable) {
+                        .execute();
+                }
+                catch (Throwable throwable) {
                     throwable.printStackTrace();
                 }
                 handledMap.put(virtualFile, true);

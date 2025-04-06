@@ -24,28 +24,33 @@
 
 package mobi.hsz.idea.gitignore.ui;
 
-import consulo.application.AllIcons;
-import consulo.application.ApplicationManager;
+import consulo.application.Application;
 import consulo.codeEditor.Editor;
 import consulo.codeEditor.EditorFactory;
 import consulo.codeEditor.markup.HighlighterTargetArea;
 import consulo.colorScheme.TextAttributes;
 import consulo.document.Document;
+import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.language.psi.PsiFile;
+import consulo.localize.LocalizeValue;
 import consulo.platform.base.icon.PlatformIconGroup;
 import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.TreeExpander;
 import consulo.ui.ex.action.*;
 import consulo.ui.ex.awt.*;
-import consulo.ui.ex.awt.tree.*;
+import consulo.ui.ex.awt.tree.CheckboxTree;
+import consulo.ui.ex.awt.tree.CheckedTreeNode;
+import consulo.ui.ex.awt.tree.DefaultTreeExpander;
+import consulo.ui.ex.awt.tree.TreeUtil;
 import consulo.ui.ex.awtUnsafe.TargetAWT;
 import consulo.ui.image.Image;
 import consulo.ui.image.ImageEffects;
 import consulo.undoRedo.CommandProcessor;
-import consulo.util.collection.ContainerUtil;
-import consulo.util.lang.Pair;
+import consulo.util.lang.Couple;
 import consulo.util.lang.StringUtil;
-import mobi.hsz.idea.gitignore.IgnoreBundle;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import mobi.hsz.idea.gitignore.command.AppendFileCommandAction;
 import mobi.hsz.idea.gitignore.command.CreateFileCommandAction;
 import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
@@ -55,9 +60,6 @@ import mobi.hsz.idea.gitignore.ui.template.TemplateTreeRenderer;
 import mobi.hsz.idea.gitignore.util.Constants;
 import mobi.hsz.idea.gitignore.util.Resources;
 import mobi.hsz.idea.gitignore.util.Utils;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.event.TreeSelectionListener;
@@ -80,7 +82,6 @@ import static mobi.hsz.idea.gitignore.util.Resources.Template.Container.USER;
  */
 public class GeneratorDialog extends DialogWrapper {
     /** {@link FilterComponent} search history key. */
-    @NonNls
     private static final String TEMPLATES_FILTER_HISTORY = "TEMPLATES_FILTER_HISTORY";
 
     /**
@@ -92,11 +93,11 @@ public class GeneratorDialog extends DialogWrapper {
     private final Set<String> starred = new HashSet<>();
 
     /** Current working project. */
-    @NotNull
+    @Nonnull
     private final Project project;
 
     /** Settings instance. */
-    @NotNull
+    @Nonnull
     private final IgnoreSettings settings;
 
     /** Current working file. */
@@ -104,7 +105,7 @@ public class GeneratorDialog extends DialogWrapper {
     private PsiFile file;
 
     /** Templates tree root node. */
-    @NotNull
+    @Nonnull
     private final TemplateTreeNode root;
 
     /** {@link CreateFileCommandAction} action instance to generate new file in the proper time. */
@@ -128,7 +129,7 @@ public class GeneratorDialog extends DialogWrapper {
 
     /** CheckboxTree selection listener. */
     private final TreeSelectionListener treeSelectionListener = e -> {
-        final TreePath path = getCurrentPath();
+        TreePath path = getCurrentPath();
         if (path != null) {
             updateDescriptionPanel(path);
         }
@@ -140,7 +141,7 @@ public class GeneratorDialog extends DialogWrapper {
      * @param project current working project
      * @param file    current working file
      */
-    public GeneratorDialog(@NotNull Project project, @Nullable PsiFile file) {
+    public GeneratorDialog(@Nonnull Project project, @Nullable PsiFile file) {
         super(project, false);
         this.project = project;
         this.file = file;
@@ -148,9 +149,9 @@ public class GeneratorDialog extends DialogWrapper {
         this.action = null;
         this.settings = IgnoreSettings.getInstance();
 
-        setTitle(IgnoreBundle.message("dialog.generator.title"));
-        setOKButtonText(IgnoreBundle.message("global.generate"));
-        setCancelButtonText(IgnoreBundle.message("global.cancel"));
+        setTitle(IgnoreLocalize.dialogGeneratorTitle());
+        setOKButtonText(IgnoreLocalize.globalGenerate());
+        setCancelButtonText(IgnoreLocalize.globalCancel());
         init();
     }
 
@@ -160,8 +161,8 @@ public class GeneratorDialog extends DialogWrapper {
      * @param project current working project
      * @param action  {@link CreateFileCommandAction} action instance to generate new file in the proper time
      */
-    public GeneratorDialog(@NotNull Project project, @Nullable CreateFileCommandAction action) {
-        this(project, (PsiFile) null);
+    public GeneratorDialog(@Nonnull Project project, @Nullable CreateFileCommandAction action) {
+        this(project, (PsiFile)null);
         this.action = action;
     }
 
@@ -172,6 +173,7 @@ public class GeneratorDialog extends DialogWrapper {
      */
     @Nullable
     @Override
+    @RequiredUIAccess
     public JComponent getPreferredFocusedComponent() {
         return profileFilter;
     }
@@ -198,8 +200,9 @@ public class GeneratorDialog extends DialogWrapper {
      * @see #showAndGetOk()
      */
     @Override
+    @RequiredUIAccess
     public void show() {
-        if (ApplicationManager.getApplication().isUnitTestMode()) {
+        if (Application.get().isUnitTestMode()) {
             dispose();
             return;
         }
@@ -225,12 +228,12 @@ public class GeneratorDialog extends DialogWrapper {
      * @param ignoreComments   ignores comments and empty lines
      */
     private void performAppendAction(boolean ignoreDuplicates, boolean ignoreComments) {
-        final StringBuilder content = new StringBuilder();
-        final Iterator<Resources.Template> iterator = checked.iterator();
+        StringBuilder content = new StringBuilder();
+        Iterator<Resources.Template> iterator = checked.iterator();
         while (iterator.hasNext()) {
-            final Resources.Template template = iterator.next();
+            Resources.Template template = iterator.next();
             if (template != null) {
-                content.append(IgnoreBundle.message("file.templateSection", template.getName()));
+                content.append(IgnoreLocalize.fileTemplatesection(template.getName()));
                 content.append(Constants.NEWLINE).append(template.getContent());
 
                 if (iterator.hasNext()) {
@@ -244,9 +247,10 @@ public class GeneratorDialog extends DialogWrapper {
             }
             if (file != null && (content.length() > 0)) {
                 new AppendFileCommandAction(project, file, content.toString(), ignoreDuplicates, ignoreComments)
-                        .execute();
+                    .execute();
             }
-        } catch (Throwable throwable) {
+        }
+        catch (Throwable throwable) {
             throwable.printStackTrace();
         }
         super.doOKAction();
@@ -270,14 +274,14 @@ public class GeneratorDialog extends DialogWrapper {
     @Override
     protected JComponent createCenterPanel() {
         // general panel
-        final JPanel centerPanel = new JPanel(new BorderLayout());
+        JPanel centerPanel = new JPanel(new BorderLayout());
         centerPanel.setPreferredSize(new Dimension(800, 500));
 
         // splitter panel - contains tree panel and preview component
-        final JBSplitter splitter = new JBSplitter(false, 0.4f);
+        JBSplitter splitter = new JBSplitter(false, 0.4f);
         centerPanel.add(splitter, BorderLayout.CENTER);
 
-        final JPanel treePanel = new JPanel(new BorderLayout());
+        JPanel treePanel = new JPanel(new BorderLayout());
         previewDocument = EditorFactory.getInstance().createDocument("");
         preview = Utils.createPreviewEditor(previewDocument, project, true);
 
@@ -288,14 +292,17 @@ public class GeneratorDialog extends DialogWrapper {
         JScrollPane treeScrollPanel = createTreeScrollPanel();
         treePanel.add(treeScrollPanel, BorderLayout.CENTER);
 
-        final JPanel northPanel = new JPanel(new GridBagLayout());
+        JPanel northPanel = new JPanel(new GridBagLayout());
         northPanel.setBorder(JBUI.Borders.empty(2, 0));
-        northPanel.add(createTreeActionsToolbarPanel(treeScrollPanel).getComponent(),
-                new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.BASELINE_LEADING,
-                        GridBagConstraints.HORIZONTAL, JBUI.emptyInsets(), 0, 0)
+        northPanel.add(
+            createTreeActionsToolbarPanel(treeScrollPanel).getComponent(),
+            new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.BASELINE_LEADING,
+                GridBagConstraints.HORIZONTAL, JBUI.emptyInsets(), 0, 0
+            )
         );
         northPanel.add(profileFilter, new GridBagConstraints(1, 0, 1, 1, 1, 1, GridBagConstraints.BASELINE_TRAILING,
-                GridBagConstraints.HORIZONTAL, JBUI.emptyInsets(), 0, 0));
+            GridBagConstraints.HORIZONTAL, JBUI.emptyInsets(), 0, 0
+        ));
         treePanel.add(northPanel, BorderLayout.NORTH);
 
         return centerPanel;
@@ -309,13 +316,15 @@ public class GeneratorDialog extends DialogWrapper {
     private JScrollPane createTreeScrollPanel() {
         fillTreeData(null, true);
 
-        final TemplateTreeRenderer renderer = new TemplateTreeRenderer() {
+        TemplateTreeRenderer renderer = new TemplateTreeRenderer() {
+            @Override
             protected String getFilter() {
                 return profileFilter != null ? profileFilter.getFilter() : null;
             }
         };
 
         tree = new CheckboxTree(renderer, root) {
+            @Override
             public Dimension getPreferredScrollableViewportSize() {
                 Dimension size = super.getPreferredScrollableViewportSize();
                 size = new Dimension(size.width + 10, size.height);
@@ -325,10 +334,11 @@ public class GeneratorDialog extends DialogWrapper {
             @Override
             protected void onNodeStateChanged(CheckedTreeNode node) {
                 super.onNodeStateChanged(node);
-                Resources.Template template = ((TemplateTreeNode) node).getTemplate();
+                Resources.Template template = ((TemplateTreeNode)node).getTemplate();
                 if (node.isChecked()) {
                     checked.add(template);
-                } else {
+                }
+                else {
                     checked.remove(template);
                 }
             }
@@ -341,7 +351,7 @@ public class GeneratorDialog extends DialogWrapper {
         UIUtil.setLineStyleAngled(tree);
         TreeUtil.installActions(tree);
 
-        final JScrollPane scrollPane = ScrollPaneFactory.createScrollPane(tree);
+        JScrollPane scrollPane = ScrollPaneFactory.createScrollPane(tree);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         TreeUtil.expandAll(tree);
 
@@ -365,53 +375,57 @@ public class GeneratorDialog extends DialogWrapper {
      * @param target templates tree
      * @return action toolbar
      */
-    private ActionToolbar createTreeActionsToolbarPanel(@NotNull JComponent target) {
-        final CommonActionsManager actionManager = CommonActionsManager.getInstance();
+    private ActionToolbar createTreeActionsToolbarPanel(@Nonnull JComponent target) {
+        CommonActionsManager actionManager = CommonActionsManager.getInstance();
 
         DefaultActionGroup actions = new DefaultActionGroup();
         actions.add(actionManager.createExpandAllAction(treeExpander, tree));
         actions.add(actionManager.createCollapseAllAction(treeExpander, tree));
         actions.add(new AnAction(
-                IgnoreBundle.message("dialog.generator.unselectAll"),
-                null,
-                AllIcons.Actions.Unselectall)
-        {
+            IgnoreLocalize.dialogGeneratorUnselectall(),
+            LocalizeValue.empty(),
+            PlatformIconGroup.actionsUnselectall()
+        ) {
             @Override
-            public void update(@NotNull AnActionEvent e) {
+            @RequiredUIAccess
+            public void update(@Nonnull AnActionEvent e) {
                 e.getPresentation().setEnabled(!checked.isEmpty());
             }
 
             @Override
-            public void actionPerformed(@NotNull AnActionEvent e) {
+            @RequiredUIAccess
+            public void actionPerformed(@Nonnull AnActionEvent e) {
                 checked.clear();
                 filterTree(profileFilter.getTextEditor().getText());
             }
         });
-        actions.add(new AnAction(IgnoreBundle.message("dialog.generator.star"), null, PlatformIconGroup.nodesStar()) {
+        actions.add(new AnAction(IgnoreLocalize.dialogGeneratorStar(), LocalizeValue.empty(), PlatformIconGroup.nodesStar()) {
             @Override
-            public void update(@NotNull AnActionEvent e) {
-                final TemplateTreeNode node = getCurrentNode();
+            @RequiredUIAccess
+            public void update(@Nonnull AnActionEvent e) {
+                TemplateTreeNode node = getCurrentNode();
                 boolean disabled = node == null || USER.equals(node.getContainer()) || !node.isLeaf();
                 boolean unstar = node != null && STARRED.equals(node.getContainer());
 
-                final Image icon = disabled ? ImageEffects.grayed(PlatformIconGroup.nodesStar()) :
-                        (unstar ? PlatformIconGroup.nodesStarempty() : PlatformIconGroup.nodesStar());
-                final String text = IgnoreBundle.message(unstar ? "dialog.generator.unstar" : "dialog.generator.star");
+                Image icon = disabled ? ImageEffects.grayed(PlatformIconGroup.nodesStar()) :
+                    (unstar ? PlatformIconGroup.nodesStarempty() : PlatformIconGroup.nodesStar());
+                LocalizeValue text = unstar ? IgnoreLocalize.dialogGeneratorUnstar() : IgnoreLocalize.dialogGeneratorStar();
 
-                final Presentation presentation = e.getPresentation();
+                Presentation presentation = e.getPresentation();
                 presentation.setEnabled(!disabled);
                 presentation.setIcon(icon);
-                presentation.setText(text);
+                presentation.setTextValue(text);
             }
 
             @Override
-            public void actionPerformed(@NotNull AnActionEvent e) {
-                final TemplateTreeNode node = getCurrentNode();
+            @RequiredUIAccess
+            public void actionPerformed(@Nonnull AnActionEvent e) {
+                TemplateTreeNode node = getCurrentNode();
                 if (node == null) {
                     return;
                 }
 
-                final Resources.Template template = node.getTemplate();
+                Resources.Template template = node.getTemplate();
                 if (template != null) {
                     boolean isStarred = !template.isStarred();
                     template.setStarred(isStarred);
@@ -419,11 +433,12 @@ public class GeneratorDialog extends DialogWrapper {
 
                     if (isStarred) {
                         starred.add(template.getName());
-                    } else {
+                    }
+                    else {
                         starred.remove(template.getName());
                     }
 
-                    settings.setStarredTemplates(ContainerUtil.newArrayList(starred));
+                    settings.setStarredTemplates(new ArrayList<>(starred));
                 }
             }
 
@@ -434,13 +449,13 @@ public class GeneratorDialog extends DialogWrapper {
              */
             @Nullable
             private TemplateTreeNode getCurrentNode() {
-                final TreePath path = getCurrentPath();
-                return path == null ? null : (TemplateTreeNode) path.getLastPathComponent();
+                TreePath path = getCurrentPath();
+                return path == null ? null : (TemplateTreeNode)path.getLastPathComponent();
             }
         });
 
-        final ActionToolbar actionToolbar = ActionManager.getInstance()
-                .createActionToolbar(ActionPlaces.UNKNOWN, actions, true);
+        ActionToolbar actionToolbar = ActionManager.getInstance()
+            .createActionToolbar(ActionPlaces.UNKNOWN, actions, true);
         actionToolbar.setTargetComponent(target);
         return actionToolbar;
     }
@@ -450,20 +465,20 @@ public class GeneratorDialog extends DialogWrapper {
      *
      * @param path selected tree path
      */
-    private void updateDescriptionPanel(@NotNull TreePath path) {
-        final TemplateTreeNode node = (TemplateTreeNode) path.getLastPathComponent();
-        final Resources.Template template = node.getTemplate();
+    @RequiredUIAccess
+    private void updateDescriptionPanel(@Nonnull TreePath path) {
+        TemplateTreeNode node = (TemplateTreeNode)path.getLastPathComponent();
+        Resources.Template template = node.getTemplate();
 
-        ApplicationManager.getApplication().runWriteAction(
-                () -> CommandProcessor.getInstance().runUndoTransparentAction(() -> {
-                    String content = template != null ?
-                            StringUtil.notNullize(template.getContent()).replace('\r', '\0') : "";
-                    previewDocument.replaceString(0, previewDocument.getTextLength(), content);
+        Application.get().runWriteAction(
+            () -> CommandProcessor.getInstance().runUndoTransparentAction(() -> {
+                String content = template != null ?
+                    StringUtil.notNullize(template.getContent()).replace('\r', '\0') : "";
+                previewDocument.replaceString(0, previewDocument.getTextLength(), content);
 
-                    List<Pair<Integer, Integer>> pairs =
-                            getFilterRanges(profileFilter.getTextEditor().getText(), content);
-                    highlightWords(pairs);
-                })
+                List<Couple<Integer>> pairs = getFilterRanges(profileFilter.getTextEditor().getText(), content);
+                highlightWords(pairs);
+            })
         );
     }
 
@@ -489,7 +504,7 @@ public class GeneratorDialog extends DialogWrapper {
                 continue;
             }
 
-            final TemplateTreeNode node = new TemplateTreeNode(template);
+            TemplateTreeNode node = new TemplateTreeNode(template);
             node.setChecked(checked.contains(template));
             getGroupNode(root, template.getContainer()).add(node);
         }
@@ -509,13 +524,13 @@ public class GeneratorDialog extends DialogWrapper {
      * @return group node
      */
     private static TemplateTreeNode getGroupNode(
-            @NotNull TemplateTreeNode root,
-            @NotNull Resources.Template.Container container)
-    {
-        final int childCount = root.getChildCount();
+        @Nonnull TemplateTreeNode root,
+        @Nonnull Resources.Template.Container container
+    ) {
+        int childCount = root.getChildCount();
 
         for (int i = 0; i < childCount; i++) {
-            TemplateTreeNode child = (TemplateTreeNode) root.getChildAt(i);
+            TemplateTreeNode child = (TemplateTreeNode)root.getChildAt(i);
             if (container.equals(child.getContainer())) {
                 return child;
             }
@@ -533,13 +548,13 @@ public class GeneratorDialog extends DialogWrapper {
      * @param content templates content
      * @return text ranges
      */
-    private List<Pair<Integer, Integer>> getFilterRanges(@NotNull String filter, @NotNull String content) {
-        List<Pair<Integer, Integer>> pairs = ContainerUtil.newArrayList();
+    private List<Couple<Integer>> getFilterRanges(@Nonnull String filter, @Nonnull String content) {
+        List<Couple<Integer>> pairs = new ArrayList<>();
         content = content.toLowerCase();
 
         for (String word : Utils.getWords(filter)) {
             for (int index = content.indexOf(word); index >= 0; index = content.indexOf(word, index + 1)) {
-                pairs.add(Pair.create(index, index + word.length()));
+                pairs.add(Couple.of(index, index + word.length()));
             }
         }
 
@@ -553,7 +568,7 @@ public class GeneratorDialog extends DialogWrapper {
      * @param filter   templates filter
      * @return template is accepted
      */
-    private boolean isTemplateAccepted(@NotNull Resources.Template template, @NotNull String filter) {
+    private boolean isTemplateAccepted(@Nonnull Resources.Template template, @Nonnull String filter) {
         filter = filter.toLowerCase();
 
         if (StringUtil.containsIgnoreCase(template.getName(), filter)) {
@@ -567,7 +582,7 @@ public class GeneratorDialog extends DialogWrapper {
             }
         }
 
-        List<Pair<Integer, Integer>> ranges = getFilterRanges(filter, StringUtil.notNullize(template.getContent()));
+        List<Couple<Integer>> ranges = getFilterRanges(filter, StringUtil.notNullize(template.getContent()));
         return nameAccepted || ranges.size() > 0;
     }
 
@@ -597,20 +612,19 @@ public class GeneratorDialog extends DialogWrapper {
      *
      * @param pairs text ranges
      */
-    private void highlightWords(@NotNull List<Pair<Integer, Integer>> pairs) {
-        final TextAttributes attr = new TextAttributes();
-        attr.setBackgroundColor(TargetAWT.from(UIUtil.getTreeSelectionBackground()));
-        attr.setForegroundColor(TargetAWT.from(UIUtil.getTreeSelectionForeground()));
+    private void highlightWords(@Nonnull List<Couple<Integer>> pairs) {
+        TextAttributes attr = new TextAttributes();
+        attr.setBackgroundColor(TargetAWT.from(UIUtil.getTreeSelectionBackground(true)));
+        attr.setForegroundColor(TargetAWT.from(UIUtil.getTreeSelectionForeground(true)));
 
-        for (Pair<Integer, Integer> pair : pairs) {
-            preview.getMarkupModel().addRangeHighlighter(pair.first, pair.second, 0, attr,
-                    HighlighterTargetArea.EXACT_RANGE);
+        for (Couple<Integer> pair : pairs) {
+            preview.getMarkupModel().addRangeHighlighter(pair.first, pair.second, 0, attr, HighlighterTargetArea.EXACT_RANGE);
         }
     }
 
     /** Reloads tree model. */
     private void reloadModel() {
-        ((DefaultTreeModel) tree.getModel()).reload();
+        ((DefaultTreeModel)tree.getModel()).reload();
     }
 
     /**
@@ -639,22 +653,22 @@ public class GeneratorDialog extends DialogWrapper {
 
     /** {@link OkAction} instance with additional `Generate without duplicates` action. */
     private class OptionOkAction extends OkAction implements OptionAction {
-        @NotNull
+        @Nonnull
         @Override
         public Action[] getOptions() {
             return new Action[]{
-                    new DialogWrapperAction(IgnoreBundle.message("global.generate.without.duplicates")) {
-                        @Override
-                        protected void doAction(ActionEvent e) {
-                            performAppendAction(true, false);
-                        }
-                    },
-                    new DialogWrapperAction(IgnoreBundle.message("global.generate.without.comments")) {
-                        @Override
-                        protected void doAction(ActionEvent e) {
-                            performAppendAction(false, true);
-                        }
+                new DialogWrapperAction(IgnoreLocalize.globalGenerateWithoutDuplicates()) {
+                    @Override
+                    protected void doAction(ActionEvent e) {
+                        performAppendAction(true, false);
                     }
+                },
+                new DialogWrapperAction(IgnoreLocalize.globalGenerateWithoutComments()) {
+                    @Override
+                    protected void doAction(ActionEvent e) {
+                        performAppendAction(false, true);
+                    }
+                }
             };
         }
     }

@@ -24,17 +24,18 @@
 
 package mobi.hsz.idea.gitignore.file;
 
+import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.fileTemplate.FileTemplateGroupDescriptor;
 import consulo.fileTemplate.FileTemplateGroupDescriptorFactory;
 import consulo.language.psi.PsiDirectory;
 import consulo.language.psi.PsiFile;
 import consulo.language.psi.PsiFileFactory;
 import consulo.language.util.IncorrectOperationException;
+import jakarta.annotation.Nullable;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
 import mobi.hsz.idea.gitignore.util.Constants;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Templates factory that generates Gitignore file and its content.
@@ -43,9 +44,6 @@ import org.jetbrains.annotations.Nullable;
  * @since 0.1
  */
 public class IgnoreTemplatesFactory implements FileTemplateGroupDescriptorFactory {
-    /** File's content header. */
-    private static final String TEMPLATE_NOTE = IgnoreBundle.message("file.templateNote");
-
     /** Group descriptor. */
     private final FileTemplateGroupDescriptor templateGroup;
 
@@ -79,20 +77,20 @@ public class IgnoreTemplatesFactory implements FileTemplateGroupDescriptorFactor
      * @return file
      */
     @Nullable
-    public PsiFile createFromTemplate(final PsiDirectory directory) throws IncorrectOperationException {
-        final String filename = fileType.getIgnoreLanguage().getFilename();
-        final PsiFile currentFile = directory.findFile(filename);
+    public PsiFile createFromTemplate(PsiDirectory directory) throws IncorrectOperationException {
+        String filename = fileType.getIgnoreLanguage().getFilename();
+        PsiFile currentFile = directory.findFile(filename);
         if (currentFile != null) {
             return currentFile;
         }
-        final PsiFileFactory factory = PsiFileFactory.getInstance(directory.getProject());
-        final IgnoreLanguage language = fileType.getIgnoreLanguage();
+        PsiFileFactory factory = PsiFileFactory.getInstance(directory.getProject());
+        IgnoreLanguage language = fileType.getIgnoreLanguage();
 
-        String content = TEMPLATE_NOTE + Constants.NEWLINE;
+        String content = IgnoreLocalize.fileTemplatenote() + Constants.NEWLINE;
         if (language.isSyntaxSupported() && !IgnoreBundle.Syntax.GLOB.equals(language.getDefaultSyntax())) {
             content = content + IgnoreBundle.Syntax.GLOB.getPresentation() + Constants.NEWLINE + Constants.NEWLINE;
         }
-        final PsiFile file = factory.createFileFromText(filename, fileType, content);
+        PsiFile file = factory.createFileFromText(filename, fileType, content);
         return (PsiFile) directory.add(file);
     }
 }

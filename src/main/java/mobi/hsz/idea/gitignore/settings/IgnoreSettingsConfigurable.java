@@ -28,15 +28,16 @@ import consulo.annotation.component.ExtensionImpl;
 import consulo.configurable.Configurable;
 import consulo.configurable.ConfigurationException;
 import consulo.configurable.SearchableConfigurable;
+import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.util.lang.Comparing;
 import consulo.versionControlSystem.VcsConfigurableProvider;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import jakarta.inject.Inject;
-import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.ui.IgnoreSettingsPanel;
 import mobi.hsz.idea.gitignore.util.Utils;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
@@ -66,7 +67,7 @@ public class IgnoreSettingsConfigurable implements SearchableConfigurable, VcsCo
      */
     @Override
     public String getDisplayName() {
-        return IgnoreBundle.message("settings.displayName");
+        return IgnoreLocalize.settingsDisplayname().get();
     }
 
     /**
@@ -74,7 +75,7 @@ public class IgnoreSettingsConfigurable implements SearchableConfigurable, VcsCo
      *
      * @return the help topic, or null if no help is available {@link #getDisplayName()}
      */
-    @NotNull
+    @Nonnull
     @Override
     public String getHelpTopic() {
         return getDisplayName();
@@ -87,6 +88,7 @@ public class IgnoreSettingsConfigurable implements SearchableConfigurable, VcsCo
      */
     @Nullable
     @Override
+    @RequiredUIAccess
     public JComponent createComponent() {
         if (settingsPanel == null) {
             settingsPanel = new IgnoreSettingsPanel();
@@ -101,22 +103,24 @@ public class IgnoreSettingsConfigurable implements SearchableConfigurable, VcsCo
      * @return true if the settings were modified, false otherwise.
      */
     @Override
+    @RequiredUIAccess
     public boolean isModified() {
         return settingsPanel == null
-                || !Comparing.equal(settings.isMissingGitignore(), settingsPanel.isMissingGitignore())
-                || !Utils.equalLists(settings.getUserTemplates(), settingsPanel.getUserTemplates())
-                || !Comparing.equal(settings.isIgnoredFileStatus(), settingsPanel.isIgnoredFileStatus())
-                || !Comparing.equal(settings.isOuterIgnoreRules(), settingsPanel.isOuterIgnoreRules())
-                || !Comparing.equal(settings.isInsertAtCursor(), settingsPanel.isInsertAtCursor())
-                || !Comparing.equal(settings.isAddUnversionedFiles(), settingsPanel.isAddUnversionedFiles())
-                || !Comparing.equal(settings.isUnignoreActions(), settingsPanel.isUnignoreActions())
-                || !Comparing.equal(settings.isInformTrackedIgnored(), settingsPanel.isInformTrackedIgnored())
-                || !Comparing.equal(settings.isNotifyIgnoredEditing(), settingsPanel.isNotifyIgnoredEditing())
-                || !settingsPanel.getLanguagesSettings().equalSettings(settings.getLanguagesSettings());
+            || !Comparing.equal(settings.isMissingGitignore(), settingsPanel.isMissingGitignore())
+            || !Utils.equalLists(settings.getUserTemplates(), settingsPanel.getUserTemplates())
+            || !Comparing.equal(settings.isIgnoredFileStatus(), settingsPanel.isIgnoredFileStatus())
+            || !Comparing.equal(settings.isOuterIgnoreRules(), settingsPanel.isOuterIgnoreRules())
+            || !Comparing.equal(settings.isInsertAtCursor(), settingsPanel.isInsertAtCursor())
+            || !Comparing.equal(settings.isAddUnversionedFiles(), settingsPanel.isAddUnversionedFiles())
+            || !Comparing.equal(settings.isUnignoreActions(), settingsPanel.isUnignoreActions())
+            || !Comparing.equal(settings.isInformTrackedIgnored(), settingsPanel.isInformTrackedIgnored())
+            || !Comparing.equal(settings.isNotifyIgnoredEditing(), settingsPanel.isNotifyIgnoredEditing())
+            || !settingsPanel.getLanguagesSettings().equalSettings(settings.getLanguagesSettings());
     }
 
     /** Store the settings from configurable to other components. */
     @Override
+    @RequiredUIAccess
     public void apply() throws ConfigurationException {
         if (settingsPanel == null) {
             return;
@@ -135,6 +139,7 @@ public class IgnoreSettingsConfigurable implements SearchableConfigurable, VcsCo
 
     /** Load settings from other components to configurable. */
     @Override
+    @RequiredUIAccess
     public void reset() {
         if (settingsPanel == null) {
             return;
@@ -155,6 +160,7 @@ public class IgnoreSettingsConfigurable implements SearchableConfigurable, VcsCo
 
     /** Disposes the Swing components used for displaying the configuration. */
     @Override
+    @RequiredUIAccess
     public void disposeUIResources() {
         if (settingsPanel != null) {
             settingsPanel.dispose();
@@ -179,7 +185,7 @@ public class IgnoreSettingsConfigurable implements SearchableConfigurable, VcsCo
      *
      * @return id
      */
-    @NotNull
+    @Nonnull
     @Override
     public String getId() {
         return getHelpTopic();

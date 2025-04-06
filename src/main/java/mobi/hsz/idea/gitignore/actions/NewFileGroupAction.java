@@ -24,8 +24,9 @@
 
 package mobi.hsz.idea.gitignore.actions;
 
-import consulo.ui.ex.action.DefaultActionGroup;
 import consulo.application.dumb.DumbAware;
+import consulo.dotignore.localize.IgnoreLocalize;
+import consulo.ui.ex.action.DefaultActionGroup;
 import consulo.ui.ex.action.Presentation;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
@@ -44,15 +45,15 @@ public class NewFileGroupAction extends DefaultActionGroup implements DumbAware 
     public NewFileGroupAction() {
         setPopup(true);
         Presentation presentation = getTemplatePresentation();
-        presentation.setText(IgnoreBundle.message("action.newFile.group"));
+        presentation.setTextValue(IgnoreLocalize.actionNewfileGroup());
         presentation.setIcon(Icons.IGNORE);
 
-        for (final IgnoreLanguage language : IgnoreBundle.LANGUAGES) {
-            final IgnoreFileType fileType = language.getFileType();
+        for (IgnoreLanguage language : IgnoreBundle.LANGUAGES) {
+            IgnoreFileType fileType = language.getFileType();
             add(new NewFileAction(fileType) {{
                 Presentation p = getTemplatePresentation();
-                p.setText(IgnoreBundle.message("action.newFile", language.getFilename(), language.getID()));
-                p.setDescription(IgnoreBundle.message("action.newFile.description", language.getID()));
+                p.setTextValue(IgnoreLocalize.actionNewfile(language.getFilename(), language.getID()));
+                p.setDescriptionValue(IgnoreLocalize.actionNewfileDescription(language.getID()));
                 p.setIcon(fileType.getIcon());
             }});
         }

@@ -25,21 +25,22 @@
 package mobi.hsz.idea.gitignore.ui.template;
 
 import consulo.codeEditor.Editor;
+import consulo.codeEditor.EditorFactory;
 import consulo.document.Document;
 import consulo.dotignore.IgnoreNotificationGroup;
+import consulo.dotignore.localize.IgnoreLocalize;
+import consulo.project.Project;
 import consulo.project.ui.notification.Notification;
 import consulo.project.ui.notification.NotificationType;
 import consulo.project.ui.notification.Notifications;
-import consulo.codeEditor.EditorFactory;
-import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.awt.DialogWrapper;
 import consulo.ui.ex.awt.JBTextField;
 import consulo.ui.ex.awt.JBUI;
-import mobi.hsz.idea.gitignore.IgnoreBundle;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
 import mobi.hsz.idea.gitignore.util.Utils;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
@@ -52,15 +53,15 @@ import java.awt.*;
  */
 public class UserTemplateDialog extends DialogWrapper {
     /** Current working project. */
-    @NotNull
+    @Nonnull
     private final Project project;
 
     /** Initial content. */
-    @NotNull
+    @Nonnull
     private final String content;
 
     /** Settings instance. */
-    @NotNull
+    @Nonnull
     private final IgnoreSettings settings;
 
     /** Preview editor with syntax highlight. */
@@ -77,15 +78,15 @@ public class UserTemplateDialog extends DialogWrapper {
      *
      * @param project current working project
      */
-    public UserTemplateDialog(@NotNull Project project, @NotNull String content) {
+    public UserTemplateDialog(@Nonnull Project project, @Nonnull String content) {
         super(project, false);
         this.project = project;
         this.content = content;
         this.settings = IgnoreSettings.getInstance();
 
-        setTitle(IgnoreBundle.message("dialog.userTemplate.title"));
-        setOKButtonText(IgnoreBundle.message("global.create"));
-        setCancelButtonText(IgnoreBundle.message("global.cancel"));
+        setTitle(IgnoreLocalize.dialogUsertemplateTitle());
+        setOKButtonText(IgnoreLocalize.globalCreate());
+        setCancelButtonText(IgnoreLocalize.globalCancel());
         init();
     }
 
@@ -99,14 +100,14 @@ public class UserTemplateDialog extends DialogWrapper {
     @Nullable
     @Override
     protected JComponent createCenterPanel() {
-        final JPanel centerPanel = new JPanel(new BorderLayout());
+        JPanel centerPanel = new JPanel(new BorderLayout());
         centerPanel.setPreferredSize(new Dimension(600, 300));
 
         previewDocument = EditorFactory.getInstance().createDocument(content);
         preview = Utils.createPreviewEditor(previewDocument, project, false);
-        name = new JBTextField(IgnoreBundle.message("dialog.userTemplate.name.value"));
+        name = new JBTextField(IgnoreLocalize.dialogUsertemplateNameValue().get());
 
-        JLabel nameLabel = new JLabel(IgnoreBundle.message("dialog.userTemplate.name"));
+        JLabel nameLabel = new JLabel(IgnoreLocalize.dialogUsertemplateName().get());
         nameLabel.setBorder(JBUI.Borders.emptyRight(10));
 
         JPanel namePanel = new JPanel(new BorderLayout());
@@ -129,6 +130,7 @@ public class UserTemplateDialog extends DialogWrapper {
      */
     @Nullable
     @Override
+    @RequiredUIAccess
     public JComponent getPreferredFocusedComponent() {
         return name;
     }
@@ -163,15 +165,18 @@ public class UserTemplateDialog extends DialogWrapper {
      */
     private void performCreateAction() {
         IgnoreSettings.UserTemplate template =
-                new IgnoreSettings.UserTemplate(name.getText(), previewDocument.getText());
+            new IgnoreSettings.UserTemplate(name.getText(), previewDocument.getText());
         settings.getUserTemplates().add(template);
 
-        Notifications.Bus.notify(new Notification(
+        Notifications.Bus.notify(
+            new Notification(
                 IgnoreNotificationGroup.GROUP,
-                IgnoreBundle.message("dialog.userTemplate.added"),
-                IgnoreBundle.message("dialog.userTemplate.added.description", template.getName()),
+                IgnoreLocalize.dialogUsertemplateAdded().get(),
+                IgnoreLocalize.dialogUsertemplateAddedDescription(template.getName()).get(),
                 NotificationType.INFORMATION
-        ), project);
+            ),
+            project
+        );
 
         super.doOKAction();
     }

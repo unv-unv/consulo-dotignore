@@ -24,18 +24,18 @@
 
 package mobi.hsz.idea.gitignore.actions;
 
-import consulo.language.editor.CommonDataKeys;
+import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
 import consulo.util.collection.ContainerUtil;
 import consulo.versionControlSystem.root.VcsRoot;
 import consulo.virtualFileSystem.VirtualFile;
-import mobi.hsz.idea.gitignore.IgnoreBundle;
+import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.IgnoreManager;
 import mobi.hsz.idea.gitignore.ui.untrackFiles.UntrackFilesDialog;
 import mobi.hsz.idea.gitignore.util.Icons;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ConcurrentMap;
 
@@ -49,10 +49,10 @@ public class HandleTrackedIgnoredFilesAction extends AnAction
 {
     /** Builds a new instance of {@link HandleTrackedIgnoredFilesAction}. */
     public HandleTrackedIgnoredFilesAction() {
-        super(IgnoreBundle.message(
-                "action.handleTrackedIgnoredFiles"),
-                IgnoreBundle.message("action.handleTrackedIgnoredFiles.description"),
-                Icons.IGNORE
+        super(
+            IgnoreLocalize.actionHandletrackedignoredfiles(),
+            IgnoreLocalize.actionHandletrackedignoredfilesDescription(),
+            Icons.IGNORE
         );
     }
 
@@ -62,8 +62,9 @@ public class HandleTrackedIgnoredFilesAction extends AnAction
      * @param e action event
      */
     @Override
-    public void actionPerformed(@NotNull AnActionEvent e) {
-        final Project project = e.getData(CommonDataKeys.PROJECT);
+    @RequiredUIAccess
+    public void actionPerformed(@Nonnull AnActionEvent e) {
+        Project project = e.getData(Project.KEY);
 
         if (project == null) {
             return;
@@ -78,7 +79,8 @@ public class HandleTrackedIgnoredFilesAction extends AnAction
      * @param e action event
      */
     @Override
-    public void update(@NotNull AnActionEvent e) {
+    @RequiredUIAccess
+    public void update(@Nonnull AnActionEvent e) {
         e.getPresentation().setVisible(!getTrackedIgnoredFiles(e).isEmpty());
     }
 
@@ -88,8 +90,8 @@ public class HandleTrackedIgnoredFilesAction extends AnAction
      * @param event current event
      * @return map of files
      */
-    private ConcurrentMap<VirtualFile, VcsRoot> getTrackedIgnoredFiles(@NotNull AnActionEvent event) {
-        final Project project = event.getData(Project.KEY);
+    private ConcurrentMap<VirtualFile, VcsRoot> getTrackedIgnoredFiles(@Nonnull AnActionEvent event) {
+        Project project = event.getData(Project.KEY);
 
         if (project != null) {
             return IgnoreManager.getInstance(project).getConfirmedIgnoredFiles();

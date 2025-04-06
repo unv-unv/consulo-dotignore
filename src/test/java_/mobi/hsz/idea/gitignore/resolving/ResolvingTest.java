@@ -71,7 +71,7 @@ public class ResolvingTest extends LightPlatformCodeInsightFixtureTestCase {
         PsiPolyVariantReference reference = ((PsiPolyVariantReference) myFixture.getReferenceAtCaretPosition());
         assertNotNull(reference);
 
-        final VirtualFile rootFile = myFixture.getFile().getContainingDirectory().getVirtualFile();
+        VirtualFile rootFile = myFixture.getFile().getContainingDirectory().getVirtualFile();
         ResolveResult[] resolveResults = reference.multiResolve(true);
         List<String> actualResolve = ContainerUtil.map(resolveResults, new Function<ResolveResult, String>() {
             @Override

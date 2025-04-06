@@ -1,6 +1,6 @@
 package mobi.hsz.idea.gitignore.inspections;
 
-import mobi.hsz.idea.gitignore.IgnoreBundle;
+import consulo.dotignore.localize.IgnoreLocalize;
 import mobi.hsz.idea.gitignore.codeInspection.IgnoreDuplicateEntryInspection;
 
 public class DuplicateEntryInspectionTest extends InspectionTestCase {
@@ -15,6 +15,6 @@ public class DuplicateEntryInspectionTest extends InspectionTestCase {
     }
     
     public void testSimpleCaseWithQuickFix() throws Exception {
-        doHighlightingFileTestWithQuickFix(IgnoreBundle.message("quick.fix.remove.entry"));
+        doHighlightingFileTestWithQuickFix(IgnoreLocalize.quickFixRemoveEntry().get());
     }
 }

@@ -24,23 +24,29 @@
 
 package mobi.hsz.idea.gitignore.actions;
 
-import consulo.language.editor.CommonDataKeys;
+import consulo.dotignore.localize.IgnoreLocalize;
+import consulo.localize.LocalizeValue;
 import consulo.project.Project;
-import consulo.ui.ex.action.*;
+import consulo.ui.annotation.RequiredUIAccess;
+import consulo.ui.ex.action.ActionGroup;
+import consulo.ui.ex.action.AnAction;
+import consulo.ui.ex.action.AnActionEvent;
+import consulo.ui.ex.action.Presentation;
 import consulo.util.lang.StringUtil;
 import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
 import mobi.hsz.idea.gitignore.util.ExternalFileException;
 import mobi.hsz.idea.gitignore.util.Utils;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.PropertyKey;
 
-import java.util.*;
-
-import static mobi.hsz.idea.gitignore.IgnoreBundle.BUNDLE_NAME;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
 /**
  * Group action that ignores specified file or directory.
@@ -55,12 +61,12 @@ public class IgnoreFileGroupAction extends ActionGroup {
     private static final int FILENAME_MAX_LENGTH = 30;
 
     /** List of suitable Gitignore {@link VirtualFile}s that can be presented in an IgnoreFile action. */
-    @NotNull
+    @Nonnull
     private final Map<IgnoreFileType, List<VirtualFile>> files = new HashMap<>();
 
     /** Action presentation's text for single element. */
-    @PropertyKey(resourceBundle = BUNDLE_NAME)
-    private final String presentationTextSingleKey;
+    @Nonnull
+    private final Function<String, LocalizeValue> presentationTextSingle;
 
     /** {@link Project}'s base directory. */
     @Nullable
@@ -71,25 +77,29 @@ public class IgnoreFileGroupAction extends ActionGroup {
      * Describes action's presentation.
      */
     public IgnoreFileGroupAction() {
-        this("action.addToIgnore.group", "action.addToIgnore.group.description", "action.addToIgnore.group.noPopup");
+        this(
+            IgnoreLocalize.actionAddtoignoreGroup(),
+            IgnoreLocalize.actionAddtoignoreGroupDescription(),
+            IgnoreLocalize::actionAddtoignoreGroupNopopup
+        );
     }
 
     /**
      * Builds a new instance of {@link IgnoreFileGroupAction}.
      * Describes action's presentation.
      *
-     * @param textKey        Action presentation's text key
-     * @param descriptionKey Action presentation's description key
+     * @param text        Action presentation's text key
+     * @param description Action presentation's description key
      */
     public IgnoreFileGroupAction(
-            @PropertyKey(resourceBundle = BUNDLE_NAME) String textKey,
-            @PropertyKey(resourceBundle = BUNDLE_NAME) String descriptionKey,
-            @PropertyKey(resourceBundle = BUNDLE_NAME) String textSingleKey)
-    {
-        final Presentation p = getTemplatePresentation();
-        p.setText(IgnoreBundle.message(textKey));
-        p.setDescription(IgnoreBundle.message(descriptionKey));
-        this.presentationTextSingleKey = textSingleKey;
+        @Nonnull LocalizeValue text,
+        @Nonnull LocalizeValue description,
+        @Nonnull Function<String, LocalizeValue> textSingleKey
+    ) {
+        Presentation p = getTemplatePresentation();
+        p.setTextValue(text);
+        p.setDescriptionValue(description);
+        this.presentationTextSingle = textSingleKey;
     }
 
     /**
@@ -99,10 +109,11 @@ public class IgnoreFileGroupAction extends ActionGroup {
      * @param e action event
      */
     @Override
-    public void update(@NotNull AnActionEvent e) {
-        final VirtualFile file = e.getData(CommonDataKeys.VIRTUAL_FILE);
-        final Project project = e.getData(CommonDataKeys.PROJECT);
-        final Presentation presentation = e.getPresentation();
+    @RequiredUIAccess
+    public void update(@Nonnull AnActionEvent e) {
+        VirtualFile file = e.getData(VirtualFile.KEY);
+        Project project = e.getData(Project.KEY);
+        Presentation presentation = e.getPresentation();
         files.clear();
 
         if (project != null && file != null) {
@@ -111,12 +122,13 @@ public class IgnoreFileGroupAction extends ActionGroup {
                 baseDir = project.getBaseDir();
 
                 for (IgnoreLanguage language : IgnoreBundle.LANGUAGES) {
-                    final IgnoreFileType fileType = language.getFileType();
+                    IgnoreFileType fileType = language.getFileType();
                     List<VirtualFile> list = Utils.getSuitableIgnoreFiles(project, fileType, file);
                     Collections.reverse(list);
                     files.put(fileType, list);
                 }
-            } catch (ExternalFileException e1) {
+            }
+            catch (ExternalFileException e1) {
                 presentation.setVisible(false);
             }
         }
@@ -130,7 +142,7 @@ public class IgnoreFileGroupAction extends ActionGroup {
      * @param e action event
      * @return actions list
      */
-    @NotNull
+    @Nonnull
     @Override
     public AnAction[] getChildren(@Nullable AnActionEvent e) {
         AnAction[] actions;
@@ -138,7 +150,8 @@ public class IgnoreFileGroupAction extends ActionGroup {
 
         if (count == 0 || baseDir == null) {
             actions = new AnAction[0];
-        } else {
+        }
+        else {
             actions = new AnAction[count];
 
             int i = 0;
@@ -147,18 +160,16 @@ public class IgnoreFileGroupAction extends ActionGroup {
                     IgnoreFileAction action = createAction(file);
                     actions[i++] = action;
 
-                    String name = Utils.getRelativePath(baseDir, file);
-                    if (StringUtil.isNotEmpty(name)) {
-                        name = StringUtil.shortenPathWithEllipsis(name, FILENAME_MAX_LENGTH);
-                    }
-
-                    if (count == 1) {
-                        name = IgnoreBundle.message(presentationTextSingleKey, name);
+                    String relativePath = Utils.getRelativePath(baseDir, file);
+                    if (StringUtil.isNotEmpty(relativePath)) {
+                        relativePath = StringUtil.shortenPathWithEllipsis(relativePath, FILENAME_MAX_LENGTH);
                     }
 
                     Presentation presentation = action.getTemplatePresentation();
                     presentation.setIcon(entry.getKey().getIcon());
-                    presentation.setText(name);
+                    presentation.setTextValue(
+                        count == 1 ? presentationTextSingle.apply(relativePath) : LocalizeValue.ofNullable(relativePath)
+                    );
                 }
             }
         }
@@ -171,7 +182,7 @@ public class IgnoreFileGroupAction extends ActionGroup {
      * @param file current file
      * @return action instance
      */
-    protected IgnoreFileAction createAction(@NotNull VirtualFile file) {
+    protected IgnoreFileAction createAction(@Nonnull VirtualFile file) {
         return new IgnoreFileAction(file);
     }
 

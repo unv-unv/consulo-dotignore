@@ -25,7 +25,7 @@
 package mobi.hsz.idea.gitignore.indexing;
 
 import consulo.annotation.component.ExtensionImpl;
-import consulo.application.ApplicationManager;
+import consulo.application.Application;
 import consulo.index.io.ID;
 import consulo.index.io.data.DataExternalizer;
 import consulo.language.psi.scope.GlobalSearchScope;
@@ -35,6 +35,7 @@ import consulo.project.Project;
 import consulo.util.collection.ContainerUtil;
 import consulo.util.lang.Pair;
 import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.IgnoreManager;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
@@ -43,7 +44,6 @@ import mobi.hsz.idea.gitignore.psi.IgnoreEntry;
 import mobi.hsz.idea.gitignore.psi.IgnoreFile;
 import mobi.hsz.idea.gitignore.psi.IgnoreVisitor;
 import mobi.hsz.idea.gitignore.util.Glob;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -70,7 +70,7 @@ public class IgnoreFilesIndex extends AbstractIgnoreFilesIndex<IgnoreFileTypeKey
      *
      * @return {@link #KEY}
      */
-    @NotNull
+    @Nonnull
     @Override
     public ID<IgnoreFileTypeKey, IgnoreEntryOccurrence> getName() {
         return KEY;
@@ -82,25 +82,25 @@ public class IgnoreFilesIndex extends AbstractIgnoreFilesIndex<IgnoreFileTypeKey
      * @param inputData indexed file data
      * @return {@link IgnoreEntryOccurrence} data mapped with {@link IgnoreFileTypeKey}
      */
-    @NotNull
+    @Nonnull
     @Override
-    public Map<IgnoreFileTypeKey, IgnoreEntryOccurrence> map(@NotNull final FileContent inputData) {
+    public Map<IgnoreFileTypeKey, IgnoreEntryOccurrence> map(@Nonnull FileContent inputData) {
         if (!(inputData.getPsiFile() instanceof IgnoreFile)) {
             return Collections.emptyMap();
         }
 
-        final ArrayList<Pair<String, Boolean>> items = ContainerUtil.newArrayList();
+        ArrayList<Pair<String, Boolean>> items = new ArrayList<>();
         inputData.getPsiFile().acceptChildren(new IgnoreVisitor() {
             @Override
-            public void visitEntry(@NotNull IgnoreEntry entry) {
-                final String regex = Glob.getRegex(entry.getValue(), entry.getSyntax(), false);
+            public void visitEntry(@Nonnull IgnoreEntry entry) {
+                String regex = Glob.getRegex(entry.getValue(), entry.getSyntax(), false);
                 items.add(Pair.create(regex, entry.isNegated()));
             }
         });
 
         return Collections.singletonMap(
-                new IgnoreFileTypeKey((IgnoreFileType) inputData.getFileType()),
-                new IgnoreEntryOccurrence(inputData.getFile().getUrl(), items)
+            new IgnoreFileTypeKey((IgnoreFileType)inputData.getFileType()),
+            new IgnoreEntryOccurrence(inputData.getFile().getUrl(), items)
         );
     }
 
@@ -112,7 +112,7 @@ public class IgnoreFilesIndex extends AbstractIgnoreFilesIndex<IgnoreFileTypeKey
      * @throws IOException if an I/O error occurs
      */
     @Override
-    public synchronized void save(@NotNull DataOutput out, IgnoreFileTypeKey value) throws IOException {
+    public synchronized void save(@Nonnull DataOutput out, IgnoreFileTypeKey value) throws IOException {
         out.writeUTF(value.getType().getLanguageName());
     }
 
@@ -121,14 +121,13 @@ public class IgnoreFilesIndex extends AbstractIgnoreFilesIndex<IgnoreFileTypeKey
      *
      * @param in input stream
      * @return {@link IgnoreFileTypeKey} instance read from the stream
-     *
      * @throws IOException if an I/O error occurs
      */
     @Override
-    public synchronized IgnoreFileTypeKey read(@NotNull DataInput in) throws IOException {
-        final String languageName = in.readUTF();
+    public synchronized IgnoreFileTypeKey read(@Nonnull DataInput in) throws IOException {
+        String languageName = in.readUTF();
         for (IgnoreLanguage language : IgnoreBundle.LANGUAGES) {
-            final IgnoreFileType type = language.getFileType();
+            IgnoreFileType type = language.getFileType();
             if (type.getLanguageName().equals(languageName)) {
                 return new IgnoreFileTypeKey(type);
             }
@@ -141,38 +140,37 @@ public class IgnoreFilesIndex extends AbstractIgnoreFilesIndex<IgnoreFileTypeKey
      *
      * @return {@link #DATA_EXTERNALIZER}
      */
-    @NotNull
+    @Nonnull
     @Override
     public DataExternalizer<IgnoreEntryOccurrence> getValueExternalizer() {
         return DATA_EXTERNALIZER;
     }
 
     /** {@link DataExternalizer} instance. */
-    private static final DataExternalizer<IgnoreEntryOccurrence> DATA_EXTERNALIZER =
-            new DataExternalizer<IgnoreEntryOccurrence>() {
-                /**
-                 * Saves data in the output stream.
-                 *
-                 * @param out output stream
-                 * @param entry entry to write
-                 * @throws IOException if an I/O error occurs
-                 */
-                @Override
-                public void save(@NotNull DataOutput out, IgnoreEntryOccurrence entry) throws IOException {
-                    IgnoreEntryOccurrence.serialize(out, entry);
-                }
+    private static final DataExternalizer<IgnoreEntryOccurrence> DATA_EXTERNALIZER = new DataExternalizer<>() {
+        /**
+         * Saves data in the output stream.
+         *
+         * @param out output stream
+         * @param entry entry to write
+         * @throws IOException if an I/O error occurs
+         */
+        @Override
+        public void save(@Nonnull DataOutput out, IgnoreEntryOccurrence entry) throws IOException {
+            IgnoreEntryOccurrence.serialize(out, entry);
+        }
 
-                /**
-                 * Reads {@link IgnoreEntryOccurrence} from the input stream.
-                 *
-                 * @param in input stream
-                 * @return read entry
-                 */
-                @Override
-                public IgnoreEntryOccurrence read(@NotNull DataInput in) throws IOException {
-                    return IgnoreEntryOccurrence.deserialize(in);
-                }
-            };
+        /**
+         * Reads {@link IgnoreEntryOccurrence} from the input stream.
+         *
+         * @param in input stream
+         * @return read entry
+         */
+        @Override
+        public IgnoreEntryOccurrence read(@Nonnull DataInput in) throws IOException {
+            return IgnoreEntryOccurrence.deserialize(in);
+        }
+    };
 
     /**
      * Returns current indexer {@link #VERSION}.
@@ -191,9 +189,9 @@ public class IgnoreFilesIndex extends AbstractIgnoreFilesIndex<IgnoreFileTypeKey
      * @return file is accepted
      */
     @Override
-    public boolean acceptInput(Project project, @NotNull VirtualFile file) {
+    public boolean acceptInput(Project project, @Nonnull VirtualFile file) {
         return file.getFileType() instanceof IgnoreFileType ||
-                IgnoreManager.FILE_TYPES_ASSOCIATION_QUEUE.containsKey(file.getName());
+            IgnoreManager.FILE_TYPES_ASSOCIATION_QUEUE.containsKey(file.getName());
     }
 
     /**
@@ -202,8 +200,8 @@ public class IgnoreFilesIndex extends AbstractIgnoreFilesIndex<IgnoreFileTypeKey
      * @param project current project
      * @return {@link IgnoreFileTypeKey} collection
      */
-    @NotNull
-    public static Collection<IgnoreFileType> getKeys(@NotNull Project project) {
+    @Nonnull
+    public static Collection<IgnoreFileType> getKeys(@Nonnull Project project) {
         Collection<IgnoreFileTypeKey> keys = FileBasedIndex.getInstance().getAllKeys(KEY, project);
         return ContainerUtil.map(keys, IgnoreFileTypeKey::getType);
     }
@@ -215,15 +213,16 @@ public class IgnoreFilesIndex extends AbstractIgnoreFilesIndex<IgnoreFileTypeKey
      * @param fileType filetype
      * @return {@link IgnoreEntryOccurrence} collection
      */
-    @NotNull
-    public static List<IgnoreEntryOccurrence> getEntries(@NotNull Project project, @NotNull IgnoreFileType fileType) {
+    @Nonnull
+    public static List<IgnoreEntryOccurrence> getEntries(@Nonnull Project project, @Nonnull IgnoreFileType fileType) {
         try {
-            if (ApplicationManager.getApplication().isReadAccessAllowed()) {
-                final GlobalSearchScope scope = IgnoreSearchScope.get(project);
+            if (Application.get().isReadAccessAllowed()) {
+                GlobalSearchScope scope = IgnoreSearchScope.get(project);
                 return FileBasedIndex.getInstance()
-                        .getValues(IgnoreFilesIndex.KEY, new IgnoreFileTypeKey(fileType), scope);
+                    .getValues(IgnoreFilesIndex.KEY, new IgnoreFileTypeKey(fileType), scope);
             }
-        } catch (RuntimeException ignored) {
+        }
+        catch (RuntimeException ignored) {
         }
         return List.of();
     }
@@ -235,8 +234,8 @@ public class IgnoreFilesIndex extends AbstractIgnoreFilesIndex<IgnoreFileTypeKey
      * @param fileType filetype
      * @return {@link VirtualFile} collection
      */
-    @NotNull
-    public static List<VirtualFile> getFiles(@NotNull Project project, @NotNull IgnoreFileType fileType) {
+    @Nonnull
+    public static List<VirtualFile> getFiles(@Nonnull Project project, @Nonnull IgnoreFileType fileType) {
         return ContainerUtil.mapNotNull(getEntries(project, fileType), IgnoreEntryOccurrence::getFile);
     }
 }

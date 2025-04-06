@@ -24,18 +24,19 @@
 
 package mobi.hsz.idea.gitignore.codeInspection;
 
+import consulo.annotation.access.RequiredReadAction;
 import consulo.codeEditor.Editor;
-import consulo.language.psi.PsiFile;
-import consulo.project.Project;
-import consulo.language.psi.PsiElement;
-import consulo.language.impl.ast.TreeUtil;
+import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.language.ast.ASTNode;
 import consulo.language.editor.inspection.LocalQuickFixAndIntentionActionOnPsiElement;
-import mobi.hsz.idea.gitignore.IgnoreBundle;
+import consulo.language.impl.ast.TreeUtil;
+import consulo.language.psi.PsiElement;
+import consulo.language.psi.PsiFile;
+import consulo.project.Project;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import mobi.hsz.idea.gitignore.psi.IgnoreEntry;
 import mobi.hsz.idea.gitignore.psi.IgnoreTypes;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * QuickFix action that removes specified entry handled by code inspections like
@@ -47,14 +48,13 @@ import org.jetbrains.annotations.Nullable;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 0.4
  */
-public class IgnoreRemoveEntryFix extends LocalQuickFixAndIntentionActionOnPsiElement
-{
+public class IgnoreRemoveEntryFix extends LocalQuickFixAndIntentionActionOnPsiElement {
     /**
      * Builds a new instance of {@link IgnoreRemoveEntryFix}.
      *
      * @param entry an element that will be handled with QuickFix
      */
-    public IgnoreRemoveEntryFix(@NotNull IgnoreEntry entry) {
+    public IgnoreRemoveEntryFix(@Nonnull IgnoreEntry entry) {
         super(entry);
     }
 
@@ -63,10 +63,11 @@ public class IgnoreRemoveEntryFix extends LocalQuickFixAndIntentionActionOnPsiEl
      *
      * @return QuickFix action name
      */
-    @NotNull
+    @Nonnull
     @Override
+    @RequiredReadAction
     public String getText() {
-        return IgnoreBundle.message("quick.fix.remove.entry");
+        return IgnoreLocalize.quickFixRemoveEntry().get();
     }
 
     /**
@@ -74,13 +75,18 @@ public class IgnoreRemoveEntryFix extends LocalQuickFixAndIntentionActionOnPsiEl
      *
      * @param project      the {@link Project} containing the working file
      * @param file         the {@link PsiFile} containing handled entry
+     * @param editor       is null when called from inspection
      * @param startElement the {@link IgnoreEntry} that will be removed
      * @param endElement   the {@link PsiElement} which is ignored in invoked action
      */
     @Override
-    public void invoke(@NotNull Project project, @NotNull PsiFile file,
-					   @Nullable("is null when called from inspection") Editor editor,
-					   @NotNull PsiElement startElement, @NotNull PsiElement endElement) {
+    public void invoke(
+        @Nonnull Project project,
+        @Nonnull PsiFile file,
+        @Nullable Editor editor,
+        @Nonnull PsiElement startElement,
+        @Nonnull PsiElement endElement
+    ) {
         if (startElement instanceof IgnoreEntry) {
             removeCrlf(startElement);
             startElement.delete();
@@ -108,9 +114,9 @@ public class IgnoreRemoveEntryFix extends LocalQuickFixAndIntentionActionOnPsiEl
      *
      * @return QuickFix family name
      */
-    @NotNull
+    @Nonnull
     @Override
     public String getFamilyName() {
-        return IgnoreBundle.message("codeInspection.group");
+        return IgnoreLocalize.codeinspectionGroup().get();
     }
 }

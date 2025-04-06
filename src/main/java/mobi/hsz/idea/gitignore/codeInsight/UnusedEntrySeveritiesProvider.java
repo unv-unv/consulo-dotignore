@@ -27,16 +27,16 @@ package mobi.hsz.idea.gitignore.codeInsight;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.colorScheme.TextAttributes;
 import consulo.colorScheme.TextAttributesKey;
+import consulo.dotignore.localize.IgnoreLocalize;
+import consulo.language.editor.annotation.HighlightSeverity;
 import consulo.language.editor.rawHighlight.HighlightInfoType;
 import consulo.language.editor.rawHighlight.SeveritiesProvider;
-import consulo.language.editor.annotation.HighlightSeverity;
 import consulo.ui.color.ColorValue;
 import consulo.ui.style.StandardColors;
-import consulo.util.collection.ContainerUtil;
-import mobi.hsz.idea.gitignore.IgnoreBundle;
+import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.highlighter.IgnoreHighlighterColors;
-import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -48,7 +48,7 @@ import java.util.List;
 @ExtensionImpl
 public class UnusedEntrySeveritiesProvider extends SeveritiesProvider {
     /** Unused entry {@link HighlightSeverity} instance. */
-    @NotNull
+    @Nonnull
     private static final HighlightSeverity UNUSED_ENTRY = new HighlightSeverity("UNUSED ENTRY", 10);
 
     /**
@@ -56,17 +56,14 @@ public class UnusedEntrySeveritiesProvider extends SeveritiesProvider {
      *
      * @return style definition
      */
-    @NotNull
+    @Nonnull
     @Override
     public List<HighlightInfoType> getSeveritiesHighlightInfoTypes() {
-        final List<HighlightInfoType> result = ContainerUtil.newArrayList();
+        List<HighlightInfoType> result = new ArrayList<>();
 
         result.add(new HighlightInfoType.HighlightInfoTypeImpl(
-                UNUSED_ENTRY,
-                TextAttributesKey.createTextAttributesKey(
-                        IgnoreBundle.message("codeInspection.unusedEntry"),
-                        IgnoreHighlighterColors.UNUSED
-                )
+            UNUSED_ENTRY,
+            TextAttributesKey.of(IgnoreLocalize.codeinspectionUnusedentry().get(), IgnoreHighlighterColors.UNUSED)
         ));
         return result;
     }
@@ -78,7 +75,7 @@ public class UnusedEntrySeveritiesProvider extends SeveritiesProvider {
      * @return entry color
      */
     @Override
-    public ColorValue getTrafficRendererColor(@NotNull TextAttributes textAttributes) {
+    public ColorValue getTrafficRendererColor(@Nonnull TextAttributes textAttributes) {
         return StandardColors.GRAY;
     }
 

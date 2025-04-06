@@ -28,13 +28,12 @@ import consulo.annotation.component.ExtensionImpl;
 import consulo.colorScheme.TextAttributesKey;
 import consulo.colorScheme.setting.AttributesDescriptor;
 import consulo.colorScheme.setting.ColorDescriptor;
+import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.language.editor.colorScheme.setting.ColorSettingsPage;
 import consulo.language.editor.highlight.SyntaxHighlighter;
 import consulo.util.io.FileUtil;
-import mobi.hsz.idea.gitignore.IgnoreBundle;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 import java.io.IOException;
 import java.util.Map;
@@ -50,36 +49,29 @@ public class IgnoreColorSettingsPage implements ColorSettingsPage {
     /**
      * The path to the sample .gitignore file.
      */
-    @NonNls
     private static final String SAMPLE_GITIGNORE_PATH = "/sample.gitignore";
-
-    /**
-     * Display name for Color Settings Page.
-     */
-    @NonNls
-    private static final String DISPLAY_NAME = IgnoreBundle.message("ignore.colorSettings.displayName");
 
     /**
      * The sample .gitignore document shown in the colors settings dialog.
      *
      * @see #loadSampleGitignore()
      */
-    @NotNull
+    @Nonnull
     private static final String SAMPLE_GITIGNORE = loadSampleGitignore();
 
     /**
      * Attributes descriptor list.
      */
     private static final AttributesDescriptor[] DESCRIPTORS = new AttributesDescriptor[]{
-            new AttributesDescriptor(IgnoreBundle.message("highlighter.header"), IgnoreHighlighterColors.HEADER),
-            new AttributesDescriptor(IgnoreBundle.message("highlighter.section"), IgnoreHighlighterColors.SECTION),
-            new AttributesDescriptor(IgnoreBundle.message("highlighter.comment"), IgnoreHighlighterColors.COMMENT),
-            new AttributesDescriptor(IgnoreBundle.message("highlighter.negation"), IgnoreHighlighterColors.NEGATION),
-            new AttributesDescriptor(IgnoreBundle.message("highlighter.brackets"), IgnoreHighlighterColors.BRACKET),
-            new AttributesDescriptor(IgnoreBundle.message("highlighter.slash"), IgnoreHighlighterColors.SLASH),
-            new AttributesDescriptor(IgnoreBundle.message("highlighter.syntax"), IgnoreHighlighterColors.SYNTAX),
-            new AttributesDescriptor(IgnoreBundle.message("highlighter.value"), IgnoreHighlighterColors.VALUE),
-            new AttributesDescriptor(IgnoreBundle.message("highlighter.unused"), IgnoreHighlighterColors.UNUSED),
+        new AttributesDescriptor(IgnoreLocalize.highlighterHeader(), IgnoreHighlighterColors.HEADER),
+        new AttributesDescriptor(IgnoreLocalize.highlighterSection(), IgnoreHighlighterColors.SECTION),
+        new AttributesDescriptor(IgnoreLocalize.highlighterComment(), IgnoreHighlighterColors.COMMENT),
+        new AttributesDescriptor(IgnoreLocalize.highlighterNegation(), IgnoreHighlighterColors.NEGATION),
+        new AttributesDescriptor(IgnoreLocalize.highlighterBrackets(), IgnoreHighlighterColors.BRACKET),
+        new AttributesDescriptor(IgnoreLocalize.highlighterSlash(), IgnoreHighlighterColors.SLASH),
+        new AttributesDescriptor(IgnoreLocalize.highlighterSyntax(), IgnoreHighlighterColors.SYNTAX),
+        new AttributesDescriptor(IgnoreLocalize.highlighterValue(), IgnoreHighlighterColors.VALUE),
+        new AttributesDescriptor(IgnoreLocalize.highlighterUnused(), IgnoreHighlighterColors.UNUSED),
     };
 
     /**
@@ -88,10 +80,9 @@ public class IgnoreColorSettingsPage implements ColorSettingsPage {
      *
      * @return the syntax highlighter instance.
      */
-    @NotNull
+    @Nonnull
     @Override
-    public SyntaxHighlighter getHighlighter()
-    {
+    public SyntaxHighlighter getHighlighter() {
         return new IgnoreHighlighter(null, null);
     }
 
@@ -100,10 +91,9 @@ public class IgnoreColorSettingsPage implements ColorSettingsPage {
      *
      * @return demo text
      */
-    @NotNull
+    @Nonnull
     @Override
-    public String getDemoText()
-    {
+    public String getDemoText() {
         return SAMPLE_GITIGNORE;
     }
 
@@ -115,8 +105,7 @@ public class IgnoreColorSettingsPage implements ColorSettingsPage {
      */
     @Nullable
     @Override
-    public Map<String, TextAttributesKey> getAdditionalHighlightingTagToDescriptorMap()
-    {
+    public Map<String, TextAttributesKey> getAdditionalHighlightingTagToDescriptorMap() {
         return null;
     }
 
@@ -128,24 +117,22 @@ public class IgnoreColorSettingsPage implements ColorSettingsPage {
      *
      * @return the list of attribute descriptors.
      */
-    @NotNull
+    @Nonnull
     @Override
-    public AttributesDescriptor[] getAttributeDescriptors()
-    {
+    public AttributesDescriptor[] getAttributeDescriptors() {
         return DESCRIPTORS;
     }
 
     /**
-     * Returns the list of descriptors specifying the {@link com.intellij.openapi.editor.colors.ColorKey}
+     * Returns the list of descriptors specifying the {@link consulo.colorScheme.EditorColorKey}
      * instances for which colors are specified in the page. For such color keys, the user can
      * choose only the background or foreground color.
      *
      * @return the list of color descriptors.
      */
-    @NotNull
+    @Nonnull
     @Override
-    public ColorDescriptor[] getColorDescriptors()
-    {
+    public ColorDescriptor[] getColorDescriptors() {
         return ColorDescriptor.EMPTY_ARRAY;
     }
 
@@ -154,31 +141,27 @@ public class IgnoreColorSettingsPage implements ColorSettingsPage {
      *
      * @return the title of the custom page.
      */
-    @NotNull
+    @Nonnull
     @Override
-    public String getDisplayName()
-    {
-        return DISPLAY_NAME;
+    public String getDisplayName() {
+        return IgnoreLocalize.ignoreColorsettingsDisplayname().get();
     }
 
     /**
      * Loads sample .gitignore file
      *
      * @return the text loaded from {@link #SAMPLE_GITIGNORE_PATH}
-     *
      * @see #getDemoText()
      * @see #SAMPLE_GITIGNORE_PATH
      * @see #SAMPLE_GITIGNORE
      */
-    @NotNull
-    private static String loadSampleGitignore()
-    {
-        final String content;
+    @Nonnull
+    private static String loadSampleGitignore() {
         try {
-            content = FileUtil.loadTextAndClose(IgnoreColorSettingsPage.class.getResourceAsStream(SAMPLE_GITIGNORE_PATH), true);
-        } catch (IOException e) {
+            return FileUtil.loadTextAndClose(IgnoreColorSettingsPage.class.getResourceAsStream(SAMPLE_GITIGNORE_PATH), true);
+        }
+        catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return content;
     }
 }

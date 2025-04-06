@@ -54,29 +54,36 @@ public abstract class TemplateTreeRenderer extends CheckboxTree.CheckboxTreeCell
      * @param row      node is a row
      * @param hasFocus node has focus
      */
-    public void customizeRenderer(final JTree tree, final Object value, final boolean selected, final boolean expanded,
-                                  final boolean leaf, final int row, final boolean hasFocus) {
+    @Override
+    public void customizeRenderer(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
         if (!(value instanceof TemplateTreeNode)) {
             return;
         }
-        TemplateTreeNode node = (TemplateTreeNode) value;
+        TemplateTreeNode node = (TemplateTreeNode)value;
 
-        final Color background = selected ? UIUtil.getTreeSelectionBackground() : UIUtil.getTreeTextBackground();
+        Color background = selected ? UIUtil.getTreeSelectionBackground(true) : UIUtil.getTreeTextBackground();
         UIUtil.changeBackGround(this, background);
-        Color foreground = selected ? UIUtil.getTreeSelectionForeground() : node.getTemplate() == null ? JBColor.BLUE : UIUtil.getTreeTextForeground();
+        Color foreground = selected
+            ? UIUtil.getTreeSelectionForeground(true)
+            : node.getTemplate() == null
+            ? JBColor.BLUE
+            : UIUtil.getTreeTextForeground();
         int style = SimpleTextAttributes.STYLE_PLAIN;
 
         String text = "", hint = "";
         if (node.getTemplate() != null) { // template leaf
             text = node.getTemplate().getName();
-        } else if (node.getContainer() != null) { // container group
+        }
+        else if (node.getContainer() != null) { // container group
             hint = IgnoreBundle.message("template.container." + node.getContainer().toString().toLowerCase());
             getCheckbox().setVisible(false);
         }
 
         // TODO migrated to speed search ? SearchUtil.appendFragments(getFilter(), text, style, foreground, background, getTextRenderer());
-        getTextRenderer().append(hint, selected ? new SimpleTextAttributes(Font.PLAIN, foreground) :
-                SimpleTextAttributes.GRAYED_ATTRIBUTES);
+        getTextRenderer().append(
+            hint,
+            selected ? new SimpleTextAttributes(Font.PLAIN, foreground) : SimpleTextAttributes.GRAYED_ATTRIBUTES
+        );
         setForeground(foreground);
     }
 }
