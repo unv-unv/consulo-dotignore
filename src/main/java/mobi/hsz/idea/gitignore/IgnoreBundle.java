@@ -45,13 +45,6 @@ import java.util.ResourceBundle;
  * @since 0.4
  */
 public class IgnoreBundle {
-    /** The {@link ResourceBundle} path. */
-    public static final String BUNDLE_NAME = "messages.IgnoreBundle";
-
-    /** The {@link ResourceBundle} instance. */
-    @Nonnull
-    private static final ResourceBundle BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
-
     /** {@link IgnoreBundle} is a non-instantiable static class. */
     private IgnoreBundle() {
     }
