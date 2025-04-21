@@ -75,21 +75,4 @@ public class IgnoreFileStatusProvider implements FileStatusProvider, DumbAware {
     public FileStatus getFileStatus(@Nonnull VirtualFile virtualFile) {
         return ignoreManager.isFileIgnored(virtualFile) && !ignoreManager.isFileTracked(virtualFile) ? IGNORED : null;
     }
-
-    /** Does nothing. */
-    @Override
-    public void refreshFileStatusFromDocument(@Nonnull VirtualFile virtualFile, @Nonnull Document doc) {
-    }
-
-    /**
-     * Does nothing.
-     *
-     * @param virtualFile file
-     * @return nothing
-     */
-    @Nonnull
-    @Override
-    public ThreeState getNotChangedDirectoryParentingStatus(@Nonnull VirtualFile virtualFile) {
-        throw new UnsupportedOperationException("Shouldn't be called");
-    }
 }
