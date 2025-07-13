@@ -78,6 +78,12 @@ public class IgnoreFileType extends LanguageFileType {
         return language.getID();
     }
 
+    @Nonnull
+    @Override
+    public LocalizeValue getDisplayName() {
+        return language.getDisplayName();
+    }
+
     /**
      * Returns the user-readable description of the file type.
      *
@@ -86,7 +92,7 @@ public class IgnoreFileType extends LanguageFileType {
     @Nonnull
     @Override
     public LocalizeValue getDescription() {
-        return LocalizeValue.of(language.getDisplayName());
+        return language.getDisplayName();
     }
 
     /**

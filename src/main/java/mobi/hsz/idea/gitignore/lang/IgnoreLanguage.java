@@ -27,6 +27,7 @@ package mobi.hsz.idea.gitignore.lang;
 import consulo.language.InjectableLanguage;
 import consulo.language.Language;
 import consulo.language.file.FileViewProvider;
+import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import consulo.ui.image.Image;
 import consulo.util.collection.ContainerUtil;
@@ -141,8 +142,8 @@ public class IgnoreLanguage extends Language implements InjectableLanguage {
 
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return getFilename() + " (" + getID() + ")";
+    public LocalizeValue getDisplayName() {
+        return LocalizeValue.localizeTODO(getFilename() + " (" + getID() + ")");
     }
 
     /**
