@@ -1,289 +1,289 @@
 action.addTemplate:
-  text: Add template...
+    text: Add template...
 action.addTemplate.description:
-  text: Add new rules from template
+    text: Add new rules from template
 action.addToIgnore:
-  text: Add to {0}
+    text: Add to {0}
 action.addToIgnore.description:
-  text: Add this file to {0} rules
+    text: Add this file to {0} rules
 action.addToIgnore.group:
-  text: Add to ignore file
-action.addToIgnore.group.noPopup:
-  text: Add to {0} file
+    text: Add to ignore file
 action.addToIgnore.group.description:
-  text: Add this file to ignore rules
+    text: Add this file to ignore rules
+action.addToIgnore.group.noPopup:
+    text: Add to {0} file
 action.addToUnignore:
-  text: Add to {0} (unignore)
+    text: Add to {0} (unignore)
 action.addToUnignore.description:
-  text: Add this file to {0} rules (unignore)
+    text: Add this file to {0} rules (unignore)
 action.addToUnignore.group:
-  text: Add to ignore file (unignore)
-action.addToUnignore.group.noPopup:
-  text: Add to {0} file (unignore)
+    text: Add to ignore file (unignore)
 action.addToUnignore.group.description:
-  text: Add this file to ignore rules (unignore)
+    text: Add this file to ignore rules (unignore)
+action.addToUnignore.group.noPopup:
+    text: Add to {0} file (unignore)
 action.appendFile.entryExists:
-  text: Entry "{0}" already exists
+    text: Entry "{0}" already exists
 action.appendFile.entryExists.in:
-  text: in {0}
-action.createUserTemplate:
-  text: Create user template
-action.createUserTemplate.description:
-  text: Create new user template basing on the current content
+    text: in {0}
 action.closeIgnored.editors:
-  text: Close _Ignored
+    text: Close _Ignored
 action.closeIgnored.editors.in.tab.group:
-  text: Close _Ignored In Group
-action.handleTrackedIgnoredFiles:
-  text: Handle tracked and ignored files
-action.handleTrackedIgnoredFiles.description:
-  text: Allows to untrack files that are ignored
-action.ignoreFile.addError:
-  text: Error during adding entry "{0}"
-action.ignoreFile.addError.to:
-  text: to {0}
-action.newFile:
-  text: '{0} file ({1})'
-action.newFile.description:
-  text: Create new {0} file
-action.newFile.exists:
-  text: '{0} file already exists'
-action.newFile.exists.in:
-  text: in {0}
-action.newFile.group:
-  text: .ignore file
-action.hideIgnoredVisibility:
-  text: Hide ignored files
-action.showIgnoredVisibility:
-  text: Show ignored files
-cache.indexing:
-  text: Ignore Rules Indexing
-codeInspection.coverEntry:
-  text: Cover entry
-codeInspection.coverEntry.message:
-  text: '<code>#ref</code> is covered by {0} #loc'
-codeInspection.duplicateEntry:
-  text: Duplicate entry
-codeInspection.duplicateEntry.message:
-  text: '<code>#ref</code> entry is defined more than once #loc'
-codeInspection.group:
-  text: Ignore
-codeInspection.unusedEntry:
-  text: Unused entry
-codeInspection.unusedEntry.message:
-  text: '<code>#ref</code> entry is never used #loc'
-codeInspection.relativeEntry:
-  text: Relative entry
-codeInspection.relativeEntry.message:
-  text: <code>#ref</code> entry contains relative path
-codeInspection.syntaxEntry:
-  text: Syntax entry
-codeInspection.syntaxEntry.message:
-  text: '<code>#ref</code> has invalid value #loc'
-codeInspection.incorrectEntry:
-  text: Incorrect entry
-codeInspection.incorrectEntry.message:
-  text: |-
-    <code>#ref</code> has incorrect syntax:
-    {0} #loc
-quick.fix.remove.entry:
-  text: Remove entry
-quick.fix.relative.entry:
-  text: Remove relative part
-quick.fix.syntax.entry:
-  text: Suggest correct value
-daemon.lineMarker.directory:
-  text: Directory entry
-daemon.ignoredEditing:
-  text: You are editing a file which is ignored
-daemon.missingGitignore:
-  text: Missing .gitignore file in Git project
-daemon.missingGitignore.create:
-  text: Create .gitignore
-daemon.addUnversionedFiles:
-  text: Would you like to add unversioned files to the .gitignore file?
-daemon.addUnversionedFiles.create:
-  text: Add unversioned files
-daemon.ok:
-  text: OK
-daemon.cancel:
-  text: Cancel
-dialog.generator.title:
-  text: Ignore File Generator
-dialog.generator.unselectAll:
-  text: Unselect all
-dialog.generator.star:
-  text: Add template to favorites
-dialog.generator.unstar:
-  text: Remove template from favorites
-dialog.untrackFiles.title:
-  text: Untrack Ignored Files
-dialog.untrackFiles.commands.label:
-  text: 'List of commands that will be performed with untrack operation:'
-dialog.untrackFiles.commands.repository:
-  text: '# in directory: {0}'
-dialog.untrackFiles.commands.command:
-  text: git rm --cached --force "{0}"
-dialog.userTemplate.title:
-  text: Create New Ignore Template
-dialog.userTemplate.name:
-  text: 'Template name:'
-dialog.userTemplate.name.value:
-  text: Your template
-dialog.userTemplate.added:
-  text: Ignore template created
-dialog.userTemplate.added.description:
-  text: Ignore template {0} has been created.
-file.templateNote:
-  text: '# Created by .ignore support plugin (hsz.mobi)'
-file.templateSection:
-  text: '### {0} template'
-global.cancel:
-  text: _Cancel
-global.generate:
-  text: _Generate
-global.create:
-  text: _Create
-global.ok:
-  text: _OK
-global.generate.without.duplicates:
-  text: Generate without _duplicates
-global.generate.without.comments:
-  text: Generate without _comments and empty lines
-highlighter.brackets:
-  text: Brackets
-highlighter.comment:
-  text: Comment
-highlighter.header:
-  text: Header
-highlighter.negation:
-  text: Negation
-highlighter.section:
-  text: Section
-highlighter.slash:
-  text: Slash
-highlighter.syntax:
-  text: Syntax
-highlighter.value:
-  text: Value
-highlighter.unused:
-  text: Unused entry
-ignore.colorSettings.displayName:
-  text: .ignore files
-outer.label:
-  text: 'Outer ignore rules:'
-projectView.ignored:
-  text: Ignored (.ignore plugin)
-projectView.tracked:
-  text: ignored, tracked with git
-projectView.containsHidden:
-  text: '{0} hidden'
-template.container.global:
-  text: Global templates (OS, IDE, ...)
-template.container.root:
-  text: Languages, frameworks
-template.container.user:
-  text: User templates
-template.container.starred:
-  text: Starred templates
-token.type.bracket.left:
-  text: <left bracket>
-token.type.bracket.right:
-  text: <right bracket>
-token.type.comment:
-  text: <comment>
-token.type.empty.line:
-  text: <empty line>
-token.type.header:
-  text: <header>
-token.type.section:
-  text: <section>
-token.type.slash:
-  text: <slash>
-token.type.value:
-  text: <value>
-settings.displayName:
-  text: .ignore files
-settings.general:
-  text: General settings
-settings.general.missingGitignore:
-  text: Notify about &missing .gitignore file in the project
-settings.general.ignoredColor:
-  text: Edit ignored files text color && font
-settings.general.ignoredFileStatus:
-  text: Enable ignored file status &coloring
-settings.general.outerIgnoreRules:
-  text: Show &outer ignore rules in editor (Git only)
-settings.general.insertAtCursor:
-  text: Insert new ignore entries at cursor &position
-settings.general.addUnversionedFiles:
-  text: Suggest to add &unversioned files (Git only)
-settings.general.unignoreFiles:
-  text: Enable unignore files group (add entries prefixed with !)
-settings.general.informTrackedIgnored:
-  text: Inform about ignored files that are still tracked (Git only)
-settings.general.notifyIgnoredEditing:
-  text: Inform about editing ignored file
-settings.general.donate:
-  text: 'Donate me with:'
-settings.userTemplates:
-  text: User templates
-settings.userTemplates.noTemplateSelected:
-  text: No template is selected.
-settings.userTemplates.dialogTitle:
-  text: User Template
-settings.userTemplates.dialogDescription:
-  text: 'Set new template name:'
-settings.userTemplates.dialogError:
-  text: Template name cannot be empty
-settings.userTemplates.default.name:
-  text: Example user template
-settings.userTemplates.default.content:
-  text: |-
-    ### Example user template
-
-    # IntelliJ project files
-    .idea
-    *.iml
-    out
-    gen
-settings.languagesSettings:
-  text: Languages settings
-settings.languagesSettings.table.name:
-  text: Language
-settings.languagesSettings.table.newFile:
-  text: Show in "New > .ignore file"
-settings.languagesSettings.table.enable:
-  text: Enable ignoring
+    text: Close _Ignored In Group
+action.createUserTemplate:
+    text: Create user template
+action.createUserTemplate.description:
+    text: Create new user template basing on the current content
 action.exportTemplates:
-  text: Export templates
+    text: Export templates
 action.exportTemplates.description:
-  text: Export ignore templates to file
-action.exportTemplates.wrapper:
-  text: Export Selected User Templates to File...
+    text: Export ignore templates to file
 action.exportTemplates.error:
-  text: User templates export failed.
+    text: User templates export failed.
 action.exportTemplates.success:
-  text: 'Exported templates: {0}'
+    text: 'Exported templates: {0}'
 action.exportTemplates.success.title:
-  text: Ignore User Templates
+    text: Ignore User Templates
+action.exportTemplates.wrapper:
+    text: Export Selected User Templates to File...
+action.handleTrackedIgnoredFiles:
+    text: Handle tracked and ignored files
+action.handleTrackedIgnoredFiles.description:
+    text: Allows to untrack files that are ignored
+action.hideIgnoredVisibility:
+    text: Hide ignored files
+action.ignoreFile.addError:
+    text: Error during adding entry "{0}"
+action.ignoreFile.addError.to:
+    text: to {0}
 action.importTemplates:
-  text: Import templates
+    text: Import templates
 action.importTemplates.description:
-  text: Import ignore templates from file
-action.importTemplates.wrapper:
-  text: Import Ignore Templates
-action.importTemplates.wrapper.description:
-  text: Please select the user ignore templates file to import.
-action.importTemplates.success:
-  text: 'Imported templates: {0}'
+    text: Import ignore templates from file
 action.importTemplates.error:
-  text: User templates import failed.
+    text: User templates import failed.
+action.importTemplates.success:
+    text: 'Imported templates: {0}'
+action.importTemplates.wrapper:
+    text: Import Ignore Templates
+action.importTemplates.wrapper.description:
+    text: Please select the user ignore templates file to import.
+action.newFile:
+    text: '{0} file ({1})'
+action.newFile.description:
+    text: Create new {0} file
+action.newFile.exists:
+    text: '{0} file already exists'
+action.newFile.exists.in:
+    text: in {0}
+action.newFile.group:
+    text: .ignore file
+action.showIgnoredVisibility:
+    text: Show ignored files
+cache.indexing:
+    text: Ignore Rules Indexing
+codeInspection.coverEntry:
+    text: Cover entry
+codeInspection.coverEntry.message:
+    text: '<code>#ref</code> is covered by {0} #loc'
+codeInspection.duplicateEntry:
+    text: Duplicate entry
+codeInspection.duplicateEntry.message:
+    text: '<code>#ref</code> entry is defined more than once #loc'
+codeInspection.group:
+    text: Ignore
+codeInspection.incorrectEntry:
+    text: Incorrect entry
+codeInspection.incorrectEntry.message:
+    text: |-
+        <code>#ref</code> has incorrect syntax:
+        {0} #loc
+codeInspection.relativeEntry:
+    text: Relative entry
+codeInspection.relativeEntry.message:
+    text: <code>#ref</code> entry contains relative path
+codeInspection.syntaxEntry:
+    text: Syntax entry
+codeInspection.syntaxEntry.message:
+    text: '<code>#ref</code> has invalid value #loc'
+codeInspection.unusedEntry:
+    text: Unused entry
+codeInspection.unusedEntry.message:
+    text: '<code>#ref</code> entry is never used #loc'
+daemon.addUnversionedFiles:
+    text: Would you like to add unversioned files to the .gitignore file?
+daemon.addUnversionedFiles.create:
+    text: Add unversioned files
+daemon.cancel:
+    text: Cancel
+daemon.ignoredEditing:
+    text: You are editing a file which is ignored
+daemon.lineMarker.directory:
+    text: Directory entry
+daemon.missingGitignore:
+    text: Missing .gitignore file in Git project
+daemon.missingGitignore.create:
+    text: Create .gitignore
+daemon.ok:
+    text: OK
+dialog.generator.star:
+    text: Add template to favorites
+dialog.generator.title:
+    text: Ignore File Generator
+dialog.generator.unselectAll:
+    text: Unselect all
+dialog.generator.unstar:
+    text: Remove template from favorites
+dialog.untrackFiles.commands.command:
+    text: git rm --cached --force "{0}"
+dialog.untrackFiles.commands.label:
+    text: 'List of commands that will be performed with untrack operation:'
+dialog.untrackFiles.commands.repository:
+    text: '# in directory: {0}'
+dialog.untrackFiles.title:
+    text: Untrack Ignored Files
+dialog.userTemplate.added:
+    text: Ignore template created
+dialog.userTemplate.added.description:
+    text: Ignore template {0} has been created.
+dialog.userTemplate.name:
+    text: 'Template name:'
+dialog.userTemplate.name.value:
+    text: Your template
+dialog.userTemplate.title:
+    text: Create New Ignore Template
+file.templateNote:
+    text: '# Created by .ignore support plugin (hsz.mobi)'
+file.templateSection:
+    text: '### {0} template'
+global.cancel:
+    text: _Cancel
+global.create:
+    text: _Create
+global.generate:
+    text: _Generate
+global.generate.without.comments:
+    text: Generate without _comments and empty lines
+global.generate.without.duplicates:
+    text: Generate without _duplicates
+global.ok:
+    text: _OK
+highlighter.brackets:
+    text: Brackets
+highlighter.comment:
+    text: Comment
+highlighter.header:
+    text: Header
+highlighter.negation:
+    text: Negation
+highlighter.section:
+    text: Section
+highlighter.slash:
+    text: Slash
+highlighter.syntax:
+    text: Syntax
+highlighter.unused:
+    text: Unused entry
+highlighter.value:
+    text: Value
+ignore.colorSettings.displayName:
+    text: .ignore files
 notification.group:
-  text: .ignore plugin
+    text: .ignore plugin
 notification.group.update:
-  text: .ignore plugin update information
-notification.untrack.title:
-  text: Ignored files found that are tracked
+    text: .ignore plugin update information
 notification.untrack.content:
-  text: <b>.ignore</b> plugin found some files that are tracked with Git which are also listed in .gitignore file. <a href="#">Show details</a> <a href="#disable">Don't show</a>
+    text: <b>.ignore</b> plugin found some files that are tracked with Git which are also listed in .gitignore file. <a href="#">Show details</a> <a href="#disable">Don't show</a>
+notification.untrack.title:
+    text: Ignored files found that are tracked
+outer.label:
+    text: 'Outer ignore rules:'
+projectView.containsHidden:
+    text: '{0} hidden'
+projectView.ignored:
+    text: Ignored (.ignore plugin)
+projectView.tracked:
+    text: ignored, tracked with git
+quick.fix.relative.entry:
+    text: Remove relative part
+quick.fix.remove.entry:
+    text: Remove entry
+quick.fix.syntax.entry:
+    text: Suggest correct value
+settings.displayName:
+    text: .ignore files
+settings.general:
+    text: General settings
+settings.general.addUnversionedFiles:
+    text: Suggest to add &unversioned files (Git only)
+settings.general.donate:
+    text: 'Donate me with:'
+settings.general.ignoredColor:
+    text: Edit ignored files text color && font
+settings.general.ignoredFileStatus:
+    text: Enable ignored file status &coloring
+settings.general.informTrackedIgnored:
+    text: Inform about ignored files that are still tracked (Git only)
+settings.general.insertAtCursor:
+    text: Insert new ignore entries at cursor &position
+settings.general.missingGitignore:
+    text: Notify about &missing .gitignore file in the project
+settings.general.notifyIgnoredEditing:
+    text: Inform about editing ignored file
+settings.general.outerIgnoreRules:
+    text: Show &outer ignore rules in editor (Git only)
+settings.general.unignoreFiles:
+    text: Enable unignore files group (add entries prefixed with !)
+settings.languagesSettings:
+    text: Languages settings
+settings.languagesSettings.table.enable:
+    text: Enable ignoring
+settings.languagesSettings.table.name:
+    text: Language
+settings.languagesSettings.table.newFile:
+    text: Show in "New > .ignore file"
+settings.userTemplates:
+    text: User templates
+settings.userTemplates.default.content:
+    text: |-
+        ### Example user template
+
+        # IntelliJ project files
+        .idea
+        *.iml
+        out
+        gen
+settings.userTemplates.default.name:
+    text: Example user template
+settings.userTemplates.dialogDescription:
+    text: 'Set new template name:'
+settings.userTemplates.dialogError:
+    text: Template name cannot be empty
+settings.userTemplates.dialogTitle:
+    text: User Template
+settings.userTemplates.noTemplateSelected:
+    text: No template is selected.
+template.container.global:
+    text: Global templates (OS, IDE, ...)
+template.container.root:
+    text: Languages, frameworks
+template.container.starred:
+    text: Starred templates
+template.container.user:
+    text: User templates
+token.type.bracket.left:
+    text: <left bracket>
+token.type.bracket.right:
+    text: <right bracket>
+token.type.comment:
+    text: <comment>
+token.type.empty.line:
+    text: <empty line>
+token.type.header:
+    text: <header>
+token.type.section:
+    text: <section>
+token.type.slash:
+    text: <slash>
+token.type.value:
+    text: <value>
