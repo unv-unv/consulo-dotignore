@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package mobi.hsz.idea.gitignore.lang;
 
 import consulo.language.InjectableLanguage;
@@ -143,7 +142,7 @@ public class IgnoreLanguage extends Language implements InjectableLanguage {
     @Nonnull
     @Override
     public LocalizeValue getDisplayName() {
-        return LocalizeValue.localizeTODO(getFilename() + " (" + getID() + ")");
+        return LocalizeValue.of(getFilename() + " (" + getID() + ")");
     }
 
     /**

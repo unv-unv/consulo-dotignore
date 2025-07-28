@@ -113,10 +113,6 @@
             <add-to-group group-id="GenerateGroup" anchor="first"/>
         </group>
 
-        <action id="CloseIgnoredEditors" class="mobi.hsz.idea.gitignore.actions.CloseIgnoredEditorsAction">
-            <add-to-group group-id="CloseEditorsGroup" anchor="before" relative-to-action="CloseAllUnpinnedEditors"/>
-        </action>
-
         <action id="HideIgnoredFiles" class="mobi.hsz.idea.gitignore.actions.HideIgnoredFilesAction">
             <add-to-group group-id="ProjectViewPopupMenu"/>
         </action>

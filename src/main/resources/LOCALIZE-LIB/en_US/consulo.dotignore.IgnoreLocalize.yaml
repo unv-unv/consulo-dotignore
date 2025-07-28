@@ -26,10 +26,12 @@ action.appendFile.entryExists:
     text: Entry "{0}" already exists
 action.appendFile.entryExists.in:
     text: in {0}
-action.closeIgnored.editors:
-    text: Close _Ignored
-action.closeIgnored.editors.in.tab.group:
+action.close.ignored.editors.description:
+    text: Close editors for ignored files
+action.close.ignored.editors.in.tab.group.text:
     text: Close _Ignored In Group
+action.close.ignored.editors.text:
+    text: Close _Ignored
 action.createUserTemplate:
     text: Create user template
 action.createUserTemplate.description:

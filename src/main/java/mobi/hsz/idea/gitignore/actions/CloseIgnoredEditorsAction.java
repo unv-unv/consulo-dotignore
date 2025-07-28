@@ -21,9 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package mobi.hsz.idea.gitignore.actions;
 
+import consulo.annotation.component.ActionImpl;
+import consulo.annotation.component.ActionParentRef;
+import consulo.annotation.component.ActionRef;
+import consulo.annotation.component.ActionRefAnchor;
 import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.fileEditor.FileEditorComposite;
 import consulo.fileEditor.FileEditorWindow;
@@ -42,7 +45,19 @@ import mobi.hsz.idea.gitignore.vcs.IgnoreFileStatusProvider;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 1.2
  */
+@ActionImpl(
+    id = "CloseIgnoredEditors",
+    parents = @ActionParentRef(
+        value = @ActionRef(id = "CloseEditorsGroup"),
+        anchor = ActionRefAnchor.BEFORE,
+        relatedToAction = @ActionRef(id = "CloseAllUnpinnedEditors")
+    )
+)
 public class CloseIgnoredEditorsAction extends CloseEditorsActionBase {
+    public CloseIgnoredEditorsAction() {
+        super(IgnoreLocalize.actionCloseIgnoredEditorsText(), IgnoreLocalize.actionCloseIgnoredEditorsDescription());
+    }
+
     /**
      * Obtains if editor is allowed to be closed.
      *
@@ -51,8 +66,7 @@ public class CloseIgnoredEditorsAction extends CloseEditorsActionBase {
     @Override
     protected boolean isFileToClose(FileEditorComposite editor, FileEditorWindow window) {
         FileStatusManager fileStatusManager = FileStatusManager.getInstance(window.getManager().getProject());
-        return fileStatusManager != null
-            && fileStatusManager.getStatus(editor.getFile()).equals(IgnoreFileStatusProvider.IGNORED);
+        return fileStatusManager.getStatus(editor.getFile()).equals(IgnoreFileStatusProvider.IGNORED);
     }
 
     /**
@@ -76,7 +90,7 @@ public class CloseIgnoredEditorsAction extends CloseEditorsActionBase {
     @Override
     protected LocalizeValue getPresentationText(boolean inSplitter) {
         return inSplitter ?
-            IgnoreLocalize.actionCloseignoredEditorsInTabGroup() :
-            IgnoreLocalize.actionCloseignoredEditors();
+            IgnoreLocalize.actionCloseIgnoredEditorsInTabGroupText() :
+            IgnoreLocalize.actionCloseIgnoredEditorsText();
     }
 }
