@@ -31,12 +31,11 @@ import consulo.colorScheme.setting.ColorDescriptor;
 import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.language.editor.colorScheme.setting.ColorSettingsPage;
 import consulo.language.editor.highlight.SyntaxHighlighter;
+import consulo.localize.LocalizeValue;
 import consulo.util.io.FileUtil;
 import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 import java.io.IOException;
-import java.util.Map;
 
 /**
  * {@link ColorSettingsPage} that allows to modify color scheme.
@@ -98,18 +97,6 @@ public class IgnoreColorSettingsPage implements ColorSettingsPage {
     }
 
     /**
-     * Returns the mapping from special tag names surrounding the regions to be highlighted
-     * in the preview text.
-     *
-     * @return <code>null</code>
-     */
-    @Nullable
-    @Override
-    public Map<String, TextAttributesKey> getAdditionalHighlightingTagToDescriptorMap() {
-        return null;
-    }
-
-    /**
      * Returns the list of descriptors specifying the {@link TextAttributesKey} instances
      * for which colors are specified in the page. For such attribute keys, the user can choose
      * all highlighting attributes (font type, background color, foreground color, error stripe color and
@@ -143,8 +130,8 @@ public class IgnoreColorSettingsPage implements ColorSettingsPage {
      */
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return IgnoreLocalize.ignoreColorsettingsDisplayname().get();
+    public LocalizeValue getDisplayName() {
+        return IgnoreLocalize.ignoreColorsettingsDisplayname();
     }
 
     /**

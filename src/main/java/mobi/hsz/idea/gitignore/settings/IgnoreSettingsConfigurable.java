@@ -29,6 +29,7 @@ import consulo.configurable.Configurable;
 import consulo.configurable.ConfigurationException;
 import consulo.configurable.SearchableConfigurable;
 import consulo.dotignore.localize.IgnoreLocalize;
+import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import consulo.ui.annotation.RequiredUIAccess;
 import consulo.util.lang.Comparing;
@@ -66,8 +67,8 @@ public class IgnoreSettingsConfigurable implements SearchableConfigurable, VcsCo
      * @return the visible name of the component {@link IgnoreSettingsConfigurable}
      */
     @Override
-    public String getDisplayName() {
-        return IgnoreLocalize.settingsDisplayname().get();
+    public LocalizeValue getDisplayName() {
+        return IgnoreLocalize.settingsDisplayname();
     }
 
     /**
@@ -78,7 +79,7 @@ public class IgnoreSettingsConfigurable implements SearchableConfigurable, VcsCo
     @Nonnull
     @Override
     public String getHelpTopic() {
-        return getDisplayName();
+        return getId();
     }
 
     /**
