@@ -72,6 +72,17 @@ public class IgnoreSettingsConfigurable implements SearchableConfigurable, VcsCo
     }
 
     /**
+     * Returns help topic as an ID.
+     *
+     * @return id
+     */
+    @Nonnull
+    @Override
+    public String getId() {
+        return "dotignore.configurable";
+    }
+
+    /**
      * Returns the topic in the help file which is shown when help for the configurable is requested.
      *
      * @return the help topic, or null if no help is available {@link #getDisplayName()}
@@ -179,17 +190,6 @@ public class IgnoreSettingsConfigurable implements SearchableConfigurable, VcsCo
     @Override
     public Configurable getConfigurable(Project project) {
         return this;
-    }
-
-    /**
-     * Returns help topic as an ID.
-     *
-     * @return id
-     */
-    @Nonnull
-    @Override
-    public String getId() {
-        return getHelpTopic();
     }
 
     /**
