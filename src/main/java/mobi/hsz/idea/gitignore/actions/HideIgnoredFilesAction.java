@@ -21,15 +21,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package mobi.hsz.idea.gitignore.actions;
 
+import consulo.annotation.component.ActionImpl;
 import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.localize.LocalizeValue;
 import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
-import consulo.ui.ex.action.Presentation;
 import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
 import mobi.hsz.idea.gitignore.util.Icons;
@@ -40,6 +39,7 @@ import mobi.hsz.idea.gitignore.util.Icons;
  * @author Maximiliano Najle <maximilianonajle@gmail.com>
  * @since 1.7
  */
+@ActionImpl(id = "HideIgnoredFiles")
 public class HideIgnoredFilesAction extends AnAction {
     /** {@link IgnoreSettings} instance. */
     public static final IgnoreSettings SETTINGS = IgnoreSettings.getInstance();
@@ -70,7 +70,6 @@ public class HideIgnoredFilesAction extends AnAction {
     public void actionPerformed(@Nonnull AnActionEvent e) {
         SETTINGS.setHideIgnoredFiles(!SETTINGS.isHideIgnoredFiles());
 
-        Presentation presentation = this.getTemplatePresentation();
-        presentation.setTextValue(getText());
+        getTemplatePresentation().setTextValue(getText());
     }
 }

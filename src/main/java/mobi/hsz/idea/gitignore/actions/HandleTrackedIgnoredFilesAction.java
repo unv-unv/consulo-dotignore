@@ -21,15 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package mobi.hsz.idea.gitignore.actions;
 
+import consulo.annotation.component.ActionImpl;
 import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.project.Project;
 import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
-import consulo.util.collection.ContainerUtil;
+import consulo.util.collection.Maps;
 import consulo.versionControlSystem.root.VcsRoot;
 import consulo.virtualFileSystem.VirtualFile;
 import jakarta.annotation.Nonnull;
@@ -45,9 +45,11 @@ import java.util.concurrent.ConcurrentMap;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 1.7.2
  */
-public class HandleTrackedIgnoredFilesAction extends AnAction
-{
-    /** Builds a new instance of {@link HandleTrackedIgnoredFilesAction}. */
+@ActionImpl(id = "HandleTrackedIgnoredFiles")
+public class HandleTrackedIgnoredFilesAction extends AnAction {
+    /**
+     * Builds a new instance of {@link HandleTrackedIgnoredFilesAction}.
+     */
     public HandleTrackedIgnoredFilesAction() {
         super(
             IgnoreLocalize.actionHandletrackedignoredfiles(),
@@ -97,6 +99,6 @@ public class HandleTrackedIgnoredFilesAction extends AnAction
             return IgnoreManager.getInstance(project).getConfirmedIgnoredFiles();
         }
 
-        return ContainerUtil.createConcurrentWeakMap();
+        return Maps.newConcurrentWeakHashMap();
     }
 }

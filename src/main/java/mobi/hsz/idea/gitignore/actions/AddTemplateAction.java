@@ -21,9 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package mobi.hsz.idea.gitignore.actions;
 
+import consulo.annotation.component.ActionImpl;
 import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.language.psi.PsiFile;
 import consulo.project.Project;
@@ -40,6 +40,7 @@ import mobi.hsz.idea.gitignore.ui.GeneratorDialog;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 0.5.3
  */
+@ActionImpl(id = "Ignore.AddTemplate")
 public class AddTemplateAction extends AnAction {
     /** Builds a new instance of {@link AddTemplateAction}. */
     public AddTemplateAction() {
@@ -74,12 +75,11 @@ public class AddTemplateAction extends AnAction {
     @Override
     @RequiredUIAccess
     public void update(@Nonnull AnActionEvent e) {
-        PsiFile file = e.getData(PsiFile.KEY);
-
-        if (!(file instanceof IgnoreFile)) {
-            e.getPresentation().setVisible(false);
-            return;
+        if (e.getData(PsiFile.KEY) instanceof IgnoreFile ignoreFile) {
+            getTemplatePresentation().setIcon(ignoreFile.getFileType().getIcon());
         }
-        getTemplatePresentation().setIcon(file.getFileType().getIcon());
+        else {
+            e.getPresentation().setVisible(false);
+        }
     }
 }

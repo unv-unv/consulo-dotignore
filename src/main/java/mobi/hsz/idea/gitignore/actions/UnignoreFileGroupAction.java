@@ -21,9 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package mobi.hsz.idea.gitignore.actions;
 
+import consulo.annotation.component.ActionImpl;
 import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnActionEvent;
@@ -39,6 +39,7 @@ import mobi.hsz.idea.gitignore.settings.IgnoreSettings;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 1.6
  */
+@ActionImpl(id = "Ignore.UnignoreGroup")
 public class UnignoreFileGroupAction extends IgnoreFileGroupAction {
     /** Ignore settings instance. */
     private final IgnoreSettings settings;

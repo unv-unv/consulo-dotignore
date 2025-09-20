@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package mobi.hsz.idea.gitignore.ui.template;
 
 import consulo.codeEditor.Editor;
@@ -30,9 +29,7 @@ import consulo.document.Document;
 import consulo.dotignore.IgnoreNotificationGroup;
 import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.project.Project;
-import consulo.project.ui.notification.Notification;
-import consulo.project.ui.notification.NotificationType;
-import consulo.project.ui.notification.Notifications;
+import consulo.project.ui.notification.NotificationService;
 import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.awt.DialogWrapper;
 import consulo.ui.ex.awt.JBTextField;
@@ -168,15 +165,11 @@ public class UserTemplateDialog extends DialogWrapper {
             new IgnoreSettings.UserTemplate(name.getText(), previewDocument.getText());
         settings.getUserTemplates().add(template);
 
-        Notifications.Bus.notify(
-            new Notification(
-                IgnoreNotificationGroup.GROUP,
-                IgnoreLocalize.dialogUsertemplateAdded().get(),
-                IgnoreLocalize.dialogUsertemplateAddedDescription(template.getName()).get(),
-                NotificationType.INFORMATION
-            ),
-            project
-        );
+        project.getApplication().getInstance(NotificationService.class)
+            .newInfo(IgnoreNotificationGroup.GROUP)
+            .title(IgnoreLocalize.dialogUsertemplateAdded())
+            .content(IgnoreLocalize.dialogUsertemplateAddedDescription(template.getName()))
+            .notify(project);
 
         super.doOKAction();
     }

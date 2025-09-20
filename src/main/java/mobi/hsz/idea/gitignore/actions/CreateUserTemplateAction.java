@@ -21,9 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package mobi.hsz.idea.gitignore.actions;
 
+import consulo.annotation.component.ActionImpl;
 import consulo.codeEditor.Editor;
 import consulo.codeEditor.EditorFactory;
 import consulo.document.Document;
@@ -45,6 +45,7 @@ import mobi.hsz.idea.gitignore.util.Icons;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 1.5
  */
+@ActionImpl(id = "IgnoreCreateUserTemplate")
 public class CreateUserTemplateAction extends AnAction
 {
     public CreateUserTemplateAction() {

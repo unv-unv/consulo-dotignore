@@ -21,21 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package mobi.hsz.idea.gitignore.actions;
 
+import consulo.annotation.component.ActionImpl;
+import consulo.annotation.component.ActionParentRef;
+import consulo.annotation.component.ActionRef;
+import consulo.annotation.component.ActionRefAnchor;
 import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import consulo.ui.annotation.RequiredUIAccess;
-import consulo.ui.ex.action.ActionGroup;
-import consulo.ui.ex.action.AnAction;
-import consulo.ui.ex.action.AnActionEvent;
-import consulo.ui.ex.action.Presentation;
+import consulo.ui.ex.action.*;
 import consulo.util.lang.StringUtil;
 import consulo.virtualFileSystem.VirtualFile;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
+import jakarta.inject.Inject;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
@@ -56,6 +57,14 @@ import java.util.function.Function;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 0.5
  */
+@ActionImpl(
+    id = "Ignore.IgnoreGroup",
+    parents = @ActionParentRef(
+        value = @ActionRef(id = "ChangesViewPopupMenu"),
+        anchor = ActionRefAnchor.BEFORE,
+        relatedToAction = @ActionRef(id = "ChangesView.Ignore")
+    )
+)
 public class IgnoreFileGroupAction extends ActionGroup {
     /** Maximum filename length for the action name. */
     private static final int FILENAME_MAX_LENGTH = 30;
@@ -76,6 +85,7 @@ public class IgnoreFileGroupAction extends ActionGroup {
      * Builds a new instance of {@link IgnoreFileGroupAction}.
      * Describes action's presentation.
      */
+    @Inject
     public IgnoreFileGroupAction() {
         this(
             IgnoreLocalize.actionAddtoignoreGroup(),
@@ -91,7 +101,7 @@ public class IgnoreFileGroupAction extends ActionGroup {
      * @param text        Action presentation's text key
      * @param description Action presentation's description key
      */
-    public IgnoreFileGroupAction(
+    protected IgnoreFileGroupAction(
         @Nonnull LocalizeValue text,
         @Nonnull LocalizeValue description,
         @Nonnull Function<String, LocalizeValue> textSingleKey

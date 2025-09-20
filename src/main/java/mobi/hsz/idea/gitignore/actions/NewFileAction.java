@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package mobi.hsz.idea.gitignore.actions;
 
 import consulo.application.dumb.DumbAware;
@@ -31,15 +30,16 @@ import consulo.ide.IdeView;
 import consulo.language.psi.PsiDirectory;
 import consulo.language.psi.PsiFile;
 import consulo.language.psi.PsiManager;
+import consulo.localize.LocalizeValue;
 import consulo.project.Project;
-import consulo.project.ui.notification.Notification;
-import consulo.project.ui.notification.NotificationType;
-import consulo.project.ui.notification.Notifications;
+import consulo.project.ui.notification.NotificationService;
 import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
+import consulo.ui.image.Image;
 import consulo.virtualFileSystem.VirtualFile;
 import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import mobi.hsz.idea.gitignore.command.CreateFileCommandAction;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.ui.GeneratorDialog;
@@ -62,7 +62,13 @@ public class NewFileAction extends AnAction implements DumbAware {
     /**
      * Builds a new instance of {@link NewFileAction}.
      */
-    public NewFileAction(@Nonnull IgnoreFileType fileType) {
+    public NewFileAction(
+        @Nonnull LocalizeValue text,
+        @Nonnull LocalizeValue description,
+        @Nullable Image icon,
+        IgnoreFileType fileType
+    ) {
+        super(text, description, icon);
         this.fileType = fileType;
     }
 
@@ -101,15 +107,11 @@ public class NewFileAction extends AnAction implements DumbAware {
             dialog = new GeneratorDialog(project, action);
         }
         else {
-            Notifications.Bus.notify(
-                new Notification(
-                    IgnoreNotificationGroup.GROUP,
-                    IgnoreLocalize.actionNewfileExists(fileType.getLanguageName()).get(),
-                    IgnoreLocalize.actionNewfileExistsIn(virtualFile.getPath()).get(),
-                    NotificationType.INFORMATION
-                ),
-                project
-            );
+            project.getApplication().getInstance(NotificationService.class)
+                .newInfo(IgnoreNotificationGroup.GROUP)
+                .title(IgnoreLocalize.actionNewfileExists(fileType.getLanguageName()))
+                .content(IgnoreLocalize.actionNewfileExistsIn(virtualFile.getPath()))
+                .notify(project);
 
             if (file == null) {
                 file = Utils.getPsiFile(project, virtualFile);
@@ -134,12 +136,11 @@ public class NewFileAction extends AnAction implements DumbAware {
     @Override
     @RequiredUIAccess
     public void update(@Nonnull AnActionEvent e) {
-        Project project = e.getData(Project.KEY);
         IdeView view = e.getData(IdeView.KEY);
 
         PsiDirectory[] directory = view != null ? view.getDirectories() : null;
-        if (directory == null || directory.length == 0 || project == null ||
-            !this.fileType.getIgnoreLanguage().isNewAllowed()) {
+        if (directory == null || directory.length == 0 || !e.hasData(Project.KEY)
+            || !this.fileType.getIgnoreLanguage().isNewAllowed()) {
             e.getPresentation().setVisible(false);
         }
     }

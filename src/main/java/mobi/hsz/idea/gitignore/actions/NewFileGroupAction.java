@@ -21,13 +21,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package mobi.hsz.idea.gitignore.actions;
 
+import consulo.annotation.component.ActionImpl;
+import consulo.annotation.component.ActionParentRef;
+import consulo.annotation.component.ActionRef;
 import consulo.application.dumb.DumbAware;
 import consulo.dotignore.localize.IgnoreLocalize;
+import consulo.localize.LocalizeValue;
 import consulo.ui.ex.action.DefaultActionGroup;
-import consulo.ui.ex.action.Presentation;
+import consulo.ui.ex.action.IdeActions;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.file.type.IgnoreFileType;
 import mobi.hsz.idea.gitignore.lang.IgnoreLanguage;
@@ -39,23 +42,27 @@ import mobi.hsz.idea.gitignore.util.Icons;
  * @author Jakub Chrzanowski <jakub@hsz.mobi>
  * @since 0.9
  */
+@ActionImpl(
+    id = "Ignore.New",
+    parents = @ActionParentRef(@ActionRef(id = IdeActions.GROUP_NEW))
+)
 public class NewFileGroupAction extends DefaultActionGroup implements DumbAware {
-    /** Builds a new instance of {@link NewFileGroupAction}. */
+    /**
+     * Builds a new instance of {@link NewFileGroupAction}.
+     */
     @SuppressWarnings("checkstyle:whitespacearound")
     public NewFileGroupAction() {
+        super(IgnoreLocalize.actionNewfileGroup(), LocalizeValue.empty(), Icons.IGNORE);
         setPopup(true);
-        Presentation presentation = getTemplatePresentation();
-        presentation.setTextValue(IgnoreLocalize.actionNewfileGroup());
-        presentation.setIcon(Icons.IGNORE);
 
         for (IgnoreLanguage language : IgnoreBundle.LANGUAGES) {
             IgnoreFileType fileType = language.getFileType();
-            add(new NewFileAction(fileType) {{
-                Presentation p = getTemplatePresentation();
-                p.setTextValue(IgnoreLocalize.actionNewfile(language.getFilename(), language.getID()));
-                p.setDescriptionValue(IgnoreLocalize.actionNewfileDescription(language.getID()));
-                p.setIcon(fileType.getIcon());
-            }});
+            add(new NewFileAction(
+                IgnoreLocalize.actionNewfile(language.getFilename(), language.getID()),
+                IgnoreLocalize.actionNewfileDescription(language.getID()),
+                fileType.getIcon(),
+                fileType
+            ));
         }
     }
 }
