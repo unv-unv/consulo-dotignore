@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package mobi.hsz.idea.gitignore.codeInspection;
 
 import consulo.annotation.access.RequiredReadAction;
@@ -36,6 +35,7 @@ import consulo.language.psi.PsiPolyVariantReference;
 import consulo.language.psi.PsiReference;
 import consulo.language.psi.ResolveResult;
 import consulo.language.psi.path.FileReferenceOwner;
+import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import consulo.virtualFileSystem.VirtualFile;
 import jakarta.annotation.Nonnull;
@@ -61,8 +61,8 @@ import java.util.regex.Pattern;
 public class IgnoreUnusedEntryInspection extends IgnoreInspection {
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return IgnoreLocalize.codeinspectionUnusedentry().get();
+    public LocalizeValue getDisplayName() {
+        return IgnoreLocalize.codeinspectionUnusedentry();
     }
 
     @Nonnull

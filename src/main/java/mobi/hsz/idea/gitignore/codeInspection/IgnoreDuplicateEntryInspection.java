@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package mobi.hsz.idea.gitignore.codeInspection;
 
 import consulo.annotation.access.RequiredReadAction;
@@ -33,6 +32,7 @@ import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.language.psi.PsiFile;
+import consulo.localize.LocalizeValue;
 import consulo.util.collection.MultiMap;
 import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.psi.IgnoreEntry;
@@ -59,8 +59,8 @@ public class IgnoreDuplicateEntryInspection extends IgnoreInspection {
 
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return IgnoreLocalize.codeinspectionDuplicateentry().get();
+    public LocalizeValue getDisplayName() {
+        return IgnoreLocalize.codeinspectionDuplicateentry();
     }
 
     @Nonnull

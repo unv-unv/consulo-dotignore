@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package mobi.hsz.idea.gitignore.codeInspection;
 
 import consulo.annotation.access.RequiredReadAction;
@@ -101,8 +100,8 @@ public class IgnoreCoverEntryInspection extends IgnoreInspection {
 
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return IgnoreLocalize.codeinspectionCoverentry().get();
+    public LocalizeValue getDisplayName() {
+        return IgnoreLocalize.codeinspectionCoverentry();
     }
 
     @Nonnull

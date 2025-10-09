@@ -2,6 +2,7 @@ package consulo.dotignore.codeInspection;
 
 import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.language.editor.inspection.LocalInspectionTool;
+import consulo.localize.LocalizeValue;
 import jakarta.annotation.Nonnull;
 
 /**
@@ -11,8 +12,8 @@ import jakarta.annotation.Nonnull;
 public abstract class IgnoreInspection extends LocalInspectionTool {
     @Nonnull
     @Override
-    public String getGroupDisplayName() {
-        return IgnoreLocalize.codeinspectionGroup().get();
+    public LocalizeValue getGroupDisplayName() {
+        return IgnoreLocalize.codeinspectionGroup();
     }
 
     @Override

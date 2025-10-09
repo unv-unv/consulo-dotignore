@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package mobi.hsz.idea.gitignore.codeInspection;
 
 import consulo.annotation.access.RequiredReadAction;
@@ -31,6 +30,7 @@ import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
 import consulo.language.psi.PsiElementVisitor;
+import consulo.localize.LocalizeValue;
 import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.IgnoreBundle;
 import mobi.hsz.idea.gitignore.psi.IgnoreEntry;
@@ -57,8 +57,8 @@ public class IgnoreIncorrectEntryInspection extends IgnoreInspection {
 
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return IgnoreLocalize.codeinspectionIncorrectentry().get();
+    public LocalizeValue getDisplayName() {
+        return IgnoreLocalize.codeinspectionIncorrectentry();
     }
 
     /**

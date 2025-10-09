@@ -33,6 +33,7 @@ import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.language.psi.PsiFile;
+import consulo.localize.LocalizeValue;
 import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.psi.IgnoreEntry;
 import mobi.hsz.idea.gitignore.psi.IgnoreFile;
@@ -54,8 +55,8 @@ public class IgnoreRelativeEntryInspection extends IgnoreInspection {
 
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return IgnoreLocalize.codeinspectionRelativeentry().get();
+    public LocalizeValue getDisplayName() {
+        return IgnoreLocalize.codeinspectionRelativeentry();
     }
 
     /**

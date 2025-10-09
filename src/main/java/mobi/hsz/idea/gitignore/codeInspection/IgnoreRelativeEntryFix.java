@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package mobi.hsz.idea.gitignore.codeInspection;
 
 import consulo.annotation.access.RequiredReadAction;
@@ -31,6 +30,7 @@ import consulo.language.editor.inspection.LocalQuickFixOnPsiElement;
 import consulo.language.psi.PsiDocumentManager;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiFile;
+import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import consulo.ui.annotation.RequiredUIAccess;
 import jakarta.annotation.Nonnull;
@@ -64,8 +64,8 @@ public class IgnoreRelativeEntryFix extends LocalQuickFixOnPsiElement {
     @Nonnull
     @Override
     @RequiredReadAction
-    public String getText() {
-        return IgnoreLocalize.quickFixRelativeEntry().get();
+    public LocalizeValue getText() {
+        return IgnoreLocalize.quickFixRelativeEntry();
     }
 
     /**
@@ -113,16 +113,5 @@ public class IgnoreRelativeEntryFix extends LocalQuickFixOnPsiElement {
         }
 
         return path.replaceAll("/\\.{1,2}/", "/").replaceAll("^\\.{0,2}/", "");
-    }
-
-    /**
-     * Gets QuickFix family name.
-     *
-     * @return QuickFix family name
-     */
-    @Nonnull
-    @Override
-    public String getFamilyName() {
-        return IgnoreLocalize.codeinspectionGroup().get();
     }
 }

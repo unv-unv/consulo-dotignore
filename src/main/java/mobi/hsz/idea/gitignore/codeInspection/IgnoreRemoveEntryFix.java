@@ -21,10 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package mobi.hsz.idea.gitignore.codeInspection;
 
 import consulo.annotation.access.RequiredReadAction;
+import consulo.annotation.access.RequiredWriteAction;
 import consulo.codeEditor.Editor;
 import consulo.dotignore.localize.IgnoreLocalize;
 import consulo.language.ast.ASTNode;
@@ -32,6 +32,7 @@ import consulo.language.editor.inspection.LocalQuickFixAndIntentionActionOnPsiEl
 import consulo.language.impl.ast.TreeUtil;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiFile;
+import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
@@ -66,8 +67,8 @@ public class IgnoreRemoveEntryFix extends LocalQuickFixAndIntentionActionOnPsiEl
     @Nonnull
     @Override
     @RequiredReadAction
-    public String getText() {
-        return IgnoreLocalize.quickFixRemoveEntry().get();
+    public LocalizeValue getText() {
+        return IgnoreLocalize.quickFixRemoveEntry();
     }
 
     /**
@@ -80,6 +81,7 @@ public class IgnoreRemoveEntryFix extends LocalQuickFixAndIntentionActionOnPsiEl
      * @param endElement   the {@link PsiElement} which is ignored in invoked action
      */
     @Override
+    @RequiredWriteAction
     public void invoke(
         @Nonnull Project project,
         @Nonnull PsiFile file,
@@ -98,6 +100,7 @@ public class IgnoreRemoveEntryFix extends LocalQuickFixAndIntentionActionOnPsiEl
      *
      * @param startElement working PSI element
      */
+    @RequiredWriteAction
     private void removeCrlf(PsiElement startElement) {
         ASTNode node = TreeUtil.findSibling(startElement.getNode(), IgnoreTypes.CRLF);
         if (node == null) {
@@ -106,17 +109,5 @@ public class IgnoreRemoveEntryFix extends LocalQuickFixAndIntentionActionOnPsiEl
         if (node != null) {
             node.getPsi().delete();
         }
-
-    }
-
-    /**
-     * Gets QuickFix family name.
-     *
-     * @return QuickFix family name
-     */
-    @Nonnull
-    @Override
-    public String getFamilyName() {
-        return IgnoreLocalize.codeinspectionGroup().get();
     }
 }
