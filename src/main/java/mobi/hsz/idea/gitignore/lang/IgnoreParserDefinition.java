@@ -43,6 +43,7 @@ import mobi.hsz.idea.gitignore.lexer.IgnoreLexerAdapter;
 import mobi.hsz.idea.gitignore.parser.IgnoreParser;
 import mobi.hsz.idea.gitignore.psi.IgnoreFile;
 import mobi.hsz.idea.gitignore.psi.IgnoreTypes;
+import mobi.hsz.idea.gitignore.psi.impl.IgnoreTypesFactory;
 
 /**
  * Defines the implementation of a parser for a custom language.
@@ -179,7 +180,7 @@ public class IgnoreParserDefinition implements ParserDefinition {
     @Override
     @RequiredReadAction
     public PsiElement createElement(@Nonnull ASTNode node) {
-        return IgnoreTypes.Factory.createElement(node);
+        return IgnoreTypesFactory.createElement(node);
     }
 
     /**
