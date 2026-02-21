@@ -166,6 +166,6 @@ public class IgnoreFile extends PsiFileImpl {
      */
     @Override
     public String toString() {
-        return fileType.getName();
+        return fileType.getId();
     }
 }

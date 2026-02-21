@@ -32,7 +32,6 @@ import consulo.application.progress.ProgressManager;
 import consulo.component.messagebus.MessageBusConnection;
 import consulo.disposer.Disposable;
 import consulo.language.file.FileTypeManager;
-import consulo.language.impl.util.NoAccessDuringPsiEvents;
 import consulo.module.content.layer.event.ModuleRootListener;
 import consulo.module.event.ModuleListener;
 import consulo.project.DumbService;
