@@ -339,8 +339,7 @@ public class IgnoreManager implements Disposable {
             return cached;
         }
         if (Application.get().isDisposed() || myProject.isDisposed()
-            || DumbService.isDumb(myProject) || !isEnabled() || baseDir == null || !Utils.isUnder(file, baseDir)
-            || NoAccessDuringPsiEvents.isInsideEventProcessing()) {
+            || DumbService.isDumb(myProject) || !isEnabled() || baseDir == null || !Utils.isUnder(file, baseDir)) {
             return false;
         }
 
