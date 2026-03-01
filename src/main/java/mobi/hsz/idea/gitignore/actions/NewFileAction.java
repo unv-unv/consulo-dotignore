@@ -26,7 +26,7 @@ package mobi.hsz.idea.gitignore.actions;
 import consulo.application.dumb.DumbAware;
 import consulo.dotignore.IgnoreNotificationGroup;
 import consulo.dotignore.localize.IgnoreLocalize;
-import consulo.ide.IdeView;
+import consulo.language.editor.util.IdeView;
 import consulo.language.psi.PsiDirectory;
 import consulo.language.psi.PsiFile;
 import consulo.language.psi.PsiManager;
