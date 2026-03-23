@@ -61,8 +61,8 @@ import java.util.function.Function;
     id = "Ignore.IgnoreGroup",
     parents = @ActionParentRef(
         value = @ActionRef(id = "ChangesViewPopupMenu"),
-        anchor = ActionRefAnchor.BEFORE,
-        relatedToAction = @ActionRef(id = "ChangesView.Ignore")
+        anchor = ActionRefAnchor.AFTER,
+        relatedToAction = @ActionRef(id = "ChangesView.AddUnversioned")
     )
 )
 public class IgnoreFileGroupAction extends ActionGroup {
