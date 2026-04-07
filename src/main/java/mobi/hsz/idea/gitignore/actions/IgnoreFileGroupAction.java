@@ -107,8 +107,8 @@ public class IgnoreFileGroupAction extends ActionGroup {
         @Nonnull Function<String, LocalizeValue> textSingleKey
     ) {
         Presentation p = getTemplatePresentation();
-        p.setTextValue(text);
-        p.setDescriptionValue(description);
+        p.setText(text);
+        p.setDescription(description);
         this.presentationTextSingle = textSingleKey;
     }
 
@@ -177,7 +177,7 @@ public class IgnoreFileGroupAction extends ActionGroup {
 
                     Presentation presentation = action.getTemplatePresentation();
                     presentation.setIcon(entry.getKey().getIcon());
-                    presentation.setTextValue(
+                    presentation.setText(
                         count == 1 ? presentationTextSingle.apply(relativePath) : LocalizeValue.ofNullable(relativePath)
                     );
                 }

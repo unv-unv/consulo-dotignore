@@ -414,7 +414,7 @@ public class GeneratorDialog extends DialogWrapper {
                 Presentation presentation = e.getPresentation();
                 presentation.setEnabled(!disabled);
                 presentation.setIcon(icon);
-                presentation.setTextValue(text);
+                presentation.setText(text);
             }
 
             @Override

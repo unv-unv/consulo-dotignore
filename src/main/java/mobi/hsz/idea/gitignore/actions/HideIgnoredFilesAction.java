@@ -70,6 +70,6 @@ public class HideIgnoredFilesAction extends AnAction {
     public void actionPerformed(@Nonnull AnActionEvent e) {
         SETTINGS.setHideIgnoredFiles(!SETTINGS.isHideIgnoredFiles());
 
-        getTemplatePresentation().setTextValue(getText());
+        getTemplatePresentation().setText(getText());
     }
 }
