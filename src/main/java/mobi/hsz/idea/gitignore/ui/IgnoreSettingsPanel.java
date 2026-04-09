@@ -40,6 +40,7 @@ import consulo.fileChooser.FileSaverDescriptor;
 import consulo.fileChooser.IdeaFileChooser;
 import consulo.language.editor.LangDataKeys;
 import consulo.localize.LocalizeValue;
+import consulo.module.Module;
 import consulo.platform.base.icon.PlatformIconGroup;
 import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.InputValidatorEx;
@@ -70,7 +71,6 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.TreeMap;
 
 import static mobi.hsz.idea.gitignore.settings.IgnoreSettings.IgnoreLanguagesSettings.KEY.ENABLE;
@@ -719,11 +719,11 @@ public class IgnoreSettingsPanel implements Disposable {
                                 return file.getExtension().endsWith("xml");
                             }
                         };
-                    descriptor.withDescriptionValue(IgnoreLocalize.actionImporttemplatesWrapperDescription());
-                    descriptor.withTitleValue(IgnoreLocalize.actionImporttemplatesWrapper());
+                    descriptor.withDescription(IgnoreLocalize.actionImporttemplatesWrapperDescription());
+                    descriptor.withTitle(IgnoreLocalize.actionImporttemplatesWrapper());
                     descriptor.putUserData(
                         LangDataKeys.MODULE_CONTEXT,
-                        event.getData(LangDataKeys.MODULE)
+                        event.getData(Module.KEY)
                     );
 
                     VirtualFile file = IdeaFileChooser.chooseFile(descriptor, templatesListPanel, null, null);
@@ -1109,16 +1109,12 @@ public class IgnoreSettingsPanel implements Disposable {
             }
             TreeMap<IgnoreSettings.IgnoreLanguagesSettings.KEY, Object> data = settings.get(language);
 
-            switch (column) {
-                case 0:
-                    return language.getID();
-                case 1:
-                    return Boolean.valueOf(data.get(NEW_FILE).toString());
-                case 2:
-                    return Boolean.valueOf(data.get(ENABLE).toString());
-            }
-
-            throw new IllegalArgumentException();
+            return switch (column) {
+                case 0 -> language.getID();
+                case 1 -> Boolean.valueOf(data.get(NEW_FILE).toString());
+                case 2 -> Boolean.valueOf(data.get(ENABLE).toString());
+                default -> throw new IllegalArgumentException();
+            };
         }
 
         /**
