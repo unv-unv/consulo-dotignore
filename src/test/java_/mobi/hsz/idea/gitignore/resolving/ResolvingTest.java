@@ -1,13 +1,13 @@
 package mobi.hsz.idea.gitignore.resolving;
 
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
-import consulo.ide.impl.idea.openapi.vfs.VfsUtilCore;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiFileSystemItem;
 import consulo.language.psi.PsiPolyVariantReference;
 import consulo.language.psi.ResolveResult;
 import consulo.util.collection.ContainerUtil;
 import consulo.virtualFileSystem.VirtualFile;
+import consulo.virtualFileSystem.util.VirtualFileUtil;
 import jakarta.annotation.Nonnull;
 import mobi.hsz.idea.gitignore.file.type.kind.GitFileType;
 
@@ -79,7 +79,7 @@ public class ResolvingTest extends LightPlatformCodeInsightFixtureTestCase {
                 assertNotNull(resolveResultElement);
                 assertInstanceOf(resolveResultElement, PsiFileSystemItem.class);
                 PsiFileSystemItem fileSystemItem = (PsiFileSystemItem)resolveResultElement;
-                return VfsUtilCore.getRelativePath(fileSystemItem.getVirtualFile(), rootFile, '/');
+                return VirtualFileUtil.getRelativePath(fileSystemItem.getVirtualFile(), rootFile, '/');
             }
         );
 
